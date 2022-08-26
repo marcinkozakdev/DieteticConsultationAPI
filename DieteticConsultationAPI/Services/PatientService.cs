@@ -47,7 +47,7 @@ namespace DieteticConsultationAPI.Services
 
         public void Delete(int id)
         {
-            _logger.LogError($"Patient with id: {id} DELETE action invoked");
+            _logger.LogError("Patient with id: {Id} DELETE action invoked", id);
 
             var patient = _dbContext
                 .Patients
@@ -107,14 +107,14 @@ namespace DieteticConsultationAPI.Services
                 Height = p.Height,
                 // Diet = MapDiet(p.Diet)
 
-            }); ;
+            });
 
             return patientsDtos;
         }
 
         public int Add(AddPatientDto dto)
         {
-            var patient = new Patient()
+            var patient = new Patient
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -124,7 +124,7 @@ namespace DieteticConsultationAPI.Services
                 Age = dto.Age,
                 Weight = dto.Weight,
                 Height = dto.Height,
-                //Diet = MapDiet(dto.Diet)
+                Diet = Map(dto.Diet!)
             };
 
             _dbContext.Patients.Add(patient);
@@ -132,6 +132,18 @@ namespace DieteticConsultationAPI.Services
 
             return patient.Id;
         }
+        
+        private Diet Map(DietDto diet) =>
+            diet is null
+                ? throw new ArgumentNullException()
+                : new()
+                {
+                    Name = diet.Name,
+                    Description = diet.Description,
+                    CalorificValue = diet.CalorificValue,
+                    ProhibitedProducts = diet.ProhibitedProducts,
+                    RecommendedProducts = diet.RecommendedProducts,
+                };
 
         //private static DietDto MapDiet(Diet diet) =>
         //   new DietDto

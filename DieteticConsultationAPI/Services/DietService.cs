@@ -1,45 +1,36 @@
-﻿using AutoMapper;
-using DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
-using System.Xml.Linq;
 
-namespace DieteticConsultationAPI.Services
+namespace DieteticConsultationAPI.Services;
+
+public class DietService : IDietService
 {
-    public interface IDietService
+    private readonly DieteticConsultationDbContext _context;
+    public DietService(DieteticConsultationDbContext context) => _context = context;
+
+    public async Task<int> Create(CreateDietDto dto)
     {
-        int Create(int patientId, CreateDietDto dto);
+        if (dto is null)
+            throw new ArgumentNullException(nameof(dto));
 
-    }
+        var patient = _context.Patients.FirstOrDefault(p => p.Id == dto.PatientId);
 
-    public class DietService : IDietService
-    {
-        private readonly DieteticConsultationDbContext _context;
+        if (patient is null)
+            throw new NotFoundException("Patient not found");
 
-        public int Create(int patientId, CreateDietDto dto)
+        var dietEntity = new Diet
         {
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            Name = dto.Name,
+            Description = dto.Description,
+            CalorificValue = dto.CalorificValue,
+            ProhibitedProducts = dto.ProhibitedProducts,
+            RecommendedProducts = dto.RecommendedProducts
+        };
 
-            if (patient is null)
-                throw new NotFoundException("Patient not found");
+        _context.Diets.Add(dietEntity);
+        _context.SaveChangesAsync();
 
-            var dietEntity = new Diet()
-            {
-                Name = dto.Name,
-                Description = dto.Description,
-                CalorificValue = dto.CalorificValue,
-                ProhibitedProducts = dto.ProhibitedProducts,
-                RecommendedProducts = dto.RecommendedProducts
-            };
-
-            _context.Diets.Add(dietEntity);
-            _context.SaveChanges();
-
-            return dietEntity.Id;
-        }
-
-       
-
-
+        return dietEntity.Id;
     }
 }

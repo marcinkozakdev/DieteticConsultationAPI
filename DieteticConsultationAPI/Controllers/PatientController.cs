@@ -4,14 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DieteticConsultationAPI.Controllers
 {
-    [Route("api/patient")]
+    [Route("api")]
     [ApiController]
     public class PatientController : ControllerBase
     {
-
         private readonly IPatientService _patientService;
-
-
         public PatientController(IPatientService patientService)
         {
             _patientService = patientService;
