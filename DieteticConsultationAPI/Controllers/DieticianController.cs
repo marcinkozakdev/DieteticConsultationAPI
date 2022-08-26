@@ -34,7 +34,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Add([FromBody] AddDieticianDto dto)
+        public ActionResult AddDietician([FromBody] AddDieticianDto dto)
         {
             var id = _dieticianService.Add(dto);
             return Created($"/api/dietician/{id}", null);

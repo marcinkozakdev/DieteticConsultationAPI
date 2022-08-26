@@ -20,6 +20,7 @@ namespace DieteticConsultationAPI.Entities
         public virtual Dietician Dietician { get; set; }
 
         public virtual Diet Diet { get; set; }
+
        
     }
 }

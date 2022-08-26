@@ -42,7 +42,6 @@ namespace DieteticConsultationAPI.Services
             patient.Weight = dto.Weight;
             patient.Height = dto.Height;
             patient.Age = dto.Age;
-            patient.Diet = MapDiet(dto.Diet);
             _dbContext.SaveChanges();
         }
 
@@ -55,7 +54,7 @@ namespace DieteticConsultationAPI.Services
                 .FirstOrDefault(p => p.Id == id);
 
             if (patient is null)
-                throw new NotFoundException("Patient nof found");
+                throw new NotFoundException("Patient not found");
 
             _dbContext.Patients.Remove(patient);
             _dbContext.SaveChanges();
@@ -70,7 +69,7 @@ namespace DieteticConsultationAPI.Services
                 .FirstOrDefault(p => p.Id == id);
 
             if (patient is null)
-                throw new NotFoundException("Patient nof found");
+                throw new NotFoundException("Patient not found");
 
             var result = new PatientDto()
             {
@@ -82,8 +81,8 @@ namespace DieteticConsultationAPI.Services
                 Age = patient.Age,
                 Weight = patient.Weight,
                 Height = patient.Height,
-                Diet = MapDiet(patient.Diet)
-                
+                //Diet = MapDiet(patient.Diet)
+
             };
 
             return result;
@@ -106,9 +105,9 @@ namespace DieteticConsultationAPI.Services
                 Age = p.Age,
                 Weight = p.Weight,
                 Height = p.Height,
-                Diet = MapDiet(p.Diet)
+                // Diet = MapDiet(p.Diet)
 
-            }) ; ;
+            }); ;
 
             return patientsDtos;
         }
@@ -125,33 +124,34 @@ namespace DieteticConsultationAPI.Services
                 Age = dto.Age,
                 Weight = dto.Weight,
                 Height = dto.Height,
+                //Diet = MapDiet(dto.Diet)
             };
-            
+
             _dbContext.Patients.Add(patient);
             _dbContext.SaveChanges();
 
             return patient.Id;
         }
 
-        private static DietDto MapDiet(Diet diet) =>
-           new DietDto
-           {
-               Name = diet.Name,
-               Description = diet.Description,
-               CalorificValue= diet.CalorificValue,
-               ProhibitedProducts = diet.ProhibitedProducts,
-               RecommendedProducts = diet.RecommendedProducts,
+        //private static DietDto MapDiet(Diet diet) =>
+        //   new DietDto
+        //   {
+        //       Name = diet.Name,
+        //       Description = diet.Description,
+        //       CalorificValue = diet.CalorificValue,
+        //       ProhibitedProducts = diet.ProhibitedProducts,
+        //       RecommendedProducts = diet.RecommendedProducts,
 
-           };
+        //   };
 
-        private static DieticianDto MapDietician(Dietician dietician) =>
-            new DieticianDto
-            {
-                FirstName = dietician.FirstName,
-                LastName = dietician.LastName,
-                Specialization = dietician.Specialization,
-                ContactEmail = dietician.ContactEmail,
-                ContactNumber = dietician.ContactNumber
-            };
+        //    private static DieticianDto MapDietician(Dietician dietician) =>
+        //        new DieticianDto
+        //        {
+        //            FirstName = dietician.FirstName,
+        //            LastName = dietician.LastName,
+        //            Specialization = dietician.Specialization,
+        //            ContactEmail = dietician.ContactEmail,
+        //            ContactNumber = dietician.ContactNumber
+        //        };
     }
 }

@@ -2,13 +2,14 @@
 using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
+using System.Xml.Linq;
 
 namespace DieteticConsultationAPI.Services
 {
     public interface IDietService
     {
         int Create(int patientId, CreateDietDto dto);
-       
+
     }
 
     public class DietService : IDietService
@@ -32,10 +33,12 @@ namespace DieteticConsultationAPI.Services
             };
 
             _context.Diets.Add(dietEntity);
-            _context.SaveChanges(); 
+            _context.SaveChanges();
 
             return dietEntity.Id;
         }
+
+       
 
 
     }

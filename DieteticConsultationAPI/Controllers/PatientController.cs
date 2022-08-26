@@ -20,7 +20,7 @@ namespace DieteticConsultationAPI.Controllers
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] UpdatePatientDto dto, [FromRoute] int id)
         {
-            _patientService.Update(id, dto);
+            _patientService.Update(dto, id);
             return Ok();
         }
 
@@ -32,24 +32,24 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Add([FromBody] AddDieticianDto dto)
+        public ActionResult Add([FromBody] AddPatientDto dto)
         {
             var id = _patientService.Add(dto);
-            return Created($"/api/dietician/{id}", null);
+            return Created($"/api/patient/{id}", null);
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<DieticianDto>> GetAll()
+        public ActionResult<IEnumerable<PatientDto>> GetAll()
         {
-            var dieticians = _patientService.GetAll();
-            return Ok(dieticians);
+            var patients = _patientService.GetAll();
+            return Ok(patients);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<DieticianDto> Get([FromRoute] int id)
+        public ActionResult<PatientDto> Get([FromRoute] int id)
         {
-            var dietician = _patientService.GetById(id);
-            return Ok(dietician);
+            var patient = _patientService.GetById(id);
+            return Ok(patient);
         }
 
     }

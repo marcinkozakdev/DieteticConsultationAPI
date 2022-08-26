@@ -4,22 +4,21 @@ using DieteticConsultationAPI.Models;
 
 namespace DieteticConsultationAPI
 {
-    public class DieteticConsultationProfile : Profile
+    public class DieteticConsultationMappingProfile : Profile
     {
-        public DieteticConsultationProfile()
+        public DieteticConsultationMappingProfile()
         {
             CreateMap<Dietician, DieticianDto>();
-
+            CreateMap<Patient, PatientDto>();
             CreateMap<Diet, DietDto>();
 
-            CreateMap<Patient, PatientDto>();
-
             CreateMap<AddDieticianDto, Dietician>();
-
+            CreateMap<AddPatientDto, Patient>();
             CreateMap<CreateDietDto, Diet>();
 
-            CreateMap<AddPatientDto, Patient>();
-
+            CreateMap<UpdateDieticianDto, Dietician>();
+            CreateMap<UpdatePatientDto, Patient>();
+            CreateMap<UpdateDietDto, Diet>();
         }
     }
 }

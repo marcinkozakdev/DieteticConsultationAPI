@@ -6,7 +6,7 @@ using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace DieteticConsultationAPI.Controllers
 {
-    [Route("api/{patientId}/diet")]
+    [Route("api/patient/{patientId}/diet")]
     [ApiController]
     public class DietController : ControllerBase
     {
@@ -16,10 +16,11 @@ namespace DieteticConsultationAPI.Controllers
         {
             _dietService = dietService;
         }
-        public ActionResult Post([FromRoute]int patientId, CreateDietDto dto)
+        public ActionResult Post([FromRoute]int patientId, [FromBody] CreateDietDto dto)
         {
             var dietId = _dietService.Create(patientId, dto);
-            return Created($"api/{patientId}/diet/{dietId}", null);
+            return Created($"api/patient/{patientId}/diet/{dietId}", null);
         }
     }
+
 }
