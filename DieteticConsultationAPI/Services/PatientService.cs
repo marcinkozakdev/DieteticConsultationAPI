@@ -110,7 +110,7 @@ namespace DieteticConsultationAPI.Services
             patient.Weight = dto.Weight;
             patient.Height = dto.Height;
             patient.Age = dto.Age;
-            patient.Diet = MapUpdate(dto.Diet);
+            patient.Diet = Map(dto.Diet);
 
 
             _context.SaveChanges();
@@ -131,7 +131,7 @@ namespace DieteticConsultationAPI.Services
             _context.SaveChanges();
         }
 
-        private DietDto? Map(Diet diet) =>
+        private DietDto? Map(Diet? diet) =>
             diet is null
             ? null
             : new DietDto
@@ -144,10 +144,10 @@ namespace DieteticConsultationAPI.Services
                 RecommendedProducts = diet.RecommendedProducts
             };
 
-        private UpdateDietDto? MapUpdate(DietDto diet) =>
+        private Diet? Map(DietDto? diet) =>
             diet is null
             ? null
-            : new UpdateDietDto
+            : new Diet
             {
                 Id = diet.Id,
                 Name = diet.Name,
