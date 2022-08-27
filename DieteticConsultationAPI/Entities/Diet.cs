@@ -9,6 +9,6 @@ public class Diet
     public string? ProhibitedProducts { get; set; }
     public string? RecommendedProducts   { get; set; }
 
-    public int PatientId { get; set; }
-    public virtual Patient Patient { get; set; }
+    public int? PatientId { get; set; }
+    public virtual Patient? Patient { get; set; }
 }

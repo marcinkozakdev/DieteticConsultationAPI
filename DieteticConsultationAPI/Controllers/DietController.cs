@@ -5,51 +5,49 @@ using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace DieteticConsultationAPI.Controllers
 {
-    [Route("api")]
+    [Route("api/diet")]
     [ApiController]
     public class DietController : ControllerBase
     {
-        private const string _prefix = "api";
-
         private readonly IDietService _dietService;
         public DietController(IDietService dietService)
         {
             _dietService = dietService;
         }
 
-        [Route(_prefix)]
         [HttpPost]
-        public ActionResult Post([FromBody] CreateDietDto dto)
+        public ActionResult Create([FromBody] CreateDietDto dto)
         {
             var dietId = _dietService.Create(dto);
             return Created(dietId.ToString(), null);
-        }
-        
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
-        {
-            var diet = await _dietService.GetDiet(id);
-            return Ok(diet);
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok();
+            var diets = _dietService.GetAll();
+            return Ok(diets);
         }
 
-        [HttpDelete]
-        public IActionResult Delete()
-        {
-            return Ok();
-        }
-        
-        [HttpPut]
-        public IActionResult Update()
-        {
-            return Ok();
-        }
-        
+        //[HttpGet("{id}")]
+        //public async Task<IActionResult> Get(int id)
+        //{
+        //    var diet = await _dietService.GetDiet(id);
+        //    return Ok();
+        //}
+
+        //[HttpDelete]
+        //public IActionResult Delete()
+        //{
+        //    return Ok();
+        //}
+
+        //[HttpPut]
+        //public IActionResult Update()
+        //{
+        //    return Ok();
+        //}
+
     }
 
 }

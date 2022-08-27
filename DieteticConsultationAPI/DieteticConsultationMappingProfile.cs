@@ -12,13 +12,15 @@ namespace DieteticConsultationAPI
             CreateMap<Patient, PatientDto>();
             CreateMap<Diet, DietDto>();
 
-            CreateMap<AddDieticianDto, Dietician>();
-            CreateMap<AddPatientDto, Patient>();
+            CreateMap<CreateDieticianDto, Dietician>();
+            CreateMap<CreatePatientDto, Patient>();
             CreateMap<CreateDietDto, Diet>();
 
             CreateMap<UpdateDieticianDto, Dietician>();
             CreateMap<UpdatePatientDto, Patient>();
             CreateMap<UpdateDietDto, Diet>();
+            CreateMap<UpdateDietDto, DietDto>();
+
         }
     }
 }

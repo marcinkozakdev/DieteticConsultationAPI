@@ -19,40 +19,42 @@ namespace DieteticConsultationAPI.Controllers
             _dieticianService = dieticianService;
         }
 
-        [HttpPut("{id}")]
-        public ActionResult Update([FromBody] UpdateDieticianDto dto, [FromRoute] int id)
-        {
-           _dieticianService.Update(id, dto);
-            return Ok();
-        }
-        
-        [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] int id)
-        {
-            _dieticianService.Delete(id);
-            return NotFound(); 
-        }
-
         [HttpPost]
-        public ActionResult AddDietician([FromBody] AddDieticianDto dto)
+        public ActionResult Create([FromBody] CreateDieticianDto dto)
         {
-            var id = _dieticianService.Add(dto);
+            var id = _dieticianService.CreateDietician(dto);
             return Created($"/api/dietician/{id}", null);
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<DieticianDto>> GetAll()
+        public IActionResult GetAll()
         {
-            var dieticians = _dieticianService.GetAll();
+            var dieticians = _dieticianService.GetAllDieticians();
             return Ok(dieticians);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<DieticianDto> Get([FromRoute] int id)
+        public IActionResult Get([FromRoute] int id)
         {
-            var dietician = _dieticianService.GetById(id);
+            var dietician = _dieticianService.GetDietician(id);
             return Ok(dietician);
         }
+
+        [HttpPut("{id}")]
+        public IActionResult Update([FromBody] UpdateDieticianDto dto, [FromRoute] int id)
+        {
+           _dieticianService.UpdateDietician(id, dto);
+            return Ok();
+        }
+        
+        [HttpDelete("{id}")]
+        public IActionResult Delete([FromRoute] int id)
+        {
+            _dieticianService.DeleteDietician(id);
+            return NotFound(); 
+        }
+
+
 
     }
 }

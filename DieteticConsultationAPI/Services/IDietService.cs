@@ -3,6 +3,7 @@ namespace DieteticConsultationAPI.Services;
 
 public interface IDietService
 {
-    Task<int> Create(CreateDietDto dto);
-    Task<DietDto> GetDiet(int id);
+    int Create(CreateDietDto dto);
+    IEnumerable<DietDto> GetAll();
+
 }

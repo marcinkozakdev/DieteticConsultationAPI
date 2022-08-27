@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DieteticConsultationAPI.Controllers
 {
-    [Route("api")]
+    [Route("api/patient")]
     [ApiController]
     public class PatientController : ControllerBase
     {
@@ -14,40 +14,42 @@ namespace DieteticConsultationAPI.Controllers
             _patientService = patientService;
         }
 
-        [HttpPut("{id}")]
-        public ActionResult Update([FromBody] UpdatePatientDto dto, [FromRoute] int id)
-        {
-            _patientService.Update(dto, id);
-            return Ok();
-        }
-
-        [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] int id)
-        {
-            _patientService.Delete(id);
-            return NotFound();
-        }
-
         [HttpPost]
-        public ActionResult Add([FromBody] AddPatientDto dto)
+        public ActionResult Create([FromBody] CreatePatientDto dto)
         {
-            var id = _patientService.Add(dto);
-            return Created($"/api/patient/{id}", null);
+            var patientId = _patientService.CreatePatient(dto);
+            return Created(patientId.ToString(), null);
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<PatientDto>> GetAll()
+        public IActionResult GetAll()
         {
-            var patients = _patientService.GetAll();
+            var patients = _patientService.GetAllPatients();
             return Ok(patients);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<PatientDto> Get([FromRoute] int id)
+        public IActionResult Get(int id)
         {
-            var patient = _patientService.GetById(id);
+            var patient = _patientService.GetPatient(id);
             return Ok(patient);
         }
+
+        [HttpPut("{id}")]
+        public IActionResult Update([FromBody] UpdatePatientDto dto, int id)
+        {
+            _patientService.UpdatePatient(dto, id);
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            _patientService.DeletePatient(id);
+            return NotFound();
+        }
+
+
 
     }
 

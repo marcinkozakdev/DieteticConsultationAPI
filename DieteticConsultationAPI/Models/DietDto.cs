@@ -1,4 +1,6 @@
-﻿namespace DieteticConsultationAPI.Models
+﻿using DieteticConsultationAPI.Entities;
+
+namespace DieteticConsultationAPI.Models
 {
     public class DietDto
     {
@@ -9,6 +11,7 @@
         public string? ProhibitedProducts { get; set; }
         public string? RecommendedProducts { get; set; }
 
-        public int PatientId { get; set; }
+        
+
     }
 }

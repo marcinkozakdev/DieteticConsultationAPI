@@ -4,6 +4,7 @@ using DieteticConsultationAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DieteticConsultationAPI.Migrations
 {
     [DbContext(typeof(DieteticConsultationDbContext))]
-    partial class DieteticConsultationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220826192148_AddedNullablePatientId")]
+    partial class AddedNullablePatientId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +57,7 @@ namespace DieteticConsultationAPI.Migrations
                         .IsUnique()
                         .HasFilter("[PatientId] IS NOT NULL");
 
-                    b.ToTable("Diets", (string)null);
+                    b.ToTable("Diets");
                 });
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Dietician", b =>
@@ -88,7 +90,7 @@ namespace DieteticConsultationAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Dieticians", (string)null);
+                    b.ToTable("Dieticians");
                 });
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Patient", b =>
@@ -139,7 +141,7 @@ namespace DieteticConsultationAPI.Migrations
 
                     b.HasIndex("DieticianId");
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Diet", b =>

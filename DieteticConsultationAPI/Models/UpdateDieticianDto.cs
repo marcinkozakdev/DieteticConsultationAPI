@@ -4,7 +4,6 @@ namespace DieteticConsultationAPI.Models
 {
     public class UpdateDieticianDto
     {
-   
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Specialization { get; set; }
@@ -12,6 +11,5 @@ namespace DieteticConsultationAPI.Models
         public string ContactEmail { get; set; }
         [Phone]
         public string ContactNumber { get; set; }
-
     }
 }
