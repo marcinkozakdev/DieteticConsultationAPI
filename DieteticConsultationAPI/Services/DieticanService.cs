@@ -47,7 +47,7 @@ namespace DieteticConsultationAPI.Services
                 Specialization = d.Specialization,
                 ContactEmail = d.ContactEmail,
                 ContactNumber = d.ContactNumber,
-                Patients = d.Patients.Select(Map).ToList()
+                Patients = d.Patients.Select(Map).ToList(),
             });
 
             return dieticiansDtos;
@@ -66,6 +66,7 @@ namespace DieteticConsultationAPI.Services
                 ContactEmail = dietician.ContactEmail,
                 ContactNumber = dietician.ContactNumber,
                 Patients = dietician.Patients.Select(Map).ToList()
+                
             };
 
             return dieticianDto;
@@ -106,6 +107,20 @@ namespace DieteticConsultationAPI.Services
                 Weight = patient.Weight,
                 Height = patient.Height,
                 Age = patient.Age,
+                Diet = Map(patient.Diet)
+            };
+
+        private static DietDto? Map(Diet? diet) =>
+            diet is null
+            ? null
+            : new DietDto
+            {
+                Id = diet.Id,
+                Name = diet.Name,
+                Description = diet.Description,
+                CalorificValue = diet.CalorificValue,
+                ProhibitedProducts = diet.ProhibitedProducts,
+                RecommendedProducts = diet.RecommendedProducts
             };
 
         private Dietician GetDieticianById(int id)

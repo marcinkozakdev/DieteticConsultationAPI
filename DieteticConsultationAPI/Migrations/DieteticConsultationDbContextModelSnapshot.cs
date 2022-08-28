@@ -55,7 +55,7 @@ namespace DieteticConsultationAPI.Migrations
                         .IsUnique()
                         .HasFilter("[PatientId] IS NOT NULL");
 
-                    b.ToTable("Diets", (string)null);
+                    b.ToTable("Diets");
                 });
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Dietician", b =>
@@ -74,6 +74,9 @@ namespace DieteticConsultationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("DietId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -88,7 +91,9 @@ namespace DieteticConsultationAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Dieticians", (string)null);
+                    b.HasIndex("DietId");
+
+                    b.ToTable("Dieticians");
                 });
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Patient", b =>
@@ -139,7 +144,7 @@ namespace DieteticConsultationAPI.Migrations
 
                     b.HasIndex("DieticianId");
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Diet", b =>
@@ -149,6 +154,15 @@ namespace DieteticConsultationAPI.Migrations
                         .HasForeignKey("DieteticConsultationAPI.Entities.Diet", "PatientId");
 
                     b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("DieteticConsultationAPI.Entities.Dietician", b =>
+                {
+                    b.HasOne("DieteticConsultationAPI.Entities.Diet", "Diet")
+                        .WithMany()
+                        .HasForeignKey("DietId");
+
+                    b.Navigation("Diet");
                 });
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Patient", b =>
@@ -169,8 +183,7 @@ namespace DieteticConsultationAPI.Migrations
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Patient", b =>
                 {
-                    b.Navigation("Diet")
-                        .IsRequired();
+                    b.Navigation("Diet");
                 });
 #pragma warning restore 612, 618
         }

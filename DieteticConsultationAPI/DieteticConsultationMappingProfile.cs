@@ -19,8 +19,6 @@ namespace DieteticConsultationAPI
             CreateMap<UpdateDieticianDto, Dietician>();
             CreateMap<UpdatePatientDto, Patient>();
             CreateMap<UpdateDietDto, Diet>();
-            CreateMap<UpdateDietDto, DietDto>();
-
         }
     }
 }

@@ -126,9 +126,11 @@ namespace DieteticConsultationAPI.Services
         {
             var patient = _context
                 .Patients
+                .Include(p => p.Diet)
                 .FirstOrDefault(p => p.Id == id);
 
             if (patient is null)
+                
                 throw new NotFoundException("Patient not found");
 
             return patient;

@@ -13,6 +13,6 @@ namespace DieteticConsultationAPI.Models
         public string ContactEmail { get; set; }
         [Phone]
         public string ContactNumber { get; set; }
-        public List<PatientDto> Patients { get; set; }  
+        public List<PatientDto> Patients { get; set; }
     }
 }
