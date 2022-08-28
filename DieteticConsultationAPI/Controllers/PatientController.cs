@@ -9,6 +9,7 @@ namespace DieteticConsultationAPI.Controllers
     public class PatientController : ControllerBase
     {
         private readonly IPatientService _patientService;
+
         public PatientController(IPatientService patientService)
         {
             _patientService = patientService;
@@ -48,11 +49,6 @@ namespace DieteticConsultationAPI.Controllers
             _patientService.DeletePatient(id);
             return NotFound();
         }
-
-
-
     }
-
-
 }
 

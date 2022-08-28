@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using DieteticConsultationAPI.Entities;
-using DieteticConsultationAPI.Models;
+﻿using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DieteticConsultationAPI.Controllers
 {
@@ -13,7 +10,6 @@ namespace DieteticConsultationAPI.Controllers
     {
         private readonly IDieticianService _dieticianService;
        
-
         public DieticianController(IDieticianService dieticianService)
         {
             _dieticianService = dieticianService;
@@ -43,7 +39,7 @@ namespace DieteticConsultationAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Update([FromBody] UpdateDieticianDto dto, [FromRoute] int id)
         {
-           _dieticianService.UpdateDietician(id, dto);
+           _dieticianService.UpdateDietician(dto, id);
             return Ok();
         }
         
@@ -53,8 +49,5 @@ namespace DieteticConsultationAPI.Controllers
             _dieticianService.DeleteDietician(id);
             return NotFound(); 
         }
-
-
-
     }
 }

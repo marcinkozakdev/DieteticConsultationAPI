@@ -17,10 +17,5 @@ namespace DieteticConsultationAPI.Models
         public decimal Height { get; set; }
         public int Age { get; set; }
         public virtual DietDto? Diet { get; set; }
-
-
-
-
-
     }
 }

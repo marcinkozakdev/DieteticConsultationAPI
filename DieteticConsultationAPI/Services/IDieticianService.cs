@@ -7,7 +7,7 @@ namespace DieteticConsultationAPI.Services
         int CreateDietician(CreateDieticianDto dto);
         IEnumerable<DieticianDto> GetAllDieticians();
         DieticianDto GetDietician(int id);
-        void UpdateDietician(int id, UpdateDieticianDto dto);
+        void UpdateDietician(UpdateDieticianDto dto, int id);
         void DeleteDietician(int id);
     }
 }

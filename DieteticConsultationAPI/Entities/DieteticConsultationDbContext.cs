@@ -37,9 +37,8 @@ namespace DieteticConsultationAPI.Entities
                 .WithOne(d => d.Patient)
                 .HasForeignKey<Diet>(d => d.PatientId);
             });
-
-
         }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(_connectionString);

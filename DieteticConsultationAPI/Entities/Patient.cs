@@ -14,5 +14,4 @@ public class Patient
     public int DieticianId { get; set; }
     public virtual Dietician Dietician { get; set; }
     public virtual Diet? Diet { get; set; }
-
 }

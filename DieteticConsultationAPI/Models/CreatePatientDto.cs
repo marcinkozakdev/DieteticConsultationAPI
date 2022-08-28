@@ -25,8 +25,5 @@ namespace DieteticConsultationAPI.Models
         public decimal Height { get; set; }
         public int Age { get; set; }
         public int DieticianId { get; set; }
-        
-
-
     }
 }

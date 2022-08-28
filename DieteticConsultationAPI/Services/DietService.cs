@@ -3,77 +3,113 @@ using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DieteticConsultationAPI.Services;
-
-public class DietService : IDietService
+namespace DieteticConsultationAPI.Services
 {
-    private readonly DieteticConsultationDbContext _context;
-    public DietService(DieteticConsultationDbContext context) => _context = context;
-
-    public int Create(CreateDietDto dto)
+    public class DietService : IDietService
     {
-        if (dto is null)
-            throw new ArgumentNullException(nameof(dto));
+        private readonly DieteticConsultationDbContext _context;
+        private readonly ILogger _logger;
 
-        var dietEntity = new Diet
+        public DietService(DieteticConsultationDbContext context, ILogger<DietService> logger)
         {
-            Id = dto.Id,
-            Name = dto.Name,
-            Description = dto.Description,
-            CalorificValue = dto.CalorificValue,
-            ProhibitedProducts = dto.ProhibitedProducts,
-            RecommendedProducts = dto.RecommendedProducts,
-            PatientId = dto.PatientId
-        };
+            _context = context;
+            _logger = logger;
+        }
 
-        _context.Diets.Add(dietEntity);
-        _context.SaveChanges();
-
-        return dietEntity.Id;
-    }
-
-    public IEnumerable<DietDto> GetAll()
-    {
-        var diets = _context
-            .Diets
-            .Include(d => d.Patient)
-            .ToList();
-
-        var results = diets.Select(d => new DietDto()
+        public int CreateDiet(CreateDietDto dto)
         {
-            Id = d.Id,
-            Name = d.Name,
-            Description = d.Description,
-            CalorificValue = d.CalorificValue,
-            ProhibitedProducts = d.ProhibitedProducts,
-            RecommendedProducts = d.RecommendedProducts,
-            
-        });
+            if (dto is null)
+                throw new ArgumentNullException(nameof(dto));
 
-        return results;
-    }
+            var diet = new Diet
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Description = dto.Description,
+                CalorificValue = dto.CalorificValue,
+                ProhibitedProducts = dto.ProhibitedProducts,
+                RecommendedProducts = dto.RecommendedProducts,
+                PatientId = dto.PatientId
+            };
 
-    public DietDto Get(int patientId)
-    {
-        var diet = _context
-            .Diets
-            .Include(d => d.Patient)
-            .ToList();
+            _context.Diets.Add(diet);
+            _context.SaveChanges();
 
-        if (diet == null)
-            throw new NotFoundException("Diet not found");
+            return diet.Id;
+        }
 
-        var result = new DietDto()
+        public IEnumerable<DietDto> GetAllDiets()
         {
-           
-        };
+            var diets = _context
+                .Diets
+                .Include(d => d.Patient)
+                .ToList();
 
-        return result;
+            var dietsDtos = diets.Select(d => new DietDto()
+            {
+                Id = d.Id,
+                Name = d.Name,
+                Description = d.Description,
+                CalorificValue = d.CalorificValue,
+                ProhibitedProducts = d.ProhibitedProducts,
+                RecommendedProducts = d.RecommendedProducts
+            });
 
+            return dietsDtos;
+        }
+
+        public DietDto GetDiet(int id)
+        {
+            var diet = GetDietById(id);
+
+            var dietDto = new DietDto()
+            {
+                Id = id,
+                Name = diet.Name,
+                Description = diet.Description,
+                CalorificValue = diet.CalorificValue,
+                ProhibitedProducts = diet.ProhibitedProducts,
+                RecommendedProducts = diet.RecommendedProducts
+            };
+
+            return dietDto;
+        }
+
+        public void UpdateDiet(UpdateDietDto dto, int id)
+        {
+            var diet = GetDietById(id);
+
+            diet.Id = id;
+            diet.Name = dto.Name;
+            diet.Description = dto.Description;
+            diet.CalorificValue = dto.CalorificValue;
+            diet.ProhibitedProducts = dto.ProhibitedProducts;
+            diet.RecommendedProducts = dto.RecommendedProducts;
+
+            _context.SaveChanges();
+        }
+
+        public void DeleteDiet(int id)
+        {
+            _logger.LogWarning($"Diet with id: {id} DELETE action invoked");
+
+            var diet = GetDietById(id);
+
+            _context.Diets.Remove(diet);
+            _context.SaveChanges();
+        }
+
+        private Diet GetDietById(int id)
+        {
+            var diet = _context
+                .Diets
+                .Include(d => d.Patient)
+                .FirstOrDefault(d => d.Id == id);
+
+            if (diet == null)
+                throw new NotFoundException("Diet not found");
+
+            return diet;
+        }
     }
-
-    //public Task<DietDto> GetDiet(int id)
-    //{
-    //    throw new NotImplementedException();
-    //}
 }

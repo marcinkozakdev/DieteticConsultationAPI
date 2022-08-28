@@ -39,35 +39,6 @@ namespace DieteticConsultationAPI.Services
             return patient.Id;
         }
 
-        public PatientDto GetPatient(int id)
-        {
-            var patient = _context
-                .Patients
-                .Include(d => d.Diet)
-                .FirstOrDefault(p => p.Id == id);
-
-            if (patient is null)
-            {
-                throw new NotFoundException("Patient not found");
-            }
-
-            var result = new PatientDto()
-            {
-                Id = id,
-                FirstName = patient.FirstName,
-                LastName = patient.LastName,
-                ContactEmail = patient.ContactEmail,
-                ContactNumber = patient.ContactNumber,
-                Sex = patient.Sex,
-                Age = patient.Age,
-                Weight = patient.Weight,
-                Height = patient.Height,
-                Diet = Map(patient.Diet)
-            };
-
-            return result;
-        }
-
         public IEnumerable<PatientDto> GetAllPatients()
         {
             var patients = _context
@@ -91,16 +62,30 @@ namespace DieteticConsultationAPI.Services
 
             return patientsDtos;
         }
+        public PatientDto GetPatient(int id)
+        {
+            var patient = GetPatientById(id);
+
+            var patientDto = new PatientDto()
+            {
+                Id = id,
+                FirstName = patient.FirstName,
+                LastName = patient.LastName,
+                ContactEmail = patient.ContactEmail,
+                ContactNumber = patient.ContactNumber,
+                Sex = patient.Sex,
+                Age = patient.Age,
+                Weight = patient.Weight,
+                Height = patient.Height,
+                Diet = Map(patient.Diet)
+            };
+
+            return patientDto;
+        }
 
         public void UpdatePatient(UpdatePatientDto dto, int id)
         {
-            var patient = _context
-                .Patients
-                .Include(p => p.Diet)
-                .FirstOrDefault(p => p.Id == id);
-
-            if (patient is null)
-                throw new NotFoundException("Patient not found");
+            var patient = GetPatientById(id);
 
             patient.Id = id;
             patient.FirstName = dto.FirstName;
@@ -110,8 +95,6 @@ namespace DieteticConsultationAPI.Services
             patient.Weight = dto.Weight;
             patient.Height = dto.Height;
             patient.Age = dto.Age;
-            patient.Diet = Map(dto.Diet);
-
 
             _context.SaveChanges();
         }
@@ -120,12 +103,7 @@ namespace DieteticConsultationAPI.Services
         {
             _logger.LogError("Patient with id: {Id} DELETE action invoked", id);
 
-            var patient = _context
-                .Patients
-                .FirstOrDefault(p => p.Id == id);
-
-            if (patient is null)
-                throw new NotFoundException("Patient not found");
+            var patient = GetPatientById(id);
 
             _context.Patients.Remove(patient);
             _context.SaveChanges();
@@ -144,18 +122,16 @@ namespace DieteticConsultationAPI.Services
                 RecommendedProducts = diet.RecommendedProducts
             };
 
-        private Diet? Map(DietDto? diet) =>
-            diet is null
-            ? null
-            : new Diet
-            {
-                Id = diet.Id,
-                Name = diet.Name,
-                Description = diet.Description,
-                CalorificValue = diet.CalorificValue,
-                ProhibitedProducts = diet.ProhibitedProducts,
-                RecommendedProducts = diet.RecommendedProducts
-            };
+        private Patient GetPatientById(int id)
+        {
+            var patient = _context
+                .Patients
+                .FirstOrDefault(p => p.Id == id);
 
+            if (patient is null)
+                throw new NotFoundException("Patient not found");
+
+            return patient;
+        }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace DieteticConsultationAPI.Models
+﻿namespace DieteticConsultationAPI.Models
 {
     public class CreateDietDto
     {
