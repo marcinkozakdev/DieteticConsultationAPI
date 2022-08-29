@@ -1,4 +1,5 @@
 ﻿using DieteticConsultationAPI.Entities;
+using System.Runtime.CompilerServices;
 
 namespace DieteticConsultationAPI
 {
@@ -10,16 +11,25 @@ namespace DieteticConsultationAPI
         {
             _dbContext = dbContext;
         }
+
         public void Seed()
         {
             if (_dbContext.Database.CanConnect())
             {
+                if (!_dbContext.Roles.Any())
+                {
+                    var roles = GetRoles();
+                    _dbContext.Roles.AddRange(roles);
+                    _dbContext.SaveChanges();
+                }
+
                 if (!_dbContext.Dieticians.Any())
                 {
                     var dieticans = GetDieticans();
                     _dbContext.Dieticians.AddRange(dieticans);
                     _dbContext.SaveChanges();
                 }
+
                 if (!_dbContext.Patients.Any())
                 {
                     var patients = GetPatients();
@@ -27,6 +37,29 @@ namespace DieteticConsultationAPI
                     _dbContext.SaveChanges();
                 }
             }
+        }
+
+        private IEnumerable<Role> GetRoles()
+        {
+            var roles = new List<Role>()
+            {
+                new Role()
+                {
+                    Name = "Admin"
+                },
+
+                new Role()
+                {
+                    Name = "Dietician"
+                },
+
+                new Role()
+                {
+                    Name = "Patient"
+                },
+            };
+
+            return roles;
         }
 
         private IEnumerable<Dietician> GetDieticans()
@@ -42,9 +75,9 @@ namespace DieteticConsultationAPI
                     ContactNumber = "777888999",
                     Patients = new List<Patient>(),
                     Id = 1
-
                 }
             };
+
             return dieticans;
         }
 
@@ -63,12 +96,10 @@ namespace DieteticConsultationAPI
                     Height = 168,
                     Age = 28,
                     DieticianId = 1
-                    
                 }
             };
+
             return patients;
         }
-
-        
     }
 }

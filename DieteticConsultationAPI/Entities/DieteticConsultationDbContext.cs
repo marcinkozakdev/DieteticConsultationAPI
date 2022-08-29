@@ -10,6 +10,8 @@ namespace DieteticConsultationAPI.Entities
         public DbSet<Dietician> Dieticians { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Diet> Diets { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +38,16 @@ namespace DieteticConsultationAPI.Entities
                 eb.HasOne(p => p.Diet)
                 .WithOne(d => d.Patient)
                 .HasForeignKey<Diet>(d => d.PatientId);
+            });
+
+            modelBuilder.Entity<User>(eb =>
+            {
+                eb.Property(u => u.Email).IsRequired();
+            });
+
+            modelBuilder.Entity<Role>(eb =>
+            {
+                eb.Property(u => u.Name).IsRequired();
             });
         }
 
