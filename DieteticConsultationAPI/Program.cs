@@ -1,88 +1,51 @@
 using DieteticConsultationAPI;
+using DieteticConsultationAPI.Authorization;
 using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Middleware;
 using DieteticConsultationAPI.Models;
+using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Models.Validators;
 using DieteticConsultationAPI.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-//using DieteticConsultationAPI.Services;
 using NLog.Web;
+using System.ComponentModel.Design;
 using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//NLog: Setup NLog for Dependency injection
-//builder.Logging.ClearProviders();
-//builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+builder.Logging.AddCustomLogging();
 builder.Host.UseNLog();
-
-// Add services to the container.
-// ConfigureServices
-var authenticationSettings = new AuthenticationSettings();
-builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
-
-builder.Services.AddSingleton(authenticationSettings);
-builder.Services.AddAuthentication(option =>
-{
-    option.DefaultAuthenticateScheme = "Bearer";
-    option.DefaultScheme = "Bearer";
-    option.DefaultChallengeScheme = "Bearer";
-}).AddJwtBearer(cfg =>
-{
-    cfg.RequireHttpsMetadata = false;
-    cfg.SaveToken = true;
-    cfg.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = authenticationSettings.JwtIssuer,
-        ValidAudience = authenticationSettings.JwtIssuer,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey))
-    };
-});
-
+builder.Services.AddAuthenticationServices(builder.Configuration);
+builder.Services.AddAutorizationServices();
 builder.Services.AddControllers().AddFluentValidation();
-builder.Services.AddDbContext<DieteticConsultationDbContext>();
-builder.Services.AddScoped<DieteticConsultationSeeder>();
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
-builder.Services.AddScoped<IDieticianService, DieticianService>();
-builder.Services.AddScoped<IDietService, DietService>();
-builder.Services.AddScoped<IPatientService, PatientService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<ErrorHandlingMiddleware>();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<RequestTimeMiddleware>();
-builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+builder.Services.AddDbContextServices(builder.Configuration);
+builder.Services.AddCustomServices();
+builder.Services.AddMiddlewareCustomServices();
+builder.Services.AddValidatorCustomServices();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-// Configure - ustawienie middleware dla projektu
-var scope = app.Services.CreateScope();
-var seeder = scope.ServiceProvider.GetRequiredService<DieteticConsultationSeeder>();
-seeder.Seed();
-if(app.Environment.IsDevelopment())
+app.UseStaticFiles();
+app.UseSeeder();
+if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
-app.UseMiddleware<ErrorHandlingMiddleware>();
-app.UseMiddleware<RequestTimeMiddleware>();
+app.UseMiddleware();
 app.UseAuthentication();
 app.UseHttpsRedirection();
-
 app.UseSwagger();
-app.UseSwaggerUI(c=>
-c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dietetic Consulatation API"));
-
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dietetic Consulatation API"));
 app.UseRouting();
 app.UseAuthorization();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
-
+app.UseEndpoints(endpoints => { endpoints.MapControllers();});
 app.Run();
+

@@ -1,7 +1,12 @@
-﻿using DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Authorization;
+using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
+using DieteticConsultationAPI.Models.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace DieteticConsultationAPI.Services
 {
@@ -9,11 +14,13 @@ namespace DieteticConsultationAPI.Services
     {
         private readonly DieteticConsultationDbContext _context;
         private readonly ILogger _logger;
+        
 
-        public DieticianService(DieteticConsultationDbContext context, ILogger<DieticianService> logger)
+        public DieticianService(DieteticConsultationDbContext context, ILogger<DieticianService> logger )
         {
             _context = context;
             _logger = logger;
+          
         }
         public int CreateDietician(CreateDieticianDto dto)
         {
@@ -32,12 +39,38 @@ namespace DieteticConsultationAPI.Services
             return dietician.Id;
         }
 
-        public IEnumerable<DieticianDto> GetAllDieticians()
+        public PagedResult<DieticianDto> GetAllDieticians(DieticianQuery query)
         {
-            var dieticians = _context
+            var baseQuery = _context
                             .Dieticians
                             .Include(d => d.Patients)
+                            .ThenInclude(d => d.Diet)
+                            .ThenInclude(d => d.Files)
+                            .Where(r => query.SearchPhrase == null 
+                                || r.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
+                                || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()));
+
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelector = new Dictionary<string, Expression<Func<Dietician, object>>>
+                {
+                    { nameof(Dietician.FirstName), p=>p.FirstName },
+                    { nameof(Dietician.LastName), p=>p.LastName }
+                };
+
+                var selectedColumn = columnsSelector[query.SortBy];
+
+                baseQuery = query.SortDirection == SortDirection.ASC
+                    ? baseQuery.OrderBy(selectedColumn)
+                    : baseQuery.OrderByDescending(selectedColumn);
+            }
+
+            var dieticians = baseQuery
+                            .Skip(query.PageSize * (query.PageNumber - 1))
+                            .Take(query.PageSize)
                             .ToList();
+
+            var totaItemsCount = baseQuery.Count();
 
             var dieticiansDtos = dieticians.Select(d => new DieticianDto()
             {
@@ -48,9 +81,11 @@ namespace DieteticConsultationAPI.Services
                 ContactEmail = d.ContactEmail,
                 ContactNumber = d.ContactNumber,
                 Patients = d.Patients.Select(Map).ToList(),
-            });
+            }).ToList();
 
-            return dieticiansDtos;
+            var result = new PagedResult<DieticianDto>(dieticiansDtos, totaItemsCount , query.PageSize, query.PageNumber);
+
+            return result;
         }
 
         public DieticianDto GetDietician(int id)
@@ -66,7 +101,6 @@ namespace DieteticConsultationAPI.Services
                 ContactEmail = dietician.ContactEmail,
                 ContactNumber = dietician.ContactNumber,
                 Patients = dietician.Patients.Select(Map).ToList()
-                
             };
 
             return dieticianDto;
@@ -128,6 +162,7 @@ namespace DieteticConsultationAPI.Services
             var dietician = _context
                .Dieticians
                .Include(d => d.Patients)
+               .ThenInclude(d => d.Diet)
                .FirstOrDefault(d => d.Id == id);
 
             if (dietician is null)

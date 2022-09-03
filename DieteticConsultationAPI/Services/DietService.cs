@@ -2,6 +2,7 @@
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using File = DieteticConsultationAPI.Entities.File;
 
 namespace DieteticConsultationAPI.Services
 {
@@ -29,7 +30,8 @@ namespace DieteticConsultationAPI.Services
                 CalorificValue = dto.CalorificValue,
                 ProhibitedProducts = dto.ProhibitedProducts,
                 RecommendedProducts = dto.RecommendedProducts,
-                PatientId = dto.PatientId
+                PatientId = dto.PatientId,
+
             };
 
             _context.Diets.Add(diet);
@@ -43,6 +45,7 @@ namespace DieteticConsultationAPI.Services
             var diets = _context
                 .Diets
                 .Include(d => d.Patient)
+                .Include(d => d.Files)
                 .ToList();
 
             var dietsDtos = diets.Select(d => new DietDto()
@@ -52,7 +55,8 @@ namespace DieteticConsultationAPI.Services
                 Description = d.Description,
                 CalorificValue = d.CalorificValue,
                 ProhibitedProducts = d.ProhibitedProducts,
-                RecommendedProducts = d.RecommendedProducts
+                RecommendedProducts = d.RecommendedProducts,
+                Files = d.Files.Select(Map).ToList(),
             });
 
             return dietsDtos;
@@ -69,7 +73,8 @@ namespace DieteticConsultationAPI.Services
                 Description = diet.Description,
                 CalorificValue = diet.CalorificValue,
                 ProhibitedProducts = diet.ProhibitedProducts,
-                RecommendedProducts = diet.RecommendedProducts
+                RecommendedProducts = diet.RecommendedProducts,
+                Files = diet.Files.Select(Map).ToList(),
             };
 
             return dietDto;
@@ -104,6 +109,7 @@ namespace DieteticConsultationAPI.Services
             var diet = _context
                 .Diets
                 .Include(d => d.Patient)
+                .Include(d => d.Files)
                 .FirstOrDefault(d => d.Id == id);
 
             if (diet == null)
@@ -111,5 +117,16 @@ namespace DieteticConsultationAPI.Services
 
             return diet;
         }
+
+        private static FileDto? Map(File? file) =>
+            file is null
+            ? null
+            : new FileDto
+            {
+                Id = file.Id,
+                FileName = file.FileName,
+                MimeType = file.MimeType,
+                Attachment = file.Attachment,
+            };
     }
 }

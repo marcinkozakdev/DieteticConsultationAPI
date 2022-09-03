@@ -91,6 +91,39 @@ namespace DieteticConsultationAPI.Migrations
                     b.ToTable("Dieticians");
                 });
 
+            modelBuilder.Entity("DieteticConsultationAPI.Entities.File", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<byte[]>("Attachment")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DietId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MimeType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DietId");
+
+                    b.ToTable("Files");
+                });
+
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Patient", b =>
                 {
                     b.Property<int>("Id")
@@ -109,6 +142,9 @@ namespace DieteticConsultationAPI.Migrations
                     b.Property<string>("ContactNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
 
                     b.Property<int>("DieticianId")
                         .HasColumnType("int");
@@ -136,6 +172,8 @@ namespace DieteticConsultationAPI.Migrations
                         .HasColumnType("decimal(4,1)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("DieticianId");
 
@@ -202,13 +240,28 @@ namespace DieteticConsultationAPI.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("DieteticConsultationAPI.Entities.File", b =>
+                {
+                    b.HasOne("DieteticConsultationAPI.Entities.Diet", "Diet")
+                        .WithMany("Files")
+                        .HasForeignKey("DietId");
+
+                    b.Navigation("Diet");
+                });
+
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Patient", b =>
                 {
+                    b.HasOne("DieteticConsultationAPI.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
                     b.HasOne("DieteticConsultationAPI.Entities.Dietician", "Dietician")
                         .WithMany("Patients")
                         .HasForeignKey("DieticianId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreatedBy");
 
                     b.Navigation("Dietician");
                 });
@@ -222,6 +275,11 @@ namespace DieteticConsultationAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("DieteticConsultationAPI.Entities.Diet", b =>
+                {
+                    b.Navigation("Files");
                 });
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Dietician", b =>

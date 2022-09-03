@@ -1,12 +1,15 @@
 ﻿using DieteticConsultationAPI.Models;
+using DieteticConsultationAPI.Models.Pagination;
+using System.Security.Claims;
 
 namespace DieteticConsultationAPI.Services
 {
     public interface IDieticianService
     {
         int CreateDietician(CreateDieticianDto dto);
-        IEnumerable<DieticianDto> GetAllDieticians();
+        PagedResult<DieticianDto> GetAllDieticians(DieticianQuery query);
         DieticianDto GetDietician(int id);
+
         void UpdateDietician(UpdateDieticianDto dto, int id);
         void DeleteDietician(int id);
     }

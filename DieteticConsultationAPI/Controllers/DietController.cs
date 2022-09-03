@@ -1,5 +1,6 @@
 ﻿using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DieteticConsultationAPI.Controllers
@@ -16,38 +17,49 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create([FromBody] CreateDietDto dto)
+        [Authorize(Roles = "Admin,Dietician")]
+        public async Task<ActionResult> Create([FromBody] CreateDietDto dto)
         {
-            var dietId = _dietService.CreateDiet(dto);
-            return Created(dietId.ToString(), null);
+            var diet = _dietService.CreateDiet(dto);
+
+            return Created(diet.ToString(), null);
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        [Authorize(Roles = "Admin,Dietician")]
+
+        public async Task<IActionResult> GetAll()
         {
             var diets = _dietService.GetAllDiets();
+
             return Ok(diets);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        [Authorize(Roles = "Admin,Dietician,Patient")]
+        public async Task<IActionResult> Get(int id)
         {
             var diet = _dietService.GetDiet(id);
-            return Ok();
+
+            return Ok(diet);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update([FromBody] UpdateDietDto dto, int id)
+        [Authorize(Roles = "Admin,Dietician")]
+        public async Task<IActionResult> Update([FromBody] UpdateDietDto dto, int id)
         {
             _dietService.UpdateDiet(dto, id);
+
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [Authorize(Roles = "Admin,Dietician")]
+        public async Task<IActionResult> Delete(int id)
         {
             _dietService.DeleteDiet(id);
-            return NotFound();
+
+            return NoContent();
         }
     }
 }

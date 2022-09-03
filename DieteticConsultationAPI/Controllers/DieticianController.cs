@@ -1,13 +1,14 @@
 ﻿using DieteticConsultationAPI.Models;
+using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace DieteticConsultationAPI.Controllers
 {
     [Route("api/dietician")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
     public class DieticianController : ControllerBase
     {
         private readonly IDieticianService _dieticianService;
@@ -18,6 +19,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public ActionResult Create([FromBody] CreateDieticianDto dto)
         {
             var id = _dieticianService.CreateDietician(dto);
@@ -27,14 +29,15 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery] DieticianQuery query)
         {
-            var dieticians = _dieticianService.GetAllDieticians();
+            var dieticians = _dieticianService.GetAllDieticians(query);
 
             return Ok(dieticians);
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult Get([FromRoute] int id)
         {
             var dietician = _dieticianService.GetDietician(id);
@@ -43,18 +46,21 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Dietician")]
         public IActionResult Update([FromBody] UpdateDieticianDto dto, [FromRoute] int id)
         {
            _dieticianService.UpdateDietician(dto, id);
+
             return Ok();
         }
         
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete([FromRoute] int id)
         {
             _dieticianService.DeleteDietician(id);
 
-            return NotFound(); 
+            return NoContent(); 
         }
     }
 }

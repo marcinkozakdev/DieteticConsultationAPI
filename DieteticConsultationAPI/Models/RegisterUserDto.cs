@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace DieteticConsultationAPI.Models
+﻿namespace DieteticConsultationAPI.Models
 {
     public class RegisterUserDto
     {
@@ -9,7 +7,6 @@ namespace DieteticConsultationAPI.Models
         public string ConfirmPassword { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-
         public int RoleId { get; set; } = 3;
     }
 }

@@ -1,8 +1,14 @@
 ﻿using AutoMapper;
+using DieteticConsultationAPI.Authorization;
 using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
+using DieteticConsultationAPI.Models.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.UserSecrets;
+using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace DieteticConsultationAPI.Services
 {
@@ -10,11 +16,15 @@ namespace DieteticConsultationAPI.Services
     {
         private readonly DieteticConsultationDbContext _context;
         private readonly ILogger<PatientService> _logger;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IUserContextService _userContextService;
 
-        public PatientService(DieteticConsultationDbContext context, ILogger<PatientService> logger)
+        public PatientService(DieteticConsultationDbContext context, ILogger<PatientService> logger, IAuthorizationService authorizationService, IUserContextService userContextService)
         {
             _context = context;
             _logger = logger;
+            _authorizationService = authorizationService;
+            _userContextService = userContextService;
         }
 
         public int CreatePatient(CreatePatientDto dto)
@@ -33,18 +43,44 @@ namespace DieteticConsultationAPI.Services
                 DieticianId = dto.DieticianId,
             };
 
+            patient.CreatedById = _userContextService.GetUserId;
+
             _context.Patients.Add(patient);
             _context.SaveChanges();
 
             return patient.Id;
         }
 
-        public IEnumerable<PatientDto> GetAllPatients()
+        public PagedResult<PatientDto> GetAllPatients(PatientQuery query)
         {
-            var patients = _context
-                .Patients
-                .Include(p => p.Diet)
+            var baseQuery = _context
+                            .Patients
+                            .Include(p => p.Diet)
+                            .Where(r => query.SearchPhrase == null 
+                                || r.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
+                                || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()));
+
+            if(!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelector = new Dictionary<string, Expression<Func<Patient, object>>>
+                {
+                    { nameof(Patient.FirstName), p=>p.FirstName },
+                    { nameof(Patient.LastName), p=>p.LastName }
+                };
+
+                var selectedColumn = columnsSelector[query.SortBy];
+
+                baseQuery = query.SortDirection == SortDirection.ASC 
+                    ? baseQuery.OrderBy(selectedColumn)
+                    : baseQuery.OrderByDescending(selectedColumn);
+            }
+
+            var patients = baseQuery
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
                 .ToList();
+
+            var totaItemsCount = baseQuery.Count();
 
             var patientsDtos = patients.Select(p => new PatientDto()
             {
@@ -58,13 +94,17 @@ namespace DieteticConsultationAPI.Services
                 Weight = p.Weight,
                 Height = p.Height,
                 Diet = Map(p.Diet)
-            });
+            }).ToList();
 
-            return patientsDtos;
+            var result = new PagedResult<PatientDto>(patientsDtos, totaItemsCount , query.PageSize, query.PageNumber);
+
+            return result;
         }
         public PatientDto GetPatient(int id)
         {
             var patient = GetPatientById(id);
+
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Read)).Result;
 
             var patientDto = new PatientDto()
             {
@@ -87,6 +127,8 @@ namespace DieteticConsultationAPI.Services
         {
             var patient = GetPatientById(id);
 
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
+
             patient.Id = id;
             patient.FirstName = dto.FirstName;
             patient.LastName = dto.LastName;
@@ -104,6 +146,8 @@ namespace DieteticConsultationAPI.Services
             _logger.LogError("Patient with id: {Id} DELETE action invoked", id);
 
             var patient = GetPatientById(id);
+
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
 
             _context.Patients.Remove(patient);
             _context.SaveChanges();
@@ -130,7 +174,7 @@ namespace DieteticConsultationAPI.Services
                 .FirstOrDefault(p => p.Id == id);
 
             if (patient is null)
-                
+
                 throw new NotFoundException("Patient not found");
 
             return patient;

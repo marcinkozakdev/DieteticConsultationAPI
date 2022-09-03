@@ -19,6 +19,7 @@ namespace DieteticConsultationAPI.Controllers
         public IActionResult RegisterUser([FromBody] RegisterUserDto dto)
         {
             _accountService.RegisterUser(dto);
+
             return Ok();
         }
 
@@ -26,7 +27,9 @@ namespace DieteticConsultationAPI.Controllers
         public IActionResult Login([FromBody] LoginDto dto)
         {
             string token = _accountService.GenerateJwt(dto);
+
             return Ok(token);
         }
+
     }
 }

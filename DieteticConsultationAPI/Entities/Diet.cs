@@ -8,7 +8,7 @@ public class Diet
     public int CalorificValue { get; set; }
     public string? ProhibitedProducts { get; set; }
     public string? RecommendedProducts   { get; set; }
-
     public int? PatientId { get; set; }
     public virtual Patient? Patient { get; set; }
+    public virtual List<File>? Files { get; set; }
 }
