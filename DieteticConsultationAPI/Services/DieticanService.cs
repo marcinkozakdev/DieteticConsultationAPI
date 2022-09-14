@@ -3,6 +3,8 @@ using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Models.Pagination;
+using DieteticConsultationAPI.Repositories.Abstractions;
+using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -14,13 +16,13 @@ namespace DieteticConsultationAPI.Services
     {
         private readonly DieteticConsultationDbContext _context;
         private readonly ILogger _logger;
-        
+        private readonly IDieticianRepository _dieticianRepository;
 
-        public DieticianService(DieteticConsultationDbContext context, ILogger<DieticianService> logger )
+        public DieticianService(DieteticConsultationDbContext context, ILogger<DieticianService> logger, IDieticianRepository dieticianRepository)
         {
             _context = context;
             _logger = logger;
-          
+            _dieticianRepository = dieticianRepository;
         }
         public int CreateDietician(CreateDieticianDto dto)
         {
@@ -33,8 +35,7 @@ namespace DieteticConsultationAPI.Services
                 ContactNumber = dto.ContactNumber
             };
 
-            _context.Dieticians.Add(dietician);
-            _context.SaveChanges();
+            _dieticianRepository.AddOrUpdate(dietician);
 
             return dietician.Id;
         }
@@ -46,9 +47,9 @@ namespace DieteticConsultationAPI.Services
                             .Include(d => d.Patients)
                             .ThenInclude(d => d.Diet)
                             .ThenInclude(d => d.Files)
-                            .Where(r => query.SearchPhrase == null 
-                                || r.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
-                                || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()));
+                            .Where(r => query.SearchPhrase == null
+                                || r.FirstName.Equals(query.SearchPhrase, StringComparison.InvariantCultureIgnoreCase)
+                                || r.LastName.Equals(query.SearchPhrase, StringComparison.InvariantCultureIgnoreCase));
 
             if (!string.IsNullOrEmpty(query.SortBy))
             {
@@ -83,7 +84,7 @@ namespace DieteticConsultationAPI.Services
                 Patients = d.Patients.Select(Map).ToList(),
             }).ToList();
 
-            var result = new PagedResult<DieticianDto>(dieticiansDtos, totaItemsCount , query.PageSize, query.PageNumber);
+            var result = new PagedResult<DieticianDto>(dieticiansDtos, totaItemsCount, query.PageSize, query.PageNumber);
 
             return result;
         }
@@ -116,7 +117,7 @@ namespace DieteticConsultationAPI.Services
             dietician.ContactEmail = dto.ContactEmail;
             dietician.ContactNumber = dto.ContactNumber;
 
-            _context.SaveChanges();
+            _dieticianRepository.AddOrUpdate(dietician);
         }
 
         public void DeleteDietician(int id)
@@ -125,8 +126,17 @@ namespace DieteticConsultationAPI.Services
 
             var dietician = GetDieticianById(id);
 
-            _context.Dieticians.Remove(dietician);
-            _context.SaveChanges();
+            _dieticianRepository.Delete(dietician.Id);
+        }
+
+        public Dietician GetDieticianById(int id)
+        {
+            var dietician = _dieticianRepository.GetById(id);
+
+            if (dietician is null)
+                throw new NotFoundException("Dietician not found");
+
+            return dietician;
         }
 
         private PatientDto Map(Patient patient) =>
@@ -157,18 +167,18 @@ namespace DieteticConsultationAPI.Services
                 RecommendedProducts = diet.RecommendedProducts
             };
 
-        private Dietician GetDieticianById(int id)
+
+        private DieticianDto Map(Dietician d)
         {
-            var dietician = _context
-               .Dieticians
-               .Include(d => d.Patients)
-               .ThenInclude(d => d.Diet)
-               .FirstOrDefault(d => d.Id == id);
-
-            if (dietician is null)
-                throw new NotFoundException("Dietician not found");
-
-            return dietician;
+            return new DieticianDto()
+            {
+                FirstName = d.FirstName,
+                LastName = d.LastName,
+                Specialization = d.Specialization,
+                ContactEmail = d.ContactEmail,
+                ContactNumber = d.ContactNumber,
+                Id = d.Id,
+            };
         }
     }
 }

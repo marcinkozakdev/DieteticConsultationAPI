@@ -4,6 +4,7 @@ using DieteticConsultationAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DieteticConsultationAPI.Migrations
 {
     [DbContext(typeof(DieteticConsultationDbContext))]
-    partial class DieteticConsultationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220903175601_FileAdded")]
+    partial class FileAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,6 +35,9 @@ namespace DieteticConsultationAPI.Migrations
                     b.Property<int>("CalorificValue")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -50,6 +55,8 @@ namespace DieteticConsultationAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("PatientId")
                         .IsUnique()
@@ -74,6 +81,9 @@ namespace DieteticConsultationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -88,10 +98,12 @@ namespace DieteticConsultationAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
                     b.ToTable("Dieticians");
                 });
 
-            modelBuilder.Entity("DieteticConsultationAPI.Entities.FileModel", b =>
+            modelBuilder.Entity("DieteticConsultationAPI.Entities.File", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,7 +125,7 @@ namespace DieteticConsultationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FileType")
+                    b.Property<string>("MimeType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -233,14 +245,29 @@ namespace DieteticConsultationAPI.Migrations
 
             modelBuilder.Entity("DieteticConsultationAPI.Entities.Diet", b =>
                 {
+                    b.HasOne("DieteticConsultationAPI.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
                     b.HasOne("DieteticConsultationAPI.Entities.Patient", "Patient")
                         .WithOne("Diet")
                         .HasForeignKey("DieteticConsultationAPI.Entities.Diet", "PatientId");
 
+                    b.Navigation("CreatedBy");
+
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("DieteticConsultationAPI.Entities.FileModel", b =>
+            modelBuilder.Entity("DieteticConsultationAPI.Entities.Dietician", b =>
+                {
+                    b.HasOne("DieteticConsultationAPI.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("DieteticConsultationAPI.Entities.File", b =>
                 {
                     b.HasOne("DieteticConsultationAPI.Entities.Diet", "Diet")
                         .WithMany("Files")

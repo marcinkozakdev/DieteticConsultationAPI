@@ -10,5 +10,5 @@ public class Diet
     public string? RecommendedProducts   { get; set; }
     public int? PatientId { get; set; }
     public virtual Patient? Patient { get; set; }
-    public virtual List<File>? Files { get; set; }
+    public virtual List<FileModel>? Files { get; set; }
 }

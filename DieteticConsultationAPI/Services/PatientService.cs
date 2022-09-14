@@ -4,6 +4,8 @@ using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Models.Pagination;
+using DieteticConsultationAPI.Repositories.Abstractions;
+using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.UserSecrets;
@@ -18,13 +20,16 @@ namespace DieteticConsultationAPI.Services
         private readonly ILogger<PatientService> _logger;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUserContextService _userContextService;
+        private readonly IPatientRepository _patientRepository;
 
-        public PatientService(DieteticConsultationDbContext context, ILogger<PatientService> logger, IAuthorizationService authorizationService, IUserContextService userContextService)
+        public PatientService(DieteticConsultationDbContext context, ILogger<PatientService> logger, IAuthorizationService authorizationService, IUserContextService userContextService, IPatientRepository patientRepository)
         {
             _context = context;
             _logger = logger;
             _authorizationService = authorizationService;
             _userContextService = userContextService;
+            _patientRepository = patientRepository;
+
         }
 
         public int CreatePatient(CreatePatientDto dto)
@@ -45,8 +50,7 @@ namespace DieteticConsultationAPI.Services
 
             patient.CreatedById = _userContextService.GetUserId;
 
-            _context.Patients.Add(patient);
-            _context.SaveChanges();
+            _patientRepository.AddOrUpdate(patient);
 
             return patient.Id;
         }
@@ -138,7 +142,7 @@ namespace DieteticConsultationAPI.Services
             patient.Height = dto.Height;
             patient.Age = dto.Age;
 
-            _context.SaveChanges();
+            _patientRepository.AddOrUpdate(patient);
         }
 
         public void DeletePatient(int id)
@@ -149,8 +153,7 @@ namespace DieteticConsultationAPI.Services
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
 
-            _context.Patients.Remove(patient);
-            _context.SaveChanges();
+            _patientRepository.Delete(id);
         }
 
         private DietDto? Map(Diet? diet) =>
@@ -168,13 +171,9 @@ namespace DieteticConsultationAPI.Services
 
         private Patient GetPatientById(int id)
         {
-            var patient = _context
-                .Patients
-                .Include(p => p.Diet)
-                .FirstOrDefault(p => p.Id == id);
+            var patient = _patientRepository.GetById(id);
 
             if (patient is null)
-
                 throw new NotFoundException("Patient not found");
 
             return patient;

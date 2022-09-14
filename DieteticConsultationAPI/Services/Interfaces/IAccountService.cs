@@ -1,6 +1,6 @@
 ﻿using DieteticConsultationAPI.Models;
 
-namespace DieteticConsultationAPI.Services
+namespace DieteticConsultationAPI.Services.Interfaces
 {
     public interface IAccountService
     {

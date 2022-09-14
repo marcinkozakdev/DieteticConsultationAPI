@@ -10,6 +10,6 @@ namespace DieteticConsultationAPI.Models
         public int CalorificValue { get; set; }
         public string? ProhibitedProducts { get; set; }
         public string? RecommendedProducts { get; set; }
-        public virtual List<FileDto>? Files { get; set; } = new();
+        public virtual List<FileModelDto>? Files { get; set; } = new();
     }
 }

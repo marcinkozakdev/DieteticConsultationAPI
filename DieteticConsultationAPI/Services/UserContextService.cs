@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using DieteticConsultationAPI.Services.Interfaces;
 
 namespace DieteticConsultationAPI.Services
 {

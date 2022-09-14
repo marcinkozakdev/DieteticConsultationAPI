@@ -14,7 +14,7 @@ namespace DieteticConsultationAPI.Entities
         public DbSet<Diet> Diets { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<File> Files { get; set; }
+        public DbSet<FileModel> Files { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

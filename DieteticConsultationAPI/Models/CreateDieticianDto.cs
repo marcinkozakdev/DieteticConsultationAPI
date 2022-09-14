@@ -8,5 +8,6 @@
         public string Specialization { get; set; }
         public string ContactEmail { get; set; }
         public string ContactNumber { get; set; }
+        public List<CreatePatientDto> Patients { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace DieteticConsultationAPI.Services
+namespace DieteticConsultationAPI.Services.Interfaces
 {
     public interface IUserContextService
     {

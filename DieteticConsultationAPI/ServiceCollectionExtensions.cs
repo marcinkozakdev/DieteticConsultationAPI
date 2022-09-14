@@ -13,6 +13,9 @@ using DieteticConsultationAPI.Middleware;
 using Microsoft.AspNetCore.Identity;
 using DieteticConsultationAPI.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using DieteticConsultationAPI.Repositories.Abstractions;
+using DieteticConsultationAPI.Repositories;
+using DieteticConsultationAPI.Services.Interfaces;
 
 namespace DieteticConsultationAPI
 {
@@ -64,6 +67,10 @@ namespace DieteticConsultationAPI
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            services.AddScoped<IDieticianRepository, DieticianRepository>();
+            services.AddScoped<IDietRepository, DietRepository>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IFileRepository, FileRepository>();
 
             return services;
         }

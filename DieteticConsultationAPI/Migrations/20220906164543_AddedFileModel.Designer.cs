@@ -4,6 +4,7 @@ using DieteticConsultationAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DieteticConsultationAPI.Migrations
 {
     [DbContext(typeof(DieteticConsultationDbContext))]
-    partial class DieteticConsultationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220906164543_AddedFileModel")]
+    partial class AddedFileModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

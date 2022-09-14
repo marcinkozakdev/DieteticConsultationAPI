@@ -1,6 +1,8 @@
 ﻿using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
+using DieteticConsultationAPI.Repositories.Abstractions;
+using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,12 +17,14 @@ namespace DieteticConsultationAPI.Services
         private readonly DieteticConsultationDbContext _context;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly AuthenticationSettings _authenticationSettings;
+        private readonly IAccountRepository _accountRepository;
 
-        public AccountService(DieteticConsultationDbContext context, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings)
+        public AccountService(DieteticConsultationDbContext context, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings, IAccountRepository accountRepository)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _authenticationSettings = authenticationSettings;
+            _accountRepository = accountRepository;
         }
 
         public void RegisterUser(RegisterUserDto dto)

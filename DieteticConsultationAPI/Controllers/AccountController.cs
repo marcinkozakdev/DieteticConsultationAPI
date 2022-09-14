@@ -1,5 +1,5 @@
 ﻿using DieteticConsultationAPI.Models;
-using DieteticConsultationAPI.Services;
+using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DieteticConsultationAPI.Controllers

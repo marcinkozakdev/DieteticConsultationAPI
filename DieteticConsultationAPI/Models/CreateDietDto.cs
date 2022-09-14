@@ -11,6 +11,6 @@ namespace DieteticConsultationAPI.Models
         public string? ProhibitedProducts { get; set; }
         public string? RecommendedProducts { get; set; }
         public int? PatientId { get; set; }
-        public virtual List<FileDto>? Files { get; set; } 
+        public virtual List<FileModelDto>? Files { get; set; } 
     }
 }

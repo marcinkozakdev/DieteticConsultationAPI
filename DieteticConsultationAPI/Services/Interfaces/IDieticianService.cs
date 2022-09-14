@@ -1,8 +1,9 @@
-﻿using DieteticConsultationAPI.Models;
+﻿using DieteticConsultationAPI.Entities;
+using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Models.Pagination;
 using System.Security.Claims;
 
-namespace DieteticConsultationAPI.Services
+namespace DieteticConsultationAPI.Services.Interfaces
 {
     public interface IDieticianService
     {
