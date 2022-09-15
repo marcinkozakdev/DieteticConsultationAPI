@@ -7,6 +7,7 @@ using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
@@ -14,13 +15,11 @@ namespace DieteticConsultationAPI.Services
 {
     public class DieticianService : IDieticianService
     {
-        private readonly DieteticConsultationDbContext _context;
         private readonly ILogger _logger;
         private readonly IDieticianRepository _dieticianRepository;
 
-        public DieticianService(DieteticConsultationDbContext context, ILogger<DieticianService> logger, IDieticianRepository dieticianRepository)
+        public DieticianService(ILogger<DieticianService> logger, IDieticianRepository dieticianRepository)
         {
-            _context = context;
             _logger = logger;
             _dieticianRepository = dieticianRepository;
         }
@@ -42,11 +41,7 @@ namespace DieteticConsultationAPI.Services
 
         public PagedResult<DieticianDto> GetAllDieticians(DieticianQuery query)
         {
-            var baseQuery = _context
-                            .Dieticians
-                            .Include(d => d.Patients)
-                            .ThenInclude(d => d.Diet)
-                            .ThenInclude(d => d.Files)
+            var baseQuery =  _dieticianRepository.GetAll()
                             .Where(r => query.SearchPhrase == null
                                 || r.FirstName.Equals(query.SearchPhrase, StringComparison.InvariantCultureIgnoreCase)
                                 || r.LastName.Equals(query.SearchPhrase, StringComparison.InvariantCultureIgnoreCase));

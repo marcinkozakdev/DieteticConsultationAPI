@@ -7,24 +7,20 @@ using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration.UserSecrets;
 using System.Linq.Expressions;
-using System.Security.Claims;
 
 namespace DieteticConsultationAPI.Services
 {
     public class PatientService : IPatientService
     {
-        private readonly DieteticConsultationDbContext _context;
         private readonly ILogger<PatientService> _logger;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUserContextService _userContextService;
         private readonly IPatientRepository _patientRepository;
 
-        public PatientService(DieteticConsultationDbContext context, ILogger<PatientService> logger, IAuthorizationService authorizationService, IUserContextService userContextService, IPatientRepository patientRepository)
+        public PatientService(ILogger<PatientService> logger, IAuthorizationService authorizationService, IUserContextService userContextService, IPatientRepository patientRepository)
         {
-            _context = context;
+            
             _logger = logger;
             _authorizationService = authorizationService;
             _userContextService = userContextService;
@@ -57,9 +53,7 @@ namespace DieteticConsultationAPI.Services
 
         public PagedResult<PatientDto> GetAllPatients(PatientQuery query)
         {
-            var baseQuery = _context
-                            .Patients
-                            .Include(p => p.Diet)
+            var baseQuery = _patientRepository.GetAll()
                             .Where(r => query.SearchPhrase == null 
                                 || r.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
                                 || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()));

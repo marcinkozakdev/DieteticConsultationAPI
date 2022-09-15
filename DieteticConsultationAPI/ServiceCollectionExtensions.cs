@@ -71,6 +71,8 @@ namespace DieteticConsultationAPI
             services.AddScoped<IDietRepository, DietRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IFileRepository, FileRepository>();
+            services.AddScoped<IPatientRepository, PatientRepository>();
+
 
             return services;
         }

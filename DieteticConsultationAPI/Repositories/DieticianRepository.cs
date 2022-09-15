@@ -5,6 +5,7 @@ using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DieteticConsultationAPI.Repositories
 {
@@ -17,13 +18,9 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-
-        public ICollection<Dietician> GetAll() =>
-            _context.Dieticians.ToList();
-
-        public ICollection<Dietician> GetAllWithPatients() =>
-          _context.Dieticians.Include(d => d.Patients).ToList();
-
+        public IQueryable<Dietician> GetAll() =>
+            _context.Dieticians.Include(d => d.Patients);
+        
         public Dietician? GetById(int? id) =>
             _context.Dieticians.FirstOrDefault(d => d.Id == id);
 
@@ -33,7 +30,7 @@ namespace DieteticConsultationAPI.Repositories
             _context.SaveChanges();
 
             if (dietician != null)
-                _context.Dieticians.Update(dietician);
+            _context.Dieticians.Update(dietician);
             _context.SaveChanges();
 
             return dietician;

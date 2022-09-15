@@ -25,7 +25,7 @@ namespace DieticianConsultationAPI.UnitTest
             _loggerMock = new Mock<ILogger<PatientService>>();
             _authorizationServiceMock = new Mock<IAuthorizationService>();
             _userContextServiceMock = new Mock<IUserContextService>();
-            _sut = new PatientService(null, _loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _repositoryMock.Object);
+            _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _repositoryMock.Object);
         }
 
         [Fact]

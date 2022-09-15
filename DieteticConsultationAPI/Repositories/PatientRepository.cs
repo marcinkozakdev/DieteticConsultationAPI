@@ -32,15 +32,7 @@ namespace DieteticConsultationAPI.Repositories
             _context.SaveChanges();
         }
 
-        public ICollection<Patient> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ICollection<Patient> GetAllWithDiet()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<Patient> GetAll() => _context.Patients.Include(p => p.Diet);
 
         public Patient? GetById(int? id) =>
             _context.Patients.Include(p => p.Diet).FirstOrDefault(p => p.Id == id);

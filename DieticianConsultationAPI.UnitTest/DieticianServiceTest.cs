@@ -2,6 +2,7 @@
 using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
+using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Repositories;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services;
@@ -26,7 +27,7 @@ namespace DieticianConsultationAPI.UnitTest
         {
             _repositoryMock = new Mock<IDieticianRepository>();
             _loggerMock = new Mock<ILogger<DieticianService>>();
-            _sut = new DieticianService(null, _loggerMock.Object, _repositoryMock.Object);
+            _sut = new DieticianService(_loggerMock.Object, _repositoryMock.Object);
         }
 
 
@@ -55,16 +56,19 @@ namespace DieticianConsultationAPI.UnitTest
         //    result.Single().FirstName.Should().NotBe(null);
         //}
 
-        [Fact]
-        public void GetAllDieticians_DieticiansFound_ReturnAllDieticians()
+        [Theory]
+        [InlineData(5,1)]
+        [InlineData(10, 1)]
+        [InlineData(15, 1)]
+        [InlineData(20, 1)]
+        [InlineData(25, 1)]
+        public void GetAllDieticians_DieticiansFound_ReturnAllDieticians(int pageSize, int pageNumber)
         {
             // arrange
             List<Dietician> dieticians = new List<Dietician>()
             {
                SampleDietician()
             };
-
-            _repositoryMock.Setup(x => x.GetAll()).Returns(dieticians);
 
             // act
 

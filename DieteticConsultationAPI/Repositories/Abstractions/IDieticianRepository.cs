@@ -5,8 +5,7 @@ namespace DieteticConsultationAPI.Repositories.Abstractions
 {
     public interface IDieticianRepository
     {
-        ICollection<Dietician> GetAll();
-        ICollection<Dietician> GetAllWithPatients();
+        IQueryable<Dietician> GetAll();
         Dietician? GetById(int? id);
         Dietician? AddOrUpdate(Dietician dietician);
        void Delete(int? id);
