@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Models;
+using FileModel = DieteticConsultationAPI.Entities.FileModel;
 
 namespace DieteticConsultationAPI
 {
@@ -11,9 +12,10 @@ namespace DieteticConsultationAPI
             CreateMap<Dietician, DieticianDto>();
             CreateMap<Patient, PatientDto>();
             CreateMap<Diet, DietDto>();
+            CreateMap<FileModel, FileModelDto>();
 
-            CreateMap<AddDieticianDto, Dietician>();
-            CreateMap<AddPatientDto, Patient>();
+            CreateMap<CreateDieticianDto, Dietician>();
+            CreateMap<CreatePatientDto, Patient>();
             CreateMap<CreateDietDto, Diet>();
 
             CreateMap<UpdateDieticianDto, Dietician>();

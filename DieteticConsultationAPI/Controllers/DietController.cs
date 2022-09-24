@@ -1,12 +1,11 @@
 ﻿using DieteticConsultationAPI.Models;
-using DieteticConsultationAPI.Services;
-using Microsoft.AspNetCore.Components;
+using DieteticConsultationAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace DieteticConsultationAPI.Controllers
 {
-    [Route("api/patient/{patientId}/diet")]
+    [Route("api/diet")]
     [ApiController]
     public class DietController : ControllerBase
     {
@@ -16,11 +15,51 @@ namespace DieteticConsultationAPI.Controllers
         {
             _dietService = dietService;
         }
-        public ActionResult Post([FromRoute]int patientId, [FromBody] CreateDietDto dto)
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Dietician")]
+        public async Task<ActionResult> Create([FromBody] CreateDietDto dto)
         {
-            var dietId = _dietService.Create(patientId, dto);
-            return Created($"api/patient/{patientId}/diet/{dietId}", null);
+            var diet = _dietService.CreateDiet(dto);
+
+            return Created(diet.ToString(), null);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin,Dietician")]
+
+        public async Task<IActionResult> GetAll()
+        {
+            var diets = _dietService.GetAllDiets();
+
+            return Ok(diets);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Dietician,Patient")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var diet = _dietService.GetDiet(id);
+
+            return Ok(diet);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Dietician")]
+        public async Task<IActionResult> Update([FromBody] UpdateDietDto dto, int id)
+        {
+            _dietService.UpdateDiet(dto, id);
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Dietician")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            _dietService.DeleteDiet(id);
+
+            return NoContent();
         }
     }
-
 }

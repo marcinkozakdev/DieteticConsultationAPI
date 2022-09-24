@@ -6,9 +6,7 @@ namespace DieteticConsultationAPI.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        [EmailAddress]
         public string ContactEmail { get; set; }
-        [Phone]
         public string ContactNumber { get; set; }
         public string Sex { get; set; }
         public decimal Weight { get; set; }

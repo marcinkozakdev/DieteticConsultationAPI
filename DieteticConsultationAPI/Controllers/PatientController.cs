@@ -1,6 +1,9 @@
 ﻿using DieteticConsultationAPI.Models;
-using DieteticConsultationAPI.Services;
+using DieteticConsultationAPI.Models.Pagination;
+using DieteticConsultationAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DieteticConsultationAPI.Controllers
 {
@@ -8,52 +11,59 @@ namespace DieteticConsultationAPI.Controllers
     [ApiController]
     public class PatientController : ControllerBase
     {
-
         private readonly IPatientService _patientService;
-
 
         public PatientController(IPatientService patientService)
         {
             _patientService = patientService;
         }
 
-        [HttpPut("{id}")]
-        public ActionResult Update([FromBody] UpdatePatientDto dto, [FromRoute] int id)
-        {
-            _patientService.Update(dto, id);
-            return Ok();
-        }
-
-        [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] int id)
-        {
-            _patientService.Delete(id);
-            return NotFound();
-        }
-
         [HttpPost]
-        public ActionResult Add([FromBody] AddPatientDto dto)
+       // [Authorize(Roles = "Admin,Dietician,Patient")]
+        public ActionResult Create([FromBody] CreatePatientDto dto)
         {
-            var id = _patientService.Add(dto);
-            return Created($"/api/patient/{id}", null);
+            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            var patientId = _patientService.CreatePatient(dto);
+
+            return Created(patientId.ToString(), null);
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<PatientDto>> GetAll()
+        //[Authorize(Roles = "Admin,Dietician")]
+        public IActionResult GetAll([FromQuery]PatientQuery query)
         {
-            var patients = _patientService.GetAll();
+            var patients = _patientService.GetAllPatients(query);
+
             return Ok(patients);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<PatientDto> Get([FromRoute] int id)
+        //[Authorize(Roles = "Admin,Dietician,Patient")]
+        public IActionResult Get(int id)
         {
-            var patient = _patientService.GetById(id);
+            var patient = _patientService.GetPatient(id);
+
             return Ok(patient);
         }
 
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Dietician,Patient")]
+        public IActionResult Update([FromBody] UpdatePatientDto dto, int id)
+        {
+            _patientService.UpdatePatient(dto, id);
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+       // [Authorize(Roles = "Admin,Dietician,Patient")]
+        public IActionResult Delete(int id)
+        {
+            _patientService.DeletePatient(id);
+
+            return NoContent();
+        }
     }
-
-
 }
 

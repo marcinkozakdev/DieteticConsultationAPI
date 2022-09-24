@@ -1,4 +1,6 @@
-﻿namespace DieteticConsultationAPI.Models
+﻿using DieteticConsultationAPI.Entities;
+
+namespace DieteticConsultationAPI.Models
 {
     public class DietDto
     {
@@ -8,7 +10,6 @@
         public int CalorificValue { get; set; }
         public string? ProhibitedProducts { get; set; }
         public string? RecommendedProducts { get; set; }
-
-        public int PatientId { get; set; }
+        public virtual List<FileModelDto>? Files { get; set; }
     }
 }

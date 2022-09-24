@@ -16,6 +16,15 @@ namespace DieteticConsultationAPI.Middleware
             {
                 await next.Invoke(context);
             }
+            catch (ForbidException forbidException)
+            {
+                context.Response.StatusCode = 403;
+            }
+            catch (BadReguestException badRequestException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(badRequestException.Message);
+            }
             catch (NotFoundException notFoundException)
             {
                 context.Response.StatusCode = 404;

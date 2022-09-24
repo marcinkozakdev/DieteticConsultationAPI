@@ -1,111 +1,29 @@
-﻿using AutoMapper;
+﻿using DieteticConsultationAPI.Authorization;
 using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
+using DieteticConsultationAPI.Models.Pagination;
+using DieteticConsultationAPI.Repositories.Abstractions;
+using DieteticConsultationAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Immutable;
+using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace DieteticConsultationAPI.Services
 {
-    public interface IDieticianService
-    {
-        int Add(AddDieticianDto dto);
-        IEnumerable<DieticianDto> GetAll();
-        DieticianDto GetById(int id);
-        void Delete(int id);
-        void Update(int id, UpdateDieticianDto dto);
-    }
-
     public class DieticianService : IDieticianService
     {
-        private readonly DieteticConsultationDbContext _dbContext;
-        private readonly ILogger<DieticianService> _logger;
+        private readonly ILogger _logger;
+        private readonly IDieticianRepository _dieticianRepository;
 
-        public DieticianService(DieteticConsultationDbContext dbContext, ILogger<DieticianService> logger)
+        public DieticianService(ILogger<DieticianService> logger, IDieticianRepository dieticianRepository)
         {
-            _dbContext = dbContext;
             _logger = logger;
+            _dieticianRepository = dieticianRepository;
         }
-       
-        
-        public void Update(int id, UpdateDieticianDto dto)
-        {
-            var dietician = _dbContext
-               .Dieticians
-               .FirstOrDefault(d => d.Id == id);
-
-            if (dietician == null)
-                throw new NotFoundException("Dietician not found");
-
-            dietician.FirstName = dto.FirstName;
-            dietician.LastName = dto.LastName;
-            dietician.Specialization = dto.Specialization;
-            dietician.ContactEmail = dto.ContactEmail;
-            dietician.ContactNumber = dto.ContactNumber;
-
-            _dbContext.SaveChanges();
-        }
-        
-        public void Delete(int id)
-        {
-            _logger.LogWarning($"Dietician with id: {id} DELETE action invoked");
-
-            var dietician = _dbContext
-               .Dieticians
-               .FirstOrDefault(d => d.Id == id);
-
-            if (dietician == null)
-                throw new NotFoundException("Dietician not found");
-
-            _dbContext.Dieticians.Remove(dietician);
-            _dbContext.SaveChanges();
-        }
-
-
-        public DieticianDto GetById(int id)
-        {
-            var dietician = _dbContext
-                .Dieticians
-                .Include(d => d.Patients)
-                .FirstOrDefault(d => d.Id == id);
-
-            if (dietician == null)
-                throw new NotFoundException("Dietician not found");
-
-            var result = new DieticianDto()
-            {
-                Id = id,
-                FirstName = dietician.FirstName,
-                LastName = dietician.LastName,
-                Specialization = dietician.Specialization,
-                ContactEmail = dietician.ContactEmail,
-                ContactNumber = dietician.ContactNumber,
-                Patients = dietician.Patients.Select(Map).ToList()
-            };
-
-            return result;
-        }
-
-        public IEnumerable<DieticianDto> GetAll()
-        {
-            var dieticians = _dbContext
-                            .Dieticians
-                            .Include(d => d.Patients)
-                            .ToList();
-
-            var dieticiansDtos = dieticians.Select(d => new DieticianDto()
-            {
-                Id = d.Id,
-                FirstName = d.FirstName,
-                LastName = d.LastName,
-                Specialization = d.Specialization,
-                ContactEmail = d.ContactEmail,
-                ContactNumber = d.ContactNumber,
-                Patients = d.Patients.Select(Map).ToList()
-            });
-            return dieticiansDtos;
-        }
-
-        public int Add(AddDieticianDto dto)
+        public int CreateDietician(CreateDieticianDto dto)
         {
             var dietician = new Dietician()
             {
@@ -116,15 +34,86 @@ namespace DieteticConsultationAPI.Services
                 ContactNumber = dto.ContactNumber
             };
 
-            _dbContext.Dieticians.Add(dietician);
-            _dbContext.SaveChanges();
+            _dieticianRepository.AddOrUpdate(dietician);
 
             return dietician.Id;
         }
 
-        private static PatientDto Map(Patient patient) =>
+        public IEnumerable<DieticianDto> GetAllDieticians()
+        {
+            var dieticians = _dieticianRepository.GetAll();
+
+            if (dieticians is null)
+                throw new NotFoundException("The diet list is empty");
+
+            var dieticiansDtos = dieticians.Select(d => new DieticianDto()
+            {
+                Id = d.Id,
+                FirstName = d.FirstName,
+                LastName = d.LastName,
+                Specialization = d.Specialization,
+                ContactEmail = d.ContactEmail,
+                ContactNumber = d.ContactNumber,
+                Patients = d.Patients.Select(Map).ToList(),
+            }).ToList();
+
+            return dieticiansDtos;
+        }
+
+        public DieticianDto GetDietician(int id)
+        {
+            var dietician = GetDieticianById(id);
+
+            var dieticianDto = new DieticianDto()
+            {
+                Id = id,
+                FirstName = dietician.FirstName,
+                LastName = dietician.LastName,
+                Specialization = dietician.Specialization,
+                ContactEmail = dietician.ContactEmail,
+                ContactNumber = dietician.ContactNumber,
+                Patients = dietician.Patients.Select(Map).ToList()
+            };
+
+            return dieticianDto;
+        }
+
+        public void UpdateDietician(UpdateDieticianDto dto, int id)
+        {
+            var dietician = GetDieticianById(id);
+
+            dietician.FirstName = dto.FirstName;
+            dietician.LastName = dto.LastName;
+            dietician.Specialization = dto.Specialization;
+            dietician.ContactEmail = dto.ContactEmail;
+            dietician.ContactNumber = dto.ContactNumber;
+
+            _dieticianRepository.AddOrUpdate(dietician);
+        }
+
+        public void DeleteDietician(int id)
+        {
+            _logger.LogWarning($"Dietician with id: {id} DELETE action invoked");
+
+            var dietician = GetDieticianById(id);
+
+            _dieticianRepository.Delete(dietician.Id);
+        }
+
+        public Dietician GetDieticianById(int id)
+        {
+            var dietician = _dieticianRepository.GetById(id);
+
+            if (dietician is null)
+                throw new NotFoundException("Dietician not found");
+
+            return dietician;
+        }
+
+        private PatientDto Map(Patient patient) =>
             new PatientDto
             {
+                Id = patient.Id,
                 FirstName = patient.FirstName,
                 LastName = patient.LastName,
                 ContactEmail = patient.ContactEmail,
@@ -132,13 +121,21 @@ namespace DieteticConsultationAPI.Services
                 Sex = patient.Sex,
                 Weight = patient.Weight,
                 Height = patient.Height,
-                Age = patient.Age
+                Age = patient.Age,
+                Diet = Map(patient.Diet)
             };
 
-
-
-
-
-
+        private static DietDto? Map(Diet? diet) =>
+            diet is null
+            ? null
+            : new DietDto
+            {
+                Id = diet.Id,
+                Name = diet.Name,
+                Description = diet.Description,
+                CalorificValue = diet.CalorificValue,
+                ProhibitedProducts = diet.ProhibitedProducts,
+                RecommendedProducts = diet.RecommendedProducts
+            };
     }
 }

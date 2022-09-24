@@ -1,121 +1,36 @@
 ﻿using AutoMapper;
+using DieteticConsultationAPI.Authorization;
 using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
-using Microsoft.EntityFrameworkCore;
+using DieteticConsultationAPI.Models.Pagination;
+using DieteticConsultationAPI.Repositories.Abstractions;
+using DieteticConsultationAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Linq.Expressions;
 
 namespace DieteticConsultationAPI.Services
 {
-    public interface IPatientService
-    {
-        PatientDto GetById(int id);
-        IEnumerable<PatientDto> GetAll();
-        int Add(AddPatientDto dto);
-        void Delete(int id);
-        void Update(UpdatePatientDto dto, int id);
-    }
-
     public class PatientService : IPatientService
     {
-        private readonly DieteticConsultationDbContext _dbContext;
         private readonly ILogger<PatientService> _logger;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IUserContextService _userContextService;
+        private readonly IPatientRepository _patientRepository;
 
-        public PatientService(DieteticConsultationDbContext dbContext, ILogger<PatientService> logger)
+        public PatientService(ILogger<PatientService> logger, IAuthorizationService authorizationService, IUserContextService userContextService, IPatientRepository patientRepository)
         {
-            _dbContext = dbContext;
             _logger = logger;
+            _authorizationService = authorizationService;
+            _userContextService = userContextService;
+            _patientRepository = patientRepository;
         }
 
-        public void Update(UpdatePatientDto dto, int id)
+        public int CreatePatient(CreatePatientDto dto)
         {
-            var patient = _dbContext
-                .Patients
-                .FirstOrDefault(p => p.Id == id);
-
-            if (patient is null)
-                throw new NotFoundException("Patient not found");
-
-            patient.FirstName = dto.FirstName;
-            patient.LastName = dto.LastName;
-            patient.ContactNumber = dto.ContactNumber;
-            patient.ContactEmail = dto.ContactEmail;
-            patient.Weight = dto.Weight;
-            patient.Height = dto.Height;
-            patient.Age = dto.Age;
-            _dbContext.SaveChanges();
-        }
-
-        public void Delete(int id)
-        {
-            _logger.LogError($"Patient with id: {id} DELETE action invoked");
-
-            var patient = _dbContext
-                .Patients
-                .FirstOrDefault(p => p.Id == id);
-
-            if (patient is null)
-                throw new NotFoundException("Patient not found");
-
-            _dbContext.Patients.Remove(patient);
-            _dbContext.SaveChanges();
-
-        }
-
-        public PatientDto GetById(int id)
-        {
-            var patient = _dbContext
-                .Patients
-                .Include(p => p.Diet)
-                .FirstOrDefault(p => p.Id == id);
-
-            if (patient is null)
-                throw new NotFoundException("Patient not found");
-
-            var result = new PatientDto()
+            var patient = new Patient
             {
-                FirstName = patient.FirstName,
-                LastName = patient.LastName,
-                ContactEmail = patient.ContactEmail,
-                ContactNumber = patient.ContactNumber,
-                Sex = patient.Sex,
-                Age = patient.Age,
-                Weight = patient.Weight,
-                Height = patient.Height,
-                //Diet = MapDiet(patient.Diet)
-
-            };
-
-            return result;
-        }
-
-        public IEnumerable<PatientDto> GetAll()
-        {
-            var patients = _dbContext
-                .Patients
-                .Include(p => p.Diet)
-                .ToList();
-
-            var patientsDtos = patients.Select(p => new PatientDto()
-            {
-                FirstName = p.FirstName,
-                LastName = p.LastName,
-                ContactEmail = p.ContactEmail,
-                ContactNumber = p.ContactNumber,
-                Sex = p.Sex,
-                Age = p.Age,
-                Weight = p.Weight,
-                Height = p.Height,
-                // Diet = MapDiet(p.Diet)
-
-            }); ;
-
-            return patientsDtos;
-        }
-
-        public int Add(AddPatientDto dto)
-        {
-            var patient = new Patient()
-            {
+                Id = dto.Id,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 ContactEmail = dto.ContactEmail,
@@ -124,34 +39,133 @@ namespace DieteticConsultationAPI.Services
                 Age = dto.Age,
                 Weight = dto.Weight,
                 Height = dto.Height,
-                //Diet = MapDiet(dto.Diet)
+                DieticianId = dto.DieticianId,
             };
 
-            _dbContext.Patients.Add(patient);
-            _dbContext.SaveChanges();
+            patient.CreatedById = _userContextService.GetUserId;
+
+            _patientRepository.AddOrUpdate(patient);
 
             return patient.Id;
         }
 
-        //private static DietDto MapDiet(Diet diet) =>
-        //   new DietDto
-        //   {
-        //       Name = diet.Name,
-        //       Description = diet.Description,
-        //       CalorificValue = diet.CalorificValue,
-        //       ProhibitedProducts = diet.ProhibitedProducts,
-        //       RecommendedProducts = diet.RecommendedProducts,
+        public PagedResult<PatientDto> GetAllPatients(PatientQuery query)
+        {
+            var baseQuery = _patientRepository.GetAll(query);
 
-        //   };
+            if(!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelector = new Dictionary<string, Expression<Func<Patient, object>>>
+                {
+                    { nameof(Patient.FirstName), p=>p.FirstName },
+                    { nameof(Patient.LastName), p=>p.LastName }
+                };
 
-        //    private static DieticianDto MapDietician(Dietician dietician) =>
-        //        new DieticianDto
-        //        {
-        //            FirstName = dietician.FirstName,
-        //            LastName = dietician.LastName,
-        //            Specialization = dietician.Specialization,
-        //            ContactEmail = dietician.ContactEmail,
-        //            ContactNumber = dietician.ContactNumber
-        //        };
+                var selectedColumn = columnsSelector[query.SortBy];
+
+                baseQuery = query.SortDirection == SortDirection.ASC 
+                    ? baseQuery.OrderBy(selectedColumn)
+                    : baseQuery.OrderByDescending(selectedColumn);
+            }
+
+            var patients = baseQuery
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
+                .ToList();
+
+            var totaItemsCount = baseQuery.Count();
+
+            var patientsDtos = patients.Select(p => new PatientDto()
+            {
+                Id = p.Id,
+                FirstName = p.FirstName,
+                LastName = p.LastName,
+                ContactEmail = p.ContactEmail,
+                ContactNumber = p.ContactNumber,
+                Sex = p.Sex,
+                Age = p.Age,
+                Weight = p.Weight,
+                Height = p.Height,
+                Diet = Map(p.Diet)
+            }).ToList();
+
+            var result = new PagedResult<PatientDto>(patientsDtos, totaItemsCount , query.PageSize, query.PageNumber);
+
+            return result;
+        }
+        public PatientDto GetPatient(int id)
+        {
+            var patient = GetPatientById(id);
+
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Read)).Result;
+
+            var patientDto = new PatientDto()
+            {
+                Id = id,
+                FirstName = patient.FirstName,
+                LastName = patient.LastName,
+                ContactEmail = patient.ContactEmail,
+                ContactNumber = patient.ContactNumber,
+                Sex = patient.Sex,
+                Age = patient.Age,
+                Weight = patient.Weight,
+                Height = patient.Height,
+                Diet = Map(patient.Diet)
+            };
+
+            return patientDto;
+        }
+
+        public void UpdatePatient(UpdatePatientDto dto, int id)
+        {
+            var patient = GetPatientById(id);
+
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
+
+            patient.Id = id;
+            patient.FirstName = dto.FirstName;
+            patient.LastName = dto.LastName;
+            patient.ContactNumber = dto.ContactNumber;
+            patient.ContactEmail = dto.ContactEmail;
+            patient.Weight = dto.Weight;
+            patient.Height = dto.Height;
+            patient.Age = dto.Age;
+
+            _patientRepository.AddOrUpdate(patient);
+        }
+
+        public void DeletePatient(int id)
+        {
+            _logger.LogError("Patient with id: {Id} DELETE action invoked", id);
+
+            var patient = GetPatientById(id);
+
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
+
+            _patientRepository.Delete(id);
+        }
+
+        private DietDto? Map(Diet? diet) =>
+            diet is null
+            ? null
+            : new DietDto
+            {
+                Id = diet.Id,
+                Name = diet.Name,
+                Description = diet.Description,
+                CalorificValue = diet.CalorificValue,
+                ProhibitedProducts = diet.ProhibitedProducts,
+                RecommendedProducts = diet.RecommendedProducts
+            };
+
+        private Patient GetPatientById(int id)
+        {
+            var patient = _patientRepository.GetById(id);
+
+            if (patient is null)
+                throw new NotFoundException("Patient not found");
+
+            return patient;
+        }
     }
 }
