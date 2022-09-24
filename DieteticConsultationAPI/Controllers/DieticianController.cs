@@ -4,7 +4,6 @@ using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace DieteticConsultationAPI.Controllers
 {
     [Route("api/dietician")]
@@ -29,9 +28,9 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult GetAll([FromQuery] DieticianQuery query)
+        public IActionResult GetAll()
         {
-            var dieticians = _dieticianService.GetAllDieticians(query);
+            var dieticians = _dieticianService.GetAllDieticians();
 
             return Ok(dieticians);
         }

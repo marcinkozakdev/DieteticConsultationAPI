@@ -39,34 +39,12 @@ namespace DieteticConsultationAPI.Services
             return dietician.Id;
         }
 
-        public PagedResult<DieticianDto> GetAllDieticians(DieticianQuery query)
+        public IEnumerable<DieticianDto> GetAllDieticians()
         {
-            var baseQuery =  _dieticianRepository.GetAll()
-                            .Where(r => query.SearchPhrase == null
-                                || r.FirstName.Equals(query.SearchPhrase, StringComparison.InvariantCultureIgnoreCase)
-                                || r.LastName.Equals(query.SearchPhrase, StringComparison.InvariantCultureIgnoreCase));
+            var dieticians = _dieticianRepository.GetAll();
 
-            if (!string.IsNullOrEmpty(query.SortBy))
-            {
-                var columnsSelector = new Dictionary<string, Expression<Func<Dietician, object>>>
-                {
-                    { nameof(Dietician.FirstName), p=>p.FirstName },
-                    { nameof(Dietician.LastName), p=>p.LastName }
-                };
-
-                var selectedColumn = columnsSelector[query.SortBy];
-
-                baseQuery = query.SortDirection == SortDirection.ASC
-                    ? baseQuery.OrderBy(selectedColumn)
-                    : baseQuery.OrderByDescending(selectedColumn);
-            }
-
-            var dieticians = baseQuery
-                            .Skip(query.PageSize * (query.PageNumber - 1))
-                            .Take(query.PageSize)
-                            .ToList();
-
-            var totaItemsCount = baseQuery.Count();
+            if (dieticians is null)
+                throw new NotFoundException("The diet list is empty");
 
             var dieticiansDtos = dieticians.Select(d => new DieticianDto()
             {
@@ -79,9 +57,7 @@ namespace DieteticConsultationAPI.Services
                 Patients = d.Patients.Select(Map).ToList(),
             }).ToList();
 
-            var result = new PagedResult<DieticianDto>(dieticiansDtos, totaItemsCount, query.PageSize, query.PageNumber);
-
-            return result;
+            return dieticiansDtos;
         }
 
         public DieticianDto GetDietician(int id)
@@ -161,19 +137,5 @@ namespace DieteticConsultationAPI.Services
                 ProhibitedProducts = diet.ProhibitedProducts,
                 RecommendedProducts = diet.RecommendedProducts
             };
-
-
-        private DieticianDto Map(Dietician d)
-        {
-            return new DieticianDto()
-            {
-                FirstName = d.FirstName,
-                LastName = d.LastName,
-                Specialization = d.Specialization,
-                ContactEmail = d.ContactEmail,
-                ContactNumber = d.ContactNumber,
-                Id = d.Id,
-            };
-        }
     }
 }

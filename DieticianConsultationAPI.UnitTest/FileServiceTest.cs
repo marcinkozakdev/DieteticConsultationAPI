@@ -3,51 +3,32 @@ using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Resources;
 using Moq;
-using System.Text;
 using Xunit;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DieticianConsultationAPI.UnitTest
 {
     public class FileServiceTest
     {
-        private readonly Mock<IFileRepository> _repositoryMock;
-        private readonly FileService _sut;
-        private IFormFile formFile;
+        private readonly Mock<IFileRepository> _fileRepositoryMock;
 
         public FileServiceTest()
         {
-            _repositoryMock = new Mock<IFileRepository>();
-            _sut = new FileService(_repositoryMock.Object);
+            _fileRepositoryMock = new Mock<IFileRepository>();
         }
 
         [Fact]
-        public void UploadFile_FileIsNotNullAndFileLenghtGreaterThanZero_ReturnUploadedFile()
+        public void UploadFile_FileIsNullAndFileLengthIsZero_ReturnNotFoundException()
         {
             // arrange
-         
+            var file = new FormFile(Stream.Null, 0, 0, null, null);
 
             // act
+            var _sut = new FileService(_fileRepositoryMock.Object);
+            Action result = () => _sut.UploadFile(file);
 
             // assert
-
-        }
-
-        [Theory]
-        [InlineData(6)]
-        [InlineData(3)]
-        public void UploadFile_BadRequest_ReturnUploadedFile(int fileLenght)
-        {
-            // arrange
-
-            // act
-
-            // assert
-
+            Assert.Throws<NotFoundException>(result);
         }
 
         [Fact]
@@ -55,28 +36,36 @@ namespace DieticianConsultationAPI.UnitTest
         {
             // arrange
             int id = 1;
-            FileModel file = SampleFile();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(file);
+            var file = SampleFile();
+
+            _fileRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(file);
 
             // act
-            FileModelDto result = _sut.DownloadFile(file.Id);
+            var _sut = new FileService(_fileRepositoryMock.Object);
+            var result = _sut.DownloadFile(file.Id);
 
             // assert
-            _repositoryMock.Verify(x => x.GetById(file.Id), Times.Once());
-            result.FileName.Should().NotBe(null);
+            _fileRepositoryMock
+                .Verify(x => x.GetById(file.Id), Times.Once());
 
+            result.FileName.Should().NotBe(null);
         }
 
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        public void DownloadFile_FileNotFound_ReturnNotFoundException(int id)
+        [Fact]
+        public void DownloadFile_FileNotFound_ReturnNotFoundException()
         {
             // arrange
-            FileModel file = SampleFile();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(file);
+            int id = 2;
+            var file = SampleFile();
+
+            _fileRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(file);
 
             // act
+            var _sut = new FileService(_fileRepositoryMock.Object);
             Action result = () => _sut.DownloadFile(file.Id);
 
             // arrange
@@ -88,66 +77,54 @@ namespace DieticianConsultationAPI.UnitTest
         {
             // arrange
             int id = 1;
-            FileModel file = SampleFile();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(file);
-            _repositoryMock.Setup(x => x.Delete(It.IsAny<int>()));
+            var file = SampleFile();
+
+            _fileRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(file);
+
+            _fileRepositoryMock
+                .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
+            var _sut = new FileService(_fileRepositoryMock.Object);
             _sut.DeleteFile(file.Id);
 
             // assert
-            _repositoryMock.Verify(x => x.Delete(file.Id), Times.Once());
+            _fileRepositoryMock
+                .Verify(x => x.Delete(file.Id), Times.Once());
         }
 
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        public void DeleteFile_FileNotFound_ReturnNotFoundException(int id)
+        [Fact]
+        public void DeleteFile_FileNotFound_ReturnNotFoundException()
         {
             // arrange
-            FileModel file = SampleFile();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(file);
-            _repositoryMock.Setup(x => x.Delete(It.IsAny<int>()));
+            int id = 2;
+            var file = SampleFile();
+
+            _fileRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(file);
+
+            _fileRepositoryMock
+                .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
+            var _sut = new FileService(_fileRepositoryMock.Object);
             Action result = () => _sut.DeleteFile(file.Id);
 
             // assert
             Assert.Throws<NotFoundException>(result);
-
         }
 
         private FileModel SampleFile()
         {
-            UTF8Encoding enc = new UTF8Encoding();
-
             return new FileModel()
             {
                 Id = 1,
                 FileName = "Diet",
                 FileType = "application/pdf",
             };
-            
         }
-
-        private FileModel SampleFileFormFile(IFormFile file)
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                file.CopyTo(memoryStream);
-
-                var newFile = new FileModel()
-                {
-                    FileName = Path.GetFileName(file.FileName),
-                    FileType = file.ContentType,
-                    Attachment = memoryStream.ToArray(),
-                    Date = DateTime.UtcNow,
-                };
-            }
-            return (FileModel)file;
-        }
-
     }
-
-   
 }

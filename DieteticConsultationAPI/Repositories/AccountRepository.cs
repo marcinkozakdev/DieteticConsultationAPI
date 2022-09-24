@@ -14,13 +14,15 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-        public void LoginUser(LoginDto dto) =>
-           _context.Users.Include(u => u.Role).FirstOrDefault(x => x.Email == dto.Email);
-        
+        public User? Login(LoginDto dto) => _context
+            .Users
+            .Include(u => u.Role)
+            .FirstOrDefault(x => x.Email == dto.Email);
 
-        public void RegisterUser()
+        public void Register(User newUser)
         {
-            throw new NotImplementedException();
-        }
+            _context.Users.Add(newUser);
+            _context.SaveChanges();
+        } 
     }
 }

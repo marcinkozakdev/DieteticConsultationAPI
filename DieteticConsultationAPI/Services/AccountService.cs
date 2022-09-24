@@ -4,7 +4,6 @@ using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,14 +13,12 @@ namespace DieteticConsultationAPI.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly DieteticConsultationDbContext _context;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly AuthenticationSettings _authenticationSettings;
         private readonly IAccountRepository _accountRepository;
 
-        public AccountService(DieteticConsultationDbContext context, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings, IAccountRepository accountRepository)
+        public AccountService(IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings, IAccountRepository accountRepository)
         {
-            _context = context;
             _passwordHasher = passwordHasher;
             _authenticationSettings = authenticationSettings;
             _accountRepository = accountRepository;
@@ -41,28 +38,21 @@ namespace DieteticConsultationAPI.Services
 
             newUser.PasswordHash = hashedPassword;
 
-            _context.Users.Add(newUser);
-            _context.SaveChanges();
+            _accountRepository.Register(newUser);
         }
 
         public string GenerateJwt(LoginDto dto)
         {
-            var user = _context
-                .Users
-                .Include(u=>u.Role)
-                .FirstOrDefault(x => x.Email == dto.Email);
+            var user = _accountRepository.Login(dto);
 
             if (user is null)
-            {
                 throw new BadReguestException("Invalid username or password");
-            }
 
-            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+            var result = _passwordHasher
+                .VerifyHashedPassword(user, user.PasswordHash, dto.Password);
 
             if (result == PasswordVerificationResult.Failed)
-            {
                 throw new BadReguestException("Invalid username or password");
-            }
 
             var claims = new List<Claim>()
             {

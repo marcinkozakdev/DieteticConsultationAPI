@@ -19,26 +19,34 @@ namespace DieteticConsultationAPI.Repositories
 
             if (diet != null)
                 _context.Diets.Update(diet);
-                _context.SaveChanges();
+            _context.SaveChanges();
 
             return diet;
         }
 
         public Diet? Delete(int? id)
         {
-            Diet? diet = _context.Diets.FirstOrDefault(d => d.Id == id);
+            Diet? diet = _context
+                .Diets
+                .FirstOrDefault(d => d.Id == id);
+
             _context.Diets.Remove(diet);
             _context.SaveChanges();
 
             return diet;
         }
 
-        public IEnumerable<Diet>? GetAll() =>
-            _context.Diets.Include(d => d.Patient).Include(d => d.Files)?.ToList();
+        public IEnumerable<Diet>? GetAll() => _context
+            .Diets
+            .Include(d => d.Patient)
+            .Include(d => d.Files)?
+            .ToList();
 
 
-        public Diet? GetById(int? id) =>
-            _context.Diets.Include(d => d.Patient).Include(d => d.Files)?.FirstOrDefault(d => d.Id == id);
-
+        public Diet? GetById(int? id) => _context
+            .Diets
+            .Include(d => d.Patient)
+            .Include(d => d.Files)?
+            .FirstOrDefault(d => d.Id == id);
     }
 }

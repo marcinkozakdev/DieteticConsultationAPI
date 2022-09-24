@@ -1,6 +1,7 @@
 ﻿using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
+using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services;
 using DieteticConsultationAPI.Services.Interfaces;
@@ -13,29 +14,50 @@ namespace DieticianConsultationAPI.UnitTest
 {
     public class PatientServiceTest
     {
-        private readonly Mock<IPatientRepository> _repositoryMock;
+        private readonly Mock<IPatientRepository> _patientRepositoryMock;
         private readonly Mock<ILogger<PatientService>> _loggerMock;
         private readonly Mock<IAuthorizationService> _authorizationServiceMock;
         private readonly Mock<IUserContextService> _userContextServiceMock;
-        private readonly PatientService _sut;
 
         public PatientServiceTest()
         {
-            _repositoryMock = new Mock<IPatientRepository>();
+            _patientRepositoryMock = new Mock<IPatientRepository>();
             _loggerMock = new Mock<ILogger<PatientService>>();
             _authorizationServiceMock = new Mock<IAuthorizationService>();
             _userContextServiceMock = new Mock<IUserContextService>();
-            _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _repositoryMock.Object);
         }
 
         [Fact]
-        public void GetAllPatients_PatientsFound_ReturnAllPatients()
+        public void GetAllPatients_QueryIsNullOrEmpty_ReturnAllPatients()
         {
             // arrange
+            var patients = new List<Patient>()
+            {
+               SamplePatient(),
+               SamplePatient_2()
+            };
+
+            var query = new PatientQuery()
+            {
+                PageNumber = 1,
+                PageSize = 10,
+                SearchPhrase = null,
+                SortBy = null,
+            };
+
+            _patientRepositoryMock
+                .Setup(x => x.GetAll(query))
+                .Returns((IQueryable<Patient>)patients.AsQueryable());
 
             // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
-            // assert
+            var result = _sut.GetAllPatients(query);
+
+            // arrange
+            _patientRepositoryMock
+                .Verify(x => x.GetAll(query), Times.Once());
+            result.TotalItemsCount.Should().Be(2);
         }
 
         [Fact]
@@ -43,28 +65,35 @@ namespace DieticianConsultationAPI.UnitTest
         {
             // arrange
             int id = 1;
-            Patient patient = SamplePatient();
-            _repositoryMock.Setup(x=>x.GetById(id)).Returns(patient);
+            var patient = SamplePatient();
+
+            _patientRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(patient);
 
             // act
-            PatientDto result = _sut.GetPatient(patient.Id);
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
+            var result = _sut.GetPatient(patient.Id);
 
             // assert
             result.FirstName.Should().NotBe(null);
         }
 
-
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        public void GetPatient_PatientNotFound_ReturnNotFoundException(int id)
+        [Fact]
+        public void GetPatient_PatientNotFound_ReturnNotFoundException()
         {
             // arrange
-            Patient patient = SamplePatient();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(patient);
+            int id = 2;
+            var patient = SamplePatient();
+
+            _patientRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(patient);
 
             // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
             Action result = () => _sut.GetPatient(patient.Id);
 
             // assert
@@ -89,13 +118,15 @@ namespace DieticianConsultationAPI.UnitTest
                 DieticianId = 1
             };
 
-            _repositoryMock.Setup(x => x.AddOrUpdate(It.IsAny<Patient>()));
+            _patientRepositoryMock
+                .Setup(x => x.AddOrUpdate(It.IsAny<Patient>()));
 
             // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
             var result = _sut.CreatePatient(patient);
 
             // assert
-            _repositoryMock.Verify(x => x.AddOrUpdate(It.IsAny<Patient>()), Times.Once());
             result.Should().NotBe(null);
             Assert.Equal("Marcin", patient.FirstName);
         }
@@ -105,8 +136,9 @@ namespace DieticianConsultationAPI.UnitTest
         {
             // arrange
             int id = 1;
-            Patient patient = SamplePatient();
-            UpdatePatientDto updatePatient = new UpdatePatientDto()
+            var patient = SamplePatient();
+            var updatePatient = new UpdatePatientDto()
+
             {
                 FirstName = "Marcin",
                 LastName = "Kozak",
@@ -117,28 +149,34 @@ namespace DieticianConsultationAPI.UnitTest
                 Height = 175,
                 Age = 29,
             };
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(patient);
-            _repositoryMock.Setup(x => x.AddOrUpdate(It.IsAny<Patient>())).Returns(patient);
+
+            _patientRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(patient);
+
+            _patientRepositoryMock
+                .Setup(x => x.AddOrUpdate(It.IsAny<Patient>()))
+                .Returns(patient);
 
             // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
             _sut.UpdatePatient(updatePatient, patient.Id);
 
             // assert
-            _repositoryMock.Verify(x => x.AddOrUpdate(It.IsAny<Patient>()), Times.Once());
             Assert.Equal(65, updatePatient.Weight);
             Assert.Equal(175, updatePatient.Height);
             Assert.Equal(29, updatePatient.Age);
         }
 
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        public void UpdatePatient_PatientNotFound_ReturnNotFoundException(int id)
+        [Fact]
+        public void UpdatePatient_PatientNotFound_ReturnNotFoundException()
         {
             // arrange
-            Patient patient = SamplePatient();
-            UpdatePatientDto updatePatient = new UpdatePatientDto()
+            int id = 2;
+            var patient = SamplePatient();
+            var updatePatient = new UpdatePatientDto()
+
             {
                 FirstName = "Marcin",
                 LastName = "Kozak",
@@ -149,10 +187,18 @@ namespace DieticianConsultationAPI.UnitTest
                 Height = 175,
                 Age = 29,
             };
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(patient);
-            _repositoryMock.Setup(x => x.AddOrUpdate(patient)).Returns(patient);
+
+            _patientRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(patient);
+
+            _patientRepositoryMock
+                .Setup(x => x.AddOrUpdate(patient))
+                .Returns(patient);
 
             // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
             Action result = () => _sut.UpdatePatient(updatePatient, patient.Id);
 
             // assert
@@ -164,36 +210,48 @@ namespace DieticianConsultationAPI.UnitTest
         {
             // arrange
             int id = 1;
-            Patient patient = SamplePatient();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(patient);
-            _repositoryMock.Setup(x => x.Delete(It.IsAny<int>()));
-            
+            var patient = SamplePatient();
+
+            _patientRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(patient);
+            _patientRepositoryMock
+                .Setup(x => x.Delete(It.IsAny<int>()));
+
             // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
             _sut.DeletePatient(patient.Id);
 
             // assert
-            _repositoryMock.Verify(x => x.Delete(patient.Id), Times.Once);
+            _patientRepositoryMock
+                .Verify(x => x.Delete(patient.Id), Times.Once);
         }
 
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        public void DeletePatient_PatientNotFound_ReturnNotFoundException(int id)
+        [Fact]
+        public void DeletePatient_PatientNotFound_ReturnNotFoundException()
         {
             // arrange
-            Patient patient = SamplePatient();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(patient);
-            _repositoryMock.Setup(x => x.Delete(It.IsAny<int>()));
+            int id = 2;
+            var patient = SamplePatient();
+
+            _patientRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(patient);
+
+            _patientRepositoryMock
+                .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
             Action result = () => _sut.DeletePatient(patient.Id);
 
             // assert
             Assert.Throws<NotFoundException>(result);
         }
 
-            private Patient SamplePatient()
+        private Patient SamplePatient()
         {
             return new Patient()
             {
@@ -206,6 +264,22 @@ namespace DieticianConsultationAPI.UnitTest
                 Height = 168,
                 Age = 28,
                 Id = 1,
+                DieticianId = 1
+            };
+        }
+        private Patient SamplePatient_2()
+        {
+            return new Patient()
+            {
+                FirstName = "Dominika",
+                LastName = "Kozak",
+                ContactEmail = "marcinkozak@test.com",
+                ContactNumber = "999888777",
+                Sex = "Female",
+                Weight = 55,
+                Height = 155,
+                Age = 26,
+                Id = 2,
                 DieticianId = 1
             };
         }

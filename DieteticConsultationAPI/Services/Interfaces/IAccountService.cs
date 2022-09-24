@@ -6,6 +6,5 @@ namespace DieteticConsultationAPI.Services.Interfaces
     {
         void RegisterUser(RegisterUserDto dto);
         string GenerateJwt(LoginDto dto);
-
     }
 }

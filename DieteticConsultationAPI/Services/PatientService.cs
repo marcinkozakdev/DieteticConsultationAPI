@@ -20,12 +20,10 @@ namespace DieteticConsultationAPI.Services
 
         public PatientService(ILogger<PatientService> logger, IAuthorizationService authorizationService, IUserContextService userContextService, IPatientRepository patientRepository)
         {
-            
             _logger = logger;
             _authorizationService = authorizationService;
             _userContextService = userContextService;
             _patientRepository = patientRepository;
-
         }
 
         public int CreatePatient(CreatePatientDto dto)
@@ -53,10 +51,7 @@ namespace DieteticConsultationAPI.Services
 
         public PagedResult<PatientDto> GetAllPatients(PatientQuery query)
         {
-            var baseQuery = _patientRepository.GetAll()
-                            .Where(r => query.SearchPhrase == null 
-                                || r.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
-                                || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()));
+            var baseQuery = _patientRepository.GetAll(query);
 
             if(!string.IsNullOrEmpty(query.SortBy))
             {

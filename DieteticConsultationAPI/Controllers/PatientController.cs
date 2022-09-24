@@ -19,7 +19,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Dietician,Patient")]
+       // [Authorize(Roles = "Admin,Dietician,Patient")]
         public ActionResult Create([FromBody] CreatePatientDto dto)
         {
             var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
@@ -30,7 +30,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Dietician")]
+        //[Authorize(Roles = "Admin,Dietician")]
         public IActionResult GetAll([FromQuery]PatientQuery query)
         {
             var patients = _patientService.GetAllPatients(query);
@@ -39,7 +39,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Dietician,Patient")]
+        //[Authorize(Roles = "Admin,Dietician,Patient")]
         public IActionResult Get(int id)
         {
             var patient = _patientService.GetPatient(id);
@@ -57,7 +57,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Dietician,Patient")]
+       // [Authorize(Roles = "Admin,Dietician,Patient")]
         public IActionResult Delete(int id)
         {
             _patientService.DeletePatient(id);

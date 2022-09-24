@@ -3,8 +3,6 @@ using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using FileModel = DieteticConsultationAPI.Entities.FileModel;
 
 namespace DieteticConsultationAPI.Services

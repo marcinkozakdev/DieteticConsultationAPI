@@ -18,9 +18,9 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-        public IQueryable<Dietician> GetAll() =>
+        public IEnumerable<Dietician> GetAll() =>
             _context.Dieticians.Include(d => d.Patients);
-        
+
         public Dietician? GetById(int? id) =>
             _context.Dieticians.FirstOrDefault(d => d.Id == id);
 
@@ -30,7 +30,7 @@ namespace DieteticConsultationAPI.Repositories
             _context.SaveChanges();
 
             if (dietician != null)
-            _context.Dieticians.Update(dietician);
+                _context.Dieticians.Update(dietician);
             _context.SaveChanges();
 
             return dietician;
@@ -41,7 +41,6 @@ namespace DieteticConsultationAPI.Repositories
             Dietician? dietician = _context.Dieticians.FirstOrDefault(d => d.Id == id);
             _context.Dieticians.Remove(dietician);
             _context.SaveChanges();
-
         }
     }
 }

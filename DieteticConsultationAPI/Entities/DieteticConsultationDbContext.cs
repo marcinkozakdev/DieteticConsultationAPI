@@ -16,7 +16,6 @@ namespace DieteticConsultationAPI.Entities
         public DbSet<Role> Roles { get; set; }
         public DbSet<FileModel> Files { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Dietician>(eb =>

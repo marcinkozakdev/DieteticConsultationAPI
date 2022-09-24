@@ -1,16 +1,9 @@
-﻿using AutoFixture;
-using DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
-using DieteticConsultationAPI.Models.Pagination;
-using DieteticConsultationAPI.Repositories;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using Xunit;
 
@@ -18,51 +11,17 @@ namespace DieticianConsultationAPI.UnitTest
 {
     public class DieticianServiceTest
     {
-
-        private readonly Mock<IDieticianRepository> _repositoryMock;
+        private readonly Mock<IDieticianRepository> _dieticianRepositoryMock;
         private readonly Mock<ILogger<DieticianService>> _loggerMock;
-        private readonly DieticianService _sut;
 
         public DieticianServiceTest()
         {
-            _repositoryMock = new Mock<IDieticianRepository>();
+            _dieticianRepositoryMock = new Mock<IDieticianRepository>();
             _loggerMock = new Mock<ILogger<DieticianService>>();
-            _sut = new DieticianService(_loggerMock.Object, _repositoryMock.Object);
         }
 
-
-        //[Fact]
-        //public void GetAllDieticians_ShouldReturnAllDieticians()
-        //{
-        //    // arrange
-        //    var getAllDieticians = new List<Dietician>()
-        //    {
-        //        new Dietician()
-        //        {
-        //            FirstName = "Mateusz"
-        //        }
-        //    };
-
-        //    var loggerMock = new Mock<ILogger<DieticianService>>();
-        //    var repositoryMock = new Mock<IDieticianRepository>();
-        //    repositoryMock.Setup(x => x.GetAll()).Returns(getAllDieticians);
-
-        //    //act
-        //    var sut = new DieticianService(null, loggerMock.Object, repositoryMock.Object);
-        //    var result = sut.GetAll();
-
-        //    //assert
-        //    result.Count.Should().Be(1);
-        //    result.Single().FirstName.Should().NotBe(null);
-        //}
-
-        [Theory]
-        [InlineData(5,1)]
-        [InlineData(10, 1)]
-        [InlineData(15, 1)]
-        [InlineData(20, 1)]
-        [InlineData(25, 1)]
-        public void GetAllDieticians_DieticiansFound_ReturnAllDieticians(int pageSize, int pageNumber)
+        [Fact]
+        public void GetAllDieticians_DieticiansFound_ReturnAllDieticians()
         {
             // arrange
             List<Dietician> dieticians = new List<Dietician>()
@@ -70,9 +29,19 @@ namespace DieticianConsultationAPI.UnitTest
                SampleDietician()
             };
 
-            // act
+            _dieticianRepositoryMock
+                .Setup(x => x.GetAll())
+                .Returns(dieticians);
 
-            // assert
+            // act
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var result = _sut.GetAllDieticians();
+
+            // arrange
+            _dieticianRepositoryMock
+                .Verify(x => x.GetAll(), Times.Once());
+
+            result.Count().Should().Be(1);
         }
 
         [Fact]
@@ -80,28 +49,34 @@ namespace DieticianConsultationAPI.UnitTest
         {
             // arrange
             int id = 1;
-            Dietician dietician = SampleDietician();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(dietician);
+            var dietician = SampleDietician();
+            
+            _dieticianRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(dietician);
 
             // act
-            DieticianDto result = _sut.GetDietician(dietician.Id);
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var result = _sut.GetDietician(dietician.Id);
 
             // assert
             result.FirstName.Should().NotBe(null);
         }
 
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        public void GetDietician_DieticianNotFound_ReturnNotFoundException(int id)
+        [Fact]
+        public void GetDietician_DieticianNotFound_ReturnNotFoundException()
         {
             // arrange
-            Dietician dietician = SampleDietician();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(dietician);
+            int id = 2;
+            var dietician = SampleDietician();
+
+            _dieticianRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(dietician);
 
             // act
-            Action result = () =>  _sut.GetDietician(dietician.Id);
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            Action result = () => _sut.GetDietician(dietician.Id);
 
             // assert
             Assert.Throws<NotFoundException>(result);
@@ -112,27 +87,34 @@ namespace DieticianConsultationAPI.UnitTest
         {
             // arrange
             int id = 1;
-            Dietician dietician = SampleDietician();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(dietician);
+            var dietician = SampleDietician();
+
+            _dieticianRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(dietician);
 
             // act
-            Dietician result = _sut.GetDieticianById(dietician.Id);
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var result = _sut.GetDieticianById(dietician.Id);
 
             // assert
-            _repositoryMock.Verify(x => x.GetById(dietician.Id), Times.Once());
+            _dieticianRepositoryMock
+                .Verify(x => x.GetById(dietician.Id), Times.Once());
         }
 
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        public void GetDieticianById_DieticianNotFound_ReturnNotFoundException(int id)
+        [Fact]
+        public void GetDieticianById_DieticianNotFound_ReturnNotFoundException()
         {
             // arrange
-            Dietician dietician = SampleDietician();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(dietician);
+            int id = 2;
+            var dietician = SampleDietician();
+
+            _dieticianRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(dietician);
 
             // act
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
             Action result = () => _sut.GetDieticianById(dietician.Id);
 
             // assert
@@ -152,24 +134,29 @@ namespace DieticianConsultationAPI.UnitTest
                 ContactNumber = "111222333",
                 Id = 2,
             };
-            
-            _repositoryMock.Setup(x => x.AddOrUpdate(It.IsAny<Dietician>()));
+
+            _dieticianRepositoryMock
+                .Setup(x => x.AddOrUpdate(It.IsAny<Dietician>()));
 
             // act
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
             var result = _sut.CreateDietician(dietician);
 
             // assert
-            _repositoryMock.Verify(x => x.AddOrUpdate(It.IsAny<Dietician>()), Times.Once());
-            result.Should().NotBe(null);
+            _dieticianRepositoryMock
+                .Verify(x => x.AddOrUpdate(It.IsAny<Dietician>()), Times.Once());
+
             Assert.Equal("Dominika", dietician.FirstName);
+            Assert.Equal(2, dietician.Id);
         }
-        
+
         [Fact]
         public void UpdateDietician_DieticianFound_ReturnDietician()
         {
             // arrange
-            int id = 1 ;
-            Dietician dietician = SampleDietician();
+            int id = 1;
+            var dietician = SampleDietician();
+
             UpdateDieticianDto updateDietician = new UpdateDieticianDto()
             {
                 FirstName = "Dominika",
@@ -178,25 +165,33 @@ namespace DieticianConsultationAPI.UnitTest
                 ContactEmail = "dominika.olszowy@test.com",
                 ContactNumber = "111222333",
             };
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(dietician);
-            _repositoryMock.Setup(x => x.AddOrUpdate(It.IsAny<Dietician>())).Returns(dietician);
+
+            _dieticianRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(dietician);
+
+            _dieticianRepositoryMock
+                .Setup(x => x.AddOrUpdate(It.IsAny<Dietician>()))
+                .Returns(dietician);
 
             // act
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
             _sut.UpdateDietician(updateDietician, dietician.Id);
 
             // assert
-            _repositoryMock.Verify(x => x.AddOrUpdate(It.IsAny<Dietician>()), Times.Once());
+            _dieticianRepositoryMock
+                .Verify(x => x.AddOrUpdate(It.IsAny<Dietician>()), Times.Once());
+
             Assert.Equal("Olszowy", updateDietician.LastName);
         }
 
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        public void UpdateDietician_DieticianNotFound_ReturnNotFoundException(int id)
+        [Fact]
+        public void UpdateDietician_DieticianNotFound_ReturnNotFoundException()
         {
             // arrange
-            Dietician dietician = SampleDietician();
+            int id = 2;
+            var dietician = SampleDietician();
+
             UpdateDieticianDto updateDietician = new UpdateDieticianDto()
             {
                 FirstName = "Dominika",
@@ -205,10 +200,17 @@ namespace DieticianConsultationAPI.UnitTest
                 ContactEmail = "dominika.olszowy@test.com",
                 ContactNumber = "111222333",
             };
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(dietician);
-            _repositoryMock.Setup(x => x.AddOrUpdate(dietician)).Returns(dietician);
+
+            _dieticianRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(dietician);
+
+            _dieticianRepositoryMock
+                .Setup(x => x.AddOrUpdate(dietician))
+                .Returns(dietician);
 
             // act
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
             Action result = () => _sut.UpdateDietician(updateDietician, dietician.Id);
 
             // assert
@@ -220,29 +222,40 @@ namespace DieticianConsultationAPI.UnitTest
         {
             // arrange
             int id = 1;
-            Dietician dietician = SampleDietician();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(dietician);
-            _repositoryMock.Setup(x => x.Delete(It.IsAny<int>()));
-            
+            var dietician = SampleDietician();
+
+            _dieticianRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(dietician);
+
+            _dieticianRepositoryMock
+                .Setup(x => x.Delete(It.IsAny<int>()));
+
             // act
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
             _sut.DeleteDietician(dietician.Id);
 
             // assert
-            _repositoryMock.Verify(x => x.Delete(dietician.Id), Times.Once);
+            _dieticianRepositoryMock.Verify(x => x.Delete(dietician.Id), Times.Once);
         }
 
         [Theory]
         [InlineData(2)]
-        [InlineData(3)]
         [InlineData(4)]
         public void DeleteDietician_DieticianNotFound_ReturnNotFoundException(int id)
         {
             // arrange
-            Dietician dietician = SampleDietician();
-            _repositoryMock.Setup(x => x.GetById(id)).Returns(dietician);
-            _repositoryMock.Setup(x => x.Delete(It.IsAny<int>()));
+            var dietician = SampleDietician();
+
+            _dieticianRepositoryMock
+                .Setup(x => x.GetById(id))
+                .Returns(dietician);
+
+            _dieticianRepositoryMock
+                .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
+            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
             Action result = () => _sut.DeleteDietician(dietician.Id);
 
             // assert

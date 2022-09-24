@@ -8,7 +8,5 @@ namespace DieteticConsultationAPI.Repositories.Abstractions
         Diet? GetById(int? id);
         Diet? AddOrUpdate(Diet? diet);
         Diet? Delete(int? id);
-
-
     }
 }

@@ -8,9 +8,8 @@ namespace DieteticConsultationAPI.Services.Interfaces
     public interface IDieticianService
     {
         int CreateDietician(CreateDieticianDto dto);
-        PagedResult<DieticianDto> GetAllDieticians(DieticianQuery query);
+        IEnumerable<DieticianDto> GetAllDieticians();
         DieticianDto GetDietician(int id);
-
         void UpdateDietician(UpdateDieticianDto dto, int id);
         void DeleteDietician(int id);
     }

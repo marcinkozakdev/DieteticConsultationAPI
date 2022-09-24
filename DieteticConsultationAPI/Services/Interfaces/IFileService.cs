@@ -8,6 +8,5 @@ namespace DieteticConsultationAPI.Services.Interfaces
         void UploadFile(IFormFile formFile);
         FileModelDto DownloadFile(int id);
         void DeleteFile(int id);
-
     }
 }
