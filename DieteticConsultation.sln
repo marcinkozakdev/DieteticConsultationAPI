@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DieteticConsultation.API", "src\DieteticConsultation.API\DieteticConsultation.API.csproj", "{CEC9CE67-82B5-4B56-A427-A464E269E9CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DieticianConsultation.API.UnitTest", "src\DieticianConsultation.API.UnitTest\DieticianConsultation.API.UnitTest.csproj", "{B4003D37-8257-41FC-AFB0-58A5B38EA34E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CEC9CE67-82B5-4B56-A427-A464E269E9CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEC9CE67-82B5-4B56-A427-A464E269E9CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEC9CE67-82B5-4B56-A427-A464E269E9CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEC9CE67-82B5-4B56-A427-A464E269E9CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4003D37-8257-41FC-AFB0-58A5B38EA34E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4003D37-8257-41FC-AFB0-58A5B38EA34E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4003D37-8257-41FC-AFB0-58A5B38EA34E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4003D37-8257-41FC-AFB0-58A5B38EA34E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {23861FD5-E61A-4CD3-92B7-90C0192B825E}
+	EndGlobalSection
+EndGlobal
