@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DieteticConsultationAPI", "DieteticConsultationAPI\DieteticConsultationAPI.csproj", "{8C267CE1-D03C-4D34-9FB1-32A881C281BE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DieticianConsultationAPI.UnitTest", "DieticianConsultationAPI.UnitTest\DieticianConsultationAPI.UnitTest.csproj", "{11312880-2EFA-481B-A764-E3CB9B8BC09D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DieteticConsultationAPI.UnitTest", "DieticianConsultationAPI.UnitTest\DieteticConsultationAPI.UnitTest.csproj", "{11312880-2EFA-481B-A764-E3CB9B8BC09D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

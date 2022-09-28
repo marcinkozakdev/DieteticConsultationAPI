@@ -46,7 +46,7 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _patientRepositoryMock
-                .Setup(x => x.GetAll(query))
+                .Setup(x => x.GetAllPatientsWithDiet(query))
                 .Returns((IQueryable<Patient>)patients.AsQueryable());
 
             // act
@@ -56,8 +56,11 @@ namespace DieteticConsultationAPI.UnitTest
 
             // arrange
             _patientRepositoryMock
-                .Verify(x => x.GetAll(query), Times.Once());
+                .Verify(x => x.GetAllPatientsWithDiet(query), Times.Once());
             result.TotalItemsCount.Should().Be(2);
+            result.TotalPages.Should().Be(1);
+            result.ItemFrom.Should().Be(1);
+            result.ItemsTo.Should().Be(10);
         }
 
         [Fact]
@@ -68,7 +71,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetById(id))
+                .Setup(x => x.GetPatientWithDiet(id))
                 .Returns(patient);
 
             // act
@@ -88,7 +91,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetById(id))
+                .Setup(x => x.GetPatientWithDiet(id))
                 .Returns(patient);
 
             // act
@@ -151,7 +154,7 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _patientRepositoryMock
-                .Setup(x => x.GetById(id))
+                .Setup(x => x.GetPatientWithDiet(id))
                 .Returns(patient);
 
             _patientRepositoryMock
@@ -189,7 +192,7 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _patientRepositoryMock
-                .Setup(x => x.GetById(id))
+                .Setup(x => x.GetPatientWithDiet(id))
                 .Returns(patient);
 
             _patientRepositoryMock
@@ -213,7 +216,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetById(id))
+                .Setup(x => x.GetPatientWithDiet(id))
                 .Returns(patient);
             _patientRepositoryMock
                 .Setup(x => x.Delete(It.IsAny<int>()));
@@ -236,7 +239,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetById(id))
+                .Setup(x => x.GetPatientWithDiet(id))
                 .Returns(patient);
 
             _patientRepositoryMock
