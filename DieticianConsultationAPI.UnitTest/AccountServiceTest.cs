@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;
 
-namespace DieticianConsultationAPI.UnitTest
+namespace DieteticConsultationAPI.UnitTest
 {
     public class AccountServiceTest
     {

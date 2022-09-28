@@ -7,7 +7,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace DieticianConsultationAPI.UnitTest
+namespace DieteticConsultationAPI.UnitTest
 {
     public class DieticianServiceTest
     {

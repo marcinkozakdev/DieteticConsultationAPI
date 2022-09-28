@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Moq;
 using Xunit;
 
-namespace DieticianConsultationAPI.UnitTest
+namespace DieteticConsultationAPI.UnitTest
 {
     public class PatientServiceTest
     {
