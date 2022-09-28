@@ -1,6 +1,5 @@
 ﻿using DieteticConsultationAPI.Entities;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 
 namespace DieteticConsultationAPI.Models.Validators
 {

@@ -73,7 +73,6 @@ namespace DieteticConsultationAPI
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IPatientRepository, PatientRepository>();
 
-
             return services;
         }
 
@@ -88,7 +87,6 @@ namespace DieteticConsultationAPI
         public static IServiceCollection AddValidatorCustomServices(this IServiceCollection services)
         {
             services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
-            services.AddScoped<IValidator<DieticianQuery>, DieticianQueryValidatior>();
             services.AddScoped<IValidator<PatientQuery>, PatientQueryValidatior>();
 
             return services;

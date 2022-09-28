@@ -1,21 +1,6 @@
 using DieteticConsultationAPI;
-using DieteticConsultationAPI.Authorization;
-using DieteticConsultationAPI.Entities;
-using DieteticConsultationAPI.Middleware;
-using DieteticConsultationAPI.Models;
-using DieteticConsultationAPI.Models.Pagination;
-using DieteticConsultationAPI.Models.Validators;
-using DieteticConsultationAPI.Services;
-using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
-using System.ComponentModel.Design;
-using System.Reflection;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 

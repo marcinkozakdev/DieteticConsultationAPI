@@ -27,7 +27,7 @@ namespace DieteticConsultationAPI.Repositories
             .FirstOrDefault(d => d.Id == id);
 
 
-        public void Upload(FileModel? file)
+        public void Upload(FileModel file)
         {
             _context.Files.Add(file);
             _context.SaveChanges();

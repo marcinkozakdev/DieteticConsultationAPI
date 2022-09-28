@@ -1,6 +1,5 @@
 ﻿using DieteticConsultationAPI.Entities;
 using Microsoft.AspNetCore.Authorization;
-using NLog.Web.LayoutRenderers;
 using System.Security.Claims;
 
 namespace DieteticConsultationAPI.Authorization
@@ -15,12 +14,10 @@ namespace DieteticConsultationAPI.Authorization
                 context.Succeed(requirement);
             }
 
-           var userId = context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
+           var userId = context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             
             if(patient.CreatedById == int.Parse(userId))
-            {
                 context.Succeed(requirement);
-            }    
 
             return Task.CompletedTask;
         }

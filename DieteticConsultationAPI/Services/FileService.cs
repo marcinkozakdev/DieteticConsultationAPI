@@ -1,14 +1,8 @@
 ﻿using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
-using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.IIS.Core;
-using Microsoft.EntityFrameworkCore;
-using System.Collections;
-using System.Net.Http.Headers;
-using System.Net.Mail;
+
 
 namespace DieteticConsultationAPI.Services
 {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DieteticConsultationAPI.Repositories
 {
-    public class AccountRepository : IAccountRepository
+    internal sealed class AccountRepository : IAccountRepository
     {
         private readonly DieteticConsultationDbContext _context;
 

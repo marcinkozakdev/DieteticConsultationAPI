@@ -1,15 +1,9 @@
-﻿using DieteticConsultationAPI.Authorization;
-using DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
-using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Immutable;
-using System.Linq.Expressions;
-using System.Security.Claims;
+
 
 namespace DieteticConsultationAPI.Services
 {

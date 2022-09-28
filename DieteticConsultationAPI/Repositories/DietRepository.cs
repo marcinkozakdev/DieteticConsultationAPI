@@ -12,19 +12,30 @@ namespace DieteticConsultationAPI.Repositories
         {
             _context = context;
         }
+
         public Diet? AddOrUpdate(Diet? diet)
         {
-            _context.Diets.Add(diet);
-            _context.SaveChanges();
+            if (_context.Diets.FirstOrDefault(d => d.Id.Equals(diet.Id)) is { } obj)
+            {
+                obj.Description = diet?.Description;
+                obj.CalorificValue = diet.CalorificValue;
+                obj.RecommendedProducts = diet.RecommendedProducts;
+                obj.ProhibitedProducts = diet.ProhibitedProducts;
+                obj.Files = diet.Files;
+                obj.Name = diet.Name;
 
-            if (diet != null)
-                _context.Diets.Update(diet);
+                _context.Update(obj);
+            }
+
+            else
+                _context.Add(diet);
+
             _context.SaveChanges();
 
             return diet;
         }
 
-        public Diet? Delete(int? id)
+        public void Delete(int? id)
         {
             Diet? diet = _context
                 .Diets
@@ -32,18 +43,15 @@ namespace DieteticConsultationAPI.Repositories
 
             _context.Diets.Remove(diet);
             _context.SaveChanges();
-
-            return diet;
         }
 
-        public IEnumerable<Diet>? GetAll() => _context
+        public IEnumerable<Diet>? GetAllDietsWithPatientsAndFiles() => _context
             .Diets
             .Include(d => d.Patient)
             .Include(d => d.Files)?
             .ToList();
 
-
-        public Diet? GetById(int? id) => _context
+        public Diet? GetDietWithPatientAndFiles(int? id) => _context
             .Diets
             .Include(d => d.Patient)
             .Include(d => d.Files)?

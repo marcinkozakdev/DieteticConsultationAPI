@@ -1,5 +1,4 @@
 ﻿using DieteticConsultationAPI.Entities;
-using System.ComponentModel.DataAnnotations;
 
 namespace DieteticConsultationAPI.Models
 {

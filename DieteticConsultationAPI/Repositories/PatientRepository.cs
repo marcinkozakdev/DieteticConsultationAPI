@@ -17,11 +17,24 @@ namespace DieteticConsultationAPI.Repositories
 
         public Patient? AddOrUpdate(Patient patient)
         {
-            _context.Patients.Add(patient);
-            _context.SaveChanges();
+            if (_context.Patients.FirstOrDefault(d => d.Id.Equals(patient.Id)) is { } obj)
+            {
+                obj.FirstName = patient.FirstName;
+                obj.LastName = patient.LastName;
+                obj.ContactNumber = patient.ContactNumber;
+                obj.ContactEmail = patient.ContactEmail;
+                obj.Age = patient.Age;
+                obj.Weight = patient.Weight;
+                obj.Height = patient.Height;
+                obj.Sex = patient.Sex;
+                obj.Diet=patient.Diet;
 
-            if (patient != null)
-                _context.Patients.Update(patient);
+                _context.Update(obj);
+            }
+
+            else
+                _context.Patients.Add(patient);
+
             _context.SaveChanges();
 
             return patient;
@@ -37,17 +50,16 @@ namespace DieteticConsultationAPI.Repositories
             _context.SaveChanges();
         }
 
-        public IQueryable<Patient> GetAll(PatientQuery query) => _context
+        public IQueryable<Patient> GetAllPatientsWithDiet(PatientQuery query) => _context
         .Patients
         .Include(p => p.Diet)
         .Where(r => query.SearchPhrase == null
                                 || r.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
                                 || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()));
 
-        public Patient? GetById(int? id) => _context
+        public Patient? GetPatientWithDiet(int? id) => _context
             .Patients
             .Include(p => p.Diet)
             .FirstOrDefault(p => p.Id == id);
-
     }
 }
