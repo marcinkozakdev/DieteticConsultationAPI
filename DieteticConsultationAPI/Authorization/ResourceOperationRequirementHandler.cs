@@ -23,7 +23,7 @@ namespace DieteticConsultationAPI.Authorization
             requirement.ResourceOperation == ResourceOperation.Read
             || requirement.ResourceOperation == ResourceOperation.Create;
 
-        static bool IsPatientId(int? createdById, string? userId) => int.TryParse(userId, out var result) && createdById is not null && createdById == result;
+        private static bool IsPatientId(int? createdById, string? userId) => int.TryParse(userId, out var result) && createdById is not null && createdById == result;
     }
 }
 

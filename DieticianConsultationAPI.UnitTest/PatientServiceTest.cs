@@ -1,4 +1,5 @@
-﻿using DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Authorization;
+using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Models.Pagination;
@@ -7,7 +8,9 @@ using DieteticConsultationAPI.Services;
 using DieteticConsultationAPI.Services.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using Moq;
+using System.Security.Claims;
 using Xunit;
 
 namespace DieteticConsultationAPI.UnitTest
@@ -64,7 +67,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void GetPatient_PatientFound_ReturnPatient()
+        public void GetPatient_PatientFoundAndAuthorizationSuccess_ReturnPatient()
         {
             // arrange
             int id = 1;
@@ -74,6 +77,13 @@ namespace DieteticConsultationAPI.UnitTest
                 .Setup(x => x.GetPatientWithDiet(id))
                 .Returns(patient);
 
+            _authorizationServiceMock
+                .Setup(x => x.AuthorizeAsync(
+                    It.IsAny<ClaimsPrincipal>(),
+                    It.IsAny<object>(),
+                    It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Success);
+
             // act
             var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
@@ -81,6 +91,33 @@ namespace DieteticConsultationAPI.UnitTest
 
             // assert
             result.FirstName.Should().NotBe(null);
+        }
+
+        [Fact]
+        public void GetPatient_PatientFoundAndAuthorizationFailed_ReturnForbidException()
+        {
+            // arrange
+            int id = 1;
+            var patient = SamplePatient();
+
+            _patientRepositoryMock
+                .Setup(x => x.GetPatientWithDiet(id))
+                .Returns(patient);
+
+            _authorizationServiceMock
+                .Setup(x => x.AuthorizeAsync(
+                    It.IsAny<ClaimsPrincipal>(),
+                    It.IsAny<object>(),
+                    It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Failed);
+
+            // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
+            Action result = () => _sut.GetPatient(patient.Id);
+
+            // assert
+            Assert.Throws<ForbidException>(result);
         }
 
         [Fact]
@@ -135,7 +172,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void UpdatePatient_PatientFound_ReturnPatient()
+        public void UpdatePatient_PatientFoundAndAuthorizationSuccess_ReturnPatient()
         {
             // arrange
             int id = 1;
@@ -157,6 +194,13 @@ namespace DieteticConsultationAPI.UnitTest
                 .Setup(x => x.GetPatientWithDiet(id))
                 .Returns(patient);
 
+            _authorizationServiceMock
+                .Setup(x => x.AuthorizeAsync(
+                    It.IsAny<ClaimsPrincipal>(),
+                    It.IsAny<object>(),
+                    It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Success);
+
             _patientRepositoryMock
                 .Setup(x => x.AddOrUpdate(It.IsAny<Patient>()))
                 .Returns(patient);
@@ -170,6 +214,49 @@ namespace DieteticConsultationAPI.UnitTest
             Assert.Equal(65, updatePatient.Weight);
             Assert.Equal(175, updatePatient.Height);
             Assert.Equal(29, updatePatient.Age);
+        }
+
+        [Fact]
+        public void UpdatePatient_PatientFoundAndAuthorizationFailed_ReturnForbidException()
+        {
+            // arrange
+            int id = 1;
+            var patient = SamplePatient();
+            var updatePatient = new UpdatePatientDto()
+
+            {
+                FirstName = "Marcin",
+                LastName = "Kozak",
+                ContactEmail = "marcinkozak@test.com",
+                ContactNumber = "999888777",
+                Sex = "Male",
+                Weight = 65,
+                Height = 175,
+                Age = 29,
+            };
+
+            _patientRepositoryMock
+                .Setup(x => x.GetPatientWithDiet(id))
+                .Returns(patient);
+
+            _authorizationServiceMock
+                .Setup(x => x.AuthorizeAsync(
+                    It.IsAny<ClaimsPrincipal>(),
+                    It.IsAny<object>(),
+                    It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Failed);
+
+            _patientRepositoryMock
+                .Setup(x => x.AddOrUpdate(It.IsAny<Patient>()))
+                .Returns(patient);
+
+            // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
+            Action result = () => _sut.UpdatePatient(updatePatient, patient.Id);
+
+            // assert
+            Assert.Throws<ForbidException>(result);
         }
 
         [Fact]
@@ -208,8 +295,9 @@ namespace DieteticConsultationAPI.UnitTest
             Assert.Throws<NotFoundException>(result);
         }
 
+
         [Fact]
-        public void DeletePatient_PatientFound_ReturnNull()
+        public void DeletePatient_PatientFoundAndAuthorizationSuccess_ReturnNull()
         {
             // arrange
             int id = 1;
@@ -218,6 +306,14 @@ namespace DieteticConsultationAPI.UnitTest
             _patientRepositoryMock
                 .Setup(x => x.GetPatientWithDiet(id))
                 .Returns(patient);
+
+            _authorizationServiceMock
+                .Setup(x => x.AuthorizeAsync(
+                    It.IsAny<ClaimsPrincipal>(),
+                    It.IsAny<object>(),
+                    It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Success);
+
             _patientRepositoryMock
                 .Setup(x => x.Delete(It.IsAny<int>()));
 
@@ -229,6 +325,36 @@ namespace DieteticConsultationAPI.UnitTest
             // assert
             _patientRepositoryMock
                 .Verify(x => x.Delete(patient.Id), Times.Once);
+        }
+
+        [Fact]
+        public void DeletePatient_PatientFoundAndAuthorizationFailed_ReturnForbidException()
+        {
+            // arrange
+            int id = 1;
+            var patient = SamplePatient();
+
+            _patientRepositoryMock
+                .Setup(x => x.GetPatientWithDiet(id))
+                .Returns(patient);
+
+            _authorizationServiceMock
+                .Setup(x => x.AuthorizeAsync(
+                    It.IsAny<ClaimsPrincipal>(),
+                    It.IsAny<object>(),
+                    It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Failed);
+
+            _patientRepositoryMock
+                .Setup(x => x.Delete(It.IsAny<int>()));
+
+            // act
+            var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
+
+            Action result = () => _sut.DeletePatient(patient.Id);
+
+            // assert
+            Assert.Throws<ForbidException>(result);
         }
 
         [Fact]

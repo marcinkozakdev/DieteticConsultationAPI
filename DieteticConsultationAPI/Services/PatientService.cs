@@ -99,6 +99,9 @@ namespace DieteticConsultationAPI.Services
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Read)).Result;
 
+            if (!authorizationResult.Succeeded)
+                throw new ForbidException();
+
             var patientDto = new PatientDto()
             {
                 Id = id,
@@ -122,6 +125,9 @@ namespace DieteticConsultationAPI.Services
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
 
+            if (!authorizationResult.Succeeded)
+                throw new ForbidException();
+
             patient.Id = id;
             patient.FirstName = dto.FirstName;
             patient.LastName = dto.LastName;
@@ -141,6 +147,9 @@ namespace DieteticConsultationAPI.Services
             var patient = GetPatientById(id);
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
+
+            if (!authorizationResult.Succeeded)
+                throw new ForbidException();
 
             _patientRepository.Delete(id);
         }
