@@ -8,22 +8,22 @@ namespace DieteticConsultationAPI.Authorization
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ResourceOperationRequirement requirement, Patient patient)
         {
-            if (HasAccess(requirement))
+            if (HasAccessPatient(requirement))
                 context.Succeed(requirement);
 
             var userId = context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? String.Empty;
            
-            if (IsPatientId(patient.CreatedById, userId))
+            if (IsPatient(patient.CreatedById, userId))
             context.Succeed(requirement);
 
             return Task.CompletedTask;
         }
 
-        private static bool HasAccess(ResourceOperationRequirement requirement) =>
+        private static bool HasAccessPatient(ResourceOperationRequirement requirement) =>
             requirement.ResourceOperation == ResourceOperation.Read
             || requirement.ResourceOperation == ResourceOperation.Create;
 
-        private static bool IsPatientId(int? createdById, string? userId) => int.TryParse(userId, out var result) && createdById is not null && createdById == result;
+        private static bool IsPatient(int? createdById, string? userId) => int.TryParse(userId, out var result) && createdById is not null && createdById == result;
     }
 }
 
