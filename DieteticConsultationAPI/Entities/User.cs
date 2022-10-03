@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace DieteticConsultationAPI.Entities
+﻿namespace DieteticConsultationAPI.Entities
 {
     public class User
     {

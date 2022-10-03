@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;
 
-namespace DieticianConsultationAPI.UnitTest
+namespace DieteticConsultationAPI.UnitTest
 {
     public class AccountServiceTest
     {
@@ -70,8 +70,13 @@ namespace DieticianConsultationAPI.UnitTest
             Assert.Throws<BadReguestException>(() => _sut.GenerateJwt(loginDto));
         }
 
-        [Fact]
-        public void GenerateJwt_WhenInvalidUserNameOrPasswordOrNull_ReturnBadRequestException()
+        [Theory]
+        [InlineData("test@test.com", "password1")]
+        [InlineData("testtest.com", "password123")]
+        [InlineData("test@test.com", null)]
+        [InlineData(null, "password123")]
+        [InlineData(null, null)]
+        public void GenerateJwt_WhenInvalidUserNameOrPasswordOrNull_ReturnBadRequestException(string email, string password)
         {
             // arrange
             var loginDto = new LoginDto();

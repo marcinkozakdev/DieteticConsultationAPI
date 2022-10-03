@@ -38,7 +38,7 @@ namespace DieteticConsultationAPI.Services
 
         public IEnumerable<DietDto> GetAllDiets()
         {
-            var diets = _dietRepository.GetAll();
+            var diets = _dietRepository.GetAllDietsWithPatientsAndFiles();
 
             if (diets is null)
                 throw new NotFoundException("The diet list is empty");
@@ -93,14 +93,14 @@ namespace DieteticConsultationAPI.Services
         {
             _logger.LogWarning($"Diet with id: {id} DELETE action invoked");
 
-            var diet = GetDietById(id);
+            GetDietById(id);
 
             _dietRepository.Delete(id);
         }
 
         private Diet GetDietById(int id)
         {
-            var diet = _dietRepository.GetById(id);
+            var diet = _dietRepository.GetDietWithPatientAndFiles(id);
 
             if (diet == null)
                 throw new NotFoundException("Diet not found");

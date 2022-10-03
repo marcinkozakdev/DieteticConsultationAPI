@@ -8,7 +8,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace DieticianConsultationAPI.UnitTest
+namespace DieteticConsultationAPI.UnitTest
 {
     public class DietServiceTest
     {
@@ -60,7 +60,7 @@ namespace DieticianConsultationAPI.UnitTest
             };
 
             _dietRepositoryMock
-                .Setup(x => x.GetAll()).Returns(diets);
+                .Setup(x => x.GetAllDietsWithPatientsAndFiles()).Returns(diets);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
@@ -68,7 +68,7 @@ namespace DieticianConsultationAPI.UnitTest
 
             // arrange
             _dietRepositoryMock
-                .Verify(x => x.GetAll(), Times.Once());
+                .Verify(x => x.GetAllDietsWithPatientsAndFiles(), Times.Once());
 
             result.Count().Should().Be(1);
         }
@@ -80,7 +80,7 @@ namespace DieticianConsultationAPI.UnitTest
             List<Diet>? diets = null;
 
             _dietRepositoryMock
-                .Setup(x => x.GetAll()).Returns(diets);
+                .Setup(x => x.GetAllDietsWithPatientsAndFiles()).Returns(diets);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
@@ -98,7 +98,7 @@ namespace DieticianConsultationAPI.UnitTest
             var diet = SampleDiet();
 
             _dietRepositoryMock
-                .Setup(x => x.GetById(id)).Returns(diet);
+                .Setup(x => x.GetDietWithPatientAndFiles(id)).Returns(diet);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
@@ -106,7 +106,7 @@ namespace DieticianConsultationAPI.UnitTest
 
             // arrange
             _dietRepositoryMock
-                .Verify(x => x.GetById(diet.Id), Times.Once());
+                .Verify(x => x.GetDietWithPatientAndFiles(diet.Id), Times.Once());
 
             result.Name.Should().NotBe(null);
         }
@@ -119,7 +119,7 @@ namespace DieticianConsultationAPI.UnitTest
             var diet = SampleDiet();
 
             _dietRepositoryMock
-                .Setup(x => x.GetById(id)).Returns(diet);
+                .Setup(x => x.GetDietWithPatientAndFiles(id)).Returns(diet);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
@@ -146,7 +146,7 @@ namespace DieticianConsultationAPI.UnitTest
             };
 
             _dietRepositoryMock
-                .Setup(x => x.GetById(id)).Returns(diet);
+                .Setup(x => x.GetDietWithPatientAndFiles(id)).Returns(diet);
 
             _dietRepositoryMock
                 .Setup(x => x.AddOrUpdate(It.IsAny<Diet>()))
@@ -180,7 +180,7 @@ namespace DieticianConsultationAPI.UnitTest
             };
 
             _dietRepositoryMock
-                .Setup(x => x.GetById(id))
+                .Setup(x => x.GetDietWithPatientAndFiles(id))
                 .Returns(diet);
 
             _dietRepositoryMock
@@ -203,7 +203,7 @@ namespace DieticianConsultationAPI.UnitTest
             var diet = SampleDiet();
 
             _dietRepositoryMock
-                .Setup(x => x.GetById(id))
+                .Setup(x => x.GetDietWithPatientAndFiles(id))
                 .Returns(diet);
 
             _dietRepositoryMock
@@ -226,12 +226,11 @@ namespace DieticianConsultationAPI.UnitTest
             var diet = SampleDiet();
 
             _dietRepositoryMock
-                .Setup(x => x.GetById(id))
+                .Setup(x => x.GetDietWithPatientAndFiles(id))
                 .Returns(diet);
 
             _dietRepositoryMock
-                .Setup(x => x.Delete(It.IsAny<int>()))
-                .Returns(diet);
+                .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);

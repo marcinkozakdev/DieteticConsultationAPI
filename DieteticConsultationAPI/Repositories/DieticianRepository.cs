@@ -1,11 +1,7 @@
 ﻿
 using DieteticConsultationAPI.Entities;
-using DieteticConsultationAPI.Exceptions;
-using DieteticConsultationAPI.Models;
-using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DieteticConsultationAPI.Repositories
 {
@@ -26,11 +22,20 @@ namespace DieteticConsultationAPI.Repositories
 
         public Dietician? AddOrUpdate(Dietician dietician)
         {
-            _context.Dieticians.Add(dietician);
-            _context.SaveChanges();
+            if (_context.Dieticians.FirstOrDefault(d => d.Id.Equals(dietician.Id)) is { } obj)
+            {
+                obj.FirstName = dietician.FirstName;
+                obj.LastName = dietician.LastName;
+                obj.Specialization = dietician.Specialization;
+                obj.ContactNumber = dietician.ContactNumber;
+                obj.ContactEmail = dietician.ContactEmail;
 
-            if (dietician != null)
-                _context.Dieticians.Update(dietician);
+                _context.Update(obj);
+            }
+
+            else
+                _context.Add(dietician);
+
             _context.SaveChanges();
 
             return dietician;

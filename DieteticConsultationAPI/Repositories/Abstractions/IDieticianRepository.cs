@@ -1,5 +1,4 @@
 ﻿using DieteticConsultationAPI.Entities;
-using DieteticConsultationAPI.Models;
 
 namespace DieteticConsultationAPI.Repositories.Abstractions
 {

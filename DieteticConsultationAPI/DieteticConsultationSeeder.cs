@@ -1,6 +1,5 @@
 ﻿using DieteticConsultationAPI.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
 
 namespace DieteticConsultationAPI
 {

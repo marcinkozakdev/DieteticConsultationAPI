@@ -51,7 +51,7 @@ namespace DieteticConsultationAPI.Services
 
         public PagedResult<PatientDto> GetAllPatients(PatientQuery query)
         {
-            var baseQuery = _patientRepository.GetAll(query);
+            var baseQuery = _patientRepository.GetAllPatientsWithDiet(query);
 
             if(!string.IsNullOrEmpty(query.SortBy))
             {
@@ -99,6 +99,9 @@ namespace DieteticConsultationAPI.Services
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Read)).Result;
 
+            if (!authorizationResult.Succeeded)
+                throw new ForbidException();
+
             var patientDto = new PatientDto()
             {
                 Id = id,
@@ -122,6 +125,9 @@ namespace DieteticConsultationAPI.Services
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
 
+            if (!authorizationResult.Succeeded)
+                throw new ForbidException();
+
             patient.Id = id;
             patient.FirstName = dto.FirstName;
             patient.LastName = dto.LastName;
@@ -142,6 +148,9 @@ namespace DieteticConsultationAPI.Services
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
 
+            if (!authorizationResult.Succeeded)
+                throw new ForbidException();
+
             _patientRepository.Delete(id);
         }
 
@@ -160,7 +169,7 @@ namespace DieteticConsultationAPI.Services
 
         private Patient GetPatientById(int id)
         {
-            var patient = _patientRepository.GetById(id);
+            var patient = _patientRepository.GetPatientWithDiet(id);
 
             if (patient is null)
                 throw new NotFoundException("Patient not found");

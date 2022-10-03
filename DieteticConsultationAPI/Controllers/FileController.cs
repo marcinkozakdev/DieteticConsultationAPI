@@ -1,5 +1,4 @@
-﻿using DieteticConsultationAPI.Entities;
-using DieteticConsultationAPI.Services.Interfaces;
+﻿using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +16,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Admin,Dietician")]
+        [Authorize(Roles = "Admin,Dietician")]
         public IActionResult Upload(IFormFile file)
         {
             _fileService.UploadFile(file);
@@ -26,7 +25,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize(Roles = "Admin,Dietician,Patient")]
+        [Authorize(Roles = "Admin,Dietician,Patient")]
         public IActionResult Download(int id)
         {
             var file =  _fileService.DownloadFile(id);
@@ -35,7 +34,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-       // [Authorize(Roles = "Admin,Dietician")]
+        [Authorize(Roles = "Admin,Dietician")]
         public IActionResult Delete(int id)
         {
             _fileService.DeleteFile(id);
