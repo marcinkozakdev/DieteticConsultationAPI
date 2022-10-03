@@ -18,7 +18,7 @@ namespace DieteticConsultationAPI.Services
         public void UploadFile(IFormFile file)
         {
             if (file is null || file.Length == 0)
-                throw new NotFoundException("File not found");
+                NotFoundHttpException.For("File not found");
 
             using var memoryStream = new MemoryStream();
 
@@ -54,7 +54,7 @@ namespace DieteticConsultationAPI.Services
         public void DeleteFile(int id)
         {
             var file = GetFileById(id);
-            
+
             _fileRepository.Delete(file.Id);
         }
 
@@ -63,10 +63,9 @@ namespace DieteticConsultationAPI.Services
             var file = _fileRepository.GetById(id);
 
             if (file is null)
-                throw new NotFoundException("File not found");
+                throw new NotFoundHttpException("File not found");
 
             return file;
         }
     }
 }
-

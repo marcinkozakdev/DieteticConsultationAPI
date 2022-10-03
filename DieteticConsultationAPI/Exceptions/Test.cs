@@ -1,4 +1,4 @@
-﻿namespace MGOS.Infrastructure.Storage.Redis;
+﻿namespace DieteticConsultationAPI.Exceptions;
 
 public class StorageException : Exception
 {

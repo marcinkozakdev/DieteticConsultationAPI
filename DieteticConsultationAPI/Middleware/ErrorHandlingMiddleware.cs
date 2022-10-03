@@ -26,13 +26,13 @@ namespace DieteticConsultationAPI.Middleware
             {
                 await BuildResponse(context, badRequestException, HttpStatusCode.BadRequest);
             }
-            catch (NotFoundException notFoundException)
+            catch (NotFoundHttpException notFoundException)
             {
                 await BuildResponse(context, notFoundException, HttpStatusCode.NotFound);
             }
-            catch (CommonException ex)
+            catch (CommonHttpException ex)
             {
-                await BuildResponse(context, ex, HttpStatusCode.InternalServerError);
+                await BuildResponse(context, ex, ex.Code);
             }
             catch (Exception)
             {

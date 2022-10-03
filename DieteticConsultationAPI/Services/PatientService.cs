@@ -172,7 +172,7 @@ namespace DieteticConsultationAPI.Services
             var patient = _patientRepository.GetPatientWithDiet(id);
 
             if (patient is null)
-                throw new NotFoundException("Patient not found");
+                throw new NotFoundHttpException("Patient not found");
 
             return patient;
         }
