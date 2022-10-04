@@ -18,21 +18,21 @@ namespace DieteticConsultationAPI.Middleware
             {
                 await next.Invoke(context);
             }
-            catch (ForbidException)
+            catch (ForbidHttpException forbidException)
             {
-                context.Response.StatusCode = 403;
+                await BuildResponse(context, forbidException, HttpStatusCode.BadRequest);
             }
-            catch (BadReguestException badRequestException)
+            catch (BadRequestHttpException badRequestException)
             {
                 await BuildResponse(context, badRequestException, HttpStatusCode.BadRequest);
             }
-            catch (NotFoundException notFoundException)
+            catch (NotFoundHttpException notFoundException)
             {
                 await BuildResponse(context, notFoundException, HttpStatusCode.NotFound);
             }
-            catch (CommonException ex)
+            catch (CommonHttpException ex)
             {
-                await BuildResponse(context, ex, HttpStatusCode.InternalServerError);
+                await BuildResponse(context, ex, ex.Code);
             }
             catch (Exception)
             {

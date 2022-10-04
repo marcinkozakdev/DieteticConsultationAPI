@@ -79,7 +79,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.GetDietician(dietician.Id);
 
             // assert
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
         [Fact]
@@ -118,7 +118,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.GetDieticianById(dietician.Id);
 
             // assert
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
         [Fact]
@@ -214,7 +214,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.UpdateDietician(updateDietician, dietician.Id);
 
             // assert
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
         [Fact]
@@ -259,7 +259,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.DeleteDietician(dietician.Id);
 
             // assert
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
         private Dietician SampleDietician()

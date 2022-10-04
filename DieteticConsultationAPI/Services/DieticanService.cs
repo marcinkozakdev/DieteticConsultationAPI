@@ -38,7 +38,7 @@ namespace DieteticConsultationAPI.Services
             var dieticians = _dieticianRepository.GetAll();
 
             if (dieticians is null)
-                throw new NotFoundException("The diet list is empty");
+                NotFoundHttpException.For("The diet list is empty");
 
             var dieticiansDtos = dieticians.Select(d => new DieticianDto()
             {
@@ -99,7 +99,7 @@ namespace DieteticConsultationAPI.Services
             var dietician = _dieticianRepository.GetById(id);
 
             if (dietician is null)
-                throw new NotFoundException("Dietician not found");
+                NotFoundHttpException.For("Dietician not found");
 
             return dietician;
         }

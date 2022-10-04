@@ -1,6 +1,9 @@
 using DieteticConsultationAPI;
 using FluentValidation.AspNetCore;
 using NLog.Web;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("DieteticConsultationAPI.UnitTest")]
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,3 +38,4 @@ app.UseEndpoints(endpoints => { endpoints.MapControllers();});
 app.Run();
 
 public partial class Program { }
+
