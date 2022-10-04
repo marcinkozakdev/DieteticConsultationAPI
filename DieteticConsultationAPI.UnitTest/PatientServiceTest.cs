@@ -117,7 +117,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.GetPatient(patient.Id);
 
             // assert
-            Assert.Throws<ForbidException>(result);
+            Assert.Throws<ForbidHttpException>(result);
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.GetPatient(patient.Id);
 
             // assert
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
         [Fact]
@@ -256,7 +256,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.UpdatePatient(updatePatient, patient.Id);
 
             // assert
-            Assert.Throws<ForbidException>(result);
+            Assert.Throws<ForbidHttpException>(result);
         }
 
         [Fact]
@@ -292,7 +292,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.UpdatePatient(updatePatient, patient.Id);
 
             // assert
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
 
@@ -354,7 +354,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.DeletePatient(patient.Id);
 
             // assert
-            Assert.Throws<ForbidException>(result);
+            Assert.Throws<ForbidHttpException>(result);
         }
 
         [Fact]
@@ -377,7 +377,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.DeletePatient(patient.Id);
 
             // assert
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
         private Patient SamplePatient()

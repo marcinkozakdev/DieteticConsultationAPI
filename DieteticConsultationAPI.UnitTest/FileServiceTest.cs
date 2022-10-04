@@ -28,7 +28,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.UploadFile(file);
 
             // assert
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.DownloadFile(file.Id);
 
             // arrange
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace DieteticConsultationAPI.UnitTest
             Action result = () => _sut.DeleteFile(file.Id);
 
             // assert
-            Assert.Throws<NotFoundException>(result);
+            Assert.Throws<NotFoundHttpException>(result);
         }
 
         private FileModel SampleFile()

@@ -67,7 +67,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
 
             //assert
-            Assert.Throws<BadReguestException>(() => _sut.GenerateJwt(loginDto));
+            Assert.Throws<BadRequestHttpException>(() => _sut.GenerateJwt(loginDto));
         }
 
         [Theory]
@@ -97,7 +97,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
 
             //assert
-            Assert.Throws<BadReguestException>(() => _sut.GenerateJwt(loginDto));
+            Assert.Throws<BadRequestHttpException>(() => _sut.GenerateJwt(loginDto));
         }
     }
 }

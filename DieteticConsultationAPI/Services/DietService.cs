@@ -41,7 +41,7 @@ namespace DieteticConsultationAPI.Services
             var diets = _dietRepository.GetAllDietsWithPatientsAndFiles();
 
             if (diets is null)
-                throw new NotFoundException("The diet list is empty");
+                NotFoundHttpException.For("The diet list is empty");
 
             var dietsDtos = diets.Select(d => new DietDto()
             {
@@ -103,7 +103,7 @@ namespace DieteticConsultationAPI.Services
             var diet = _dietRepository.GetDietWithPatientAndFiles(id);
 
             if (diet == null)
-                throw new NotFoundException("Diet not found");
+                NotFoundHttpException.For("Diet not found");
 
             return diet;
         }
