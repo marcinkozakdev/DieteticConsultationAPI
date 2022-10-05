@@ -5,8 +5,8 @@ namespace DieteticConsultationAPI.Services.Interfaces
 {
     public interface IFileService
     {
-        void UploadFile(IFormFile formFile);
-        FileModelDto DownloadFile(int id);
-        void DeleteFile(int id);
+        Task UploadFile(IFormFile formFile);
+        Task<FileModelDto> DownloadFile(int id);
+        Task DeleteFile(int id);
     }
 }

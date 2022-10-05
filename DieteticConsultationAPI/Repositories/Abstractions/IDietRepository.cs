@@ -4,9 +4,9 @@ namespace DieteticConsultationAPI.Repositories.Abstractions
 {
     public interface IDietRepository
     {
-        IEnumerable<Diet>? GetAllDietsWithPatientsAndFiles();
-        Diet? GetDietWithPatientAndFiles(int? id);
-        Diet? AddOrUpdate(Diet? diet);
-        void Delete(int? id);
+        Task<IEnumerable<Diet>> GetAllDietsWithPatientsAndFiles();
+        Task<Diet> GetDietWithPatientAndFiles(int id);
+        Task<Diet> AddOrUpdate(Diet diet);
+        Task Delete(int id);
     }
 }

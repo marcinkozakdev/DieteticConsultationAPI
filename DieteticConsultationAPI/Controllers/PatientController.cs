@@ -20,47 +20,47 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Dietician,Patient")]
-        public ActionResult Create([FromBody] CreatePatientDto dto)
+        public async Task<ActionResult> Create([FromBody] CreatePatientDto dto)
         {
             var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-            var patientId = _patientService.CreatePatient(dto);
+            var patientId = await _patientService.CreatePatient(dto);
 
             return Created(patientId.ToString(), null);
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin,Dietician")]
-        public IActionResult GetAll([FromQuery]PatientQuery query)
+        public async Task<IActionResult> GetAll([FromQuery]PatientQuery query)
         {
-            var patients = _patientService.GetAllPatients(query);
+            var patients = await _patientService.GetAllPatients(query);
 
             return Ok(patients);
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Dietician,Patient")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var patient = _patientService.GetPatient(id);
+            var patient = await _patientService.GetPatient(id);
 
             return Ok(patient);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Dietician,Patient")]
-        public IActionResult Update([FromBody] UpdatePatientDto dto, int id)
+        public async Task<IActionResult> Update([FromBody] UpdatePatientDto dto, int id)
         {
-            _patientService.UpdatePatient(dto, id);
+            await _patientService.UpdatePatient(dto, id);
 
             return Ok();
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Dietician,Patient")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _patientService.DeletePatient(id);
+            await _patientService.DeletePatient(id);
 
             return NoContent();
         }

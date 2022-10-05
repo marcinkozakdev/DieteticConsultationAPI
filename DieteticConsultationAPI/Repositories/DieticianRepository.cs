@@ -14,15 +14,15 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-        public IEnumerable<Dietician> GetAll() =>
-            _context.Dieticians.Include(d => d.Patients);
+        public async Task<IEnumerable<Dietician>> GetAll() =>
+            await _context.Dieticians.Include(d => d.Patients).ToListAsync();
 
-        public Dietician? GetById(int? id) =>
-            _context.Dieticians.FirstOrDefault(d => d.Id == id);
+        public async Task<Dietician> GetById(int? id) =>
+            await _context.Dieticians.FirstOrDefaultAsync(d => d.Id == id);
 
-        public Dietician? AddOrUpdate(Dietician dietician)
+        public async Task<Dietician> AddOrUpdate(Dietician dietician)
         {
-            if (_context.Dieticians.FirstOrDefault(d => d.Id.Equals(dietician.Id)) is { } obj)
+            if (await _context.Dieticians.FirstOrDefaultAsync(d => d.Id.Equals(dietician.Id)) is { } obj)
             {
                 obj.FirstName = dietician.FirstName;
                 obj.LastName = dietician.LastName;
@@ -34,18 +34,18 @@ namespace DieteticConsultationAPI.Repositories
             }
 
             else
-                _context.Add(dietician);
+                await _context.AddAsync(dietician);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return dietician;
         }
 
-        public void Delete(int? id)
+        public async Task Delete(int? id)
         {
-            Dietician? dietician = _context.Dieticians.FirstOrDefault(d => d.Id == id);
+            Dietician dietician = await _context.Dieticians.FirstOrDefaultAsync(d => d.Id == id);
             _context.Dieticians.Remove(dietician);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

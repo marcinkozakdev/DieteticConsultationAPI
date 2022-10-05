@@ -12,25 +12,26 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-        public void Delete(int? id)
+        public async Task Delete(int? id)
         {
-            FileModel? file = _context
+            FileModel file = _context
                 .Files
                 .FirstOrDefault(d => d.Id == id);
 
             _context.Files.Remove(file);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public FileModel? GetById(int? id) => _context
+        public async Task<FileModel> GetById(int? id) => await Task.FromResult(_context
             .Files
-            .FirstOrDefault(d => d.Id == id);
+            .FirstOrDefault(d => d.Id == id));
 
 
-        public void Upload(FileModel file)
+        public async Task Upload(FileModel file)
         {
             _context.Files.Add(file);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }
+        

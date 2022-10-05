@@ -17,27 +17,27 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Dietician")]
-        public IActionResult Upload(IFormFile file)
+        public async Task<IActionResult> Upload(IFormFile file)
         {
-            _fileService.UploadFile(file);
+            await _fileService.UploadFile(file);
 
             return Ok();
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Dietician,Patient")]
-        public IActionResult Download(int id)
+        public async Task<IActionResult> Download(int id)
         {
-            var file =  _fileService.DownloadFile(id);
+            var file =  await _fileService.DownloadFile(id);
 
             return File(file.Attachment, file.FileType, file.FileName);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Dietician")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _fileService.DeleteFile(id);
+            await _fileService.DeleteFile(id);
 
             return NoContent();
         }

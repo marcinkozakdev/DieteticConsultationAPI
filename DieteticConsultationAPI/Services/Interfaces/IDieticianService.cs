@@ -7,10 +7,10 @@ namespace DieteticConsultationAPI.Services.Interfaces
 {
     public interface IDieticianService
     {
-        int CreateDietician(CreateDieticianDto dto);
-        IEnumerable<DieticianDto> GetAllDieticians();
-        DieticianDto GetDietician(int id);
-        void UpdateDietician(UpdateDieticianDto dto, int id);
-        void DeleteDietician(int id);
+        Task<int> CreateDietician(CreateDieticianDto dto);
+        Task<IEnumerable<DieticianDto>> GetAllDieticians();
+        Task<DieticianDto> GetDietician(int id);
+        Task UpdateDietician(UpdateDieticianDto dto, int id);
+        Task DeleteDietician(int id);
     }
 }

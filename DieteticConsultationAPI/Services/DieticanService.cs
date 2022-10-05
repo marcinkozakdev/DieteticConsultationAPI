@@ -17,7 +17,7 @@ namespace DieteticConsultationAPI.Services
             _logger = logger;
             _dieticianRepository = dieticianRepository;
         }
-        public int CreateDietician(CreateDieticianDto dto)
+        public async Task<int> CreateDietician(CreateDieticianDto dto)
         {
             var dietician = new Dietician()
             {
@@ -28,14 +28,14 @@ namespace DieteticConsultationAPI.Services
                 ContactNumber = dto.ContactNumber
             };
 
-            _dieticianRepository.AddOrUpdate(dietician);
+            await _dieticianRepository.AddOrUpdate(dietician);
 
             return dietician.Id;
         }
 
-        public IEnumerable<DieticianDto> GetAllDieticians()
+        public async Task<IEnumerable<DieticianDto>> GetAllDieticians()
         {
-            var dieticians = _dieticianRepository.GetAll();
+            var dieticians = await _dieticianRepository.GetAll();
 
             if (dieticians is null)
                 throw new NotFoundException("The diet list is empty");
@@ -54,9 +54,9 @@ namespace DieteticConsultationAPI.Services
             return dieticiansDtos;
         }
 
-        public DieticianDto GetDietician(int id)
+        public async Task<DieticianDto> GetDietician(int id)
         {
-            var dietician = GetDieticianById(id);
+            var dietician = await GetDieticianById(id);
 
             var dieticianDto = new DieticianDto()
             {
@@ -72,9 +72,9 @@ namespace DieteticConsultationAPI.Services
             return dieticianDto;
         }
 
-        public void UpdateDietician(UpdateDieticianDto dto, int id)
+        public async Task UpdateDietician(UpdateDieticianDto dto, int id)
         {
-            var dietician = GetDieticianById(id);
+            var dietician = await GetDieticianById(id);
 
             dietician.FirstName = dto.FirstName;
             dietician.LastName = dto.LastName;
@@ -82,21 +82,21 @@ namespace DieteticConsultationAPI.Services
             dietician.ContactEmail = dto.ContactEmail;
             dietician.ContactNumber = dto.ContactNumber;
 
-            _dieticianRepository.AddOrUpdate(dietician);
+            await _dieticianRepository.AddOrUpdate(dietician);
         }
 
-        public void DeleteDietician(int id)
+        public async Task DeleteDietician(int id)
         {
             _logger.LogWarning($"Dietician with id: {id} DELETE action invoked");
 
-            var dietician = GetDieticianById(id);
+            var dietician = await GetDieticianById(id);
 
-            _dieticianRepository.Delete(dietician.Id);
+            await _dieticianRepository.Delete(dietician.Id);
         }
 
-        public Dietician GetDieticianById(int id)
+        public async Task<Dietician> GetDieticianById(int id)
         {
-            var dietician = _dieticianRepository.GetById(id);
+            var dietician = await _dieticianRepository.GetById(id);
 
             if (dietician is null)
                 throw new NotFoundException("Dietician not found");
@@ -119,7 +119,7 @@ namespace DieteticConsultationAPI.Services
                 Diet = Map(patient.Diet)
             };
 
-        private static DietDto? Map(Diet? diet) =>
+        private static DietDto Map(Diet diet) =>
             diet is null
             ? null
             : new DietDto

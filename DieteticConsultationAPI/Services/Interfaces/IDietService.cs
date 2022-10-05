@@ -4,10 +4,10 @@ namespace DieteticConsultationAPI.Services.Interfaces
 {
     public interface IDietService
     {
-        int CreateDiet(CreateDietDto dto);
-        IEnumerable<DietDto> GetAllDiets();
-        DietDto GetDiet(int id);
-        void DeleteDiet(int id);
-        void UpdateDiet(UpdateDietDto dto, int id);
+        Task<int> CreateDiet(CreateDietDto dto);
+        Task<IEnumerable<DietDto>> GetAllDiets();
+        Task<DietDto> GetDiet(int id);
+        Task DeleteDiet(int id);
+        Task UpdateDiet(UpdateDietDto dto, int id);
     }
 }

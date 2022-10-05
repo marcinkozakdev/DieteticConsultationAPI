@@ -15,7 +15,7 @@ namespace DieteticConsultationAPI.Services
             _fileRepository = fileRepository;
         }
 
-        public void UploadFile(IFormFile file)
+        public async Task UploadFile(IFormFile file)
         {
             if (file is null || file.Length == 0)
                 throw new NotFoundException("File not found");
@@ -32,12 +32,12 @@ namespace DieteticConsultationAPI.Services
                 Date = DateTime.UtcNow,
             };
 
-            _fileRepository.Upload(newFile);
+            await _fileRepository.Upload(newFile);
         }
 
-        public FileModelDto DownloadFile(int id)
+        public async Task<FileModelDto> DownloadFile(int id)
         {
-            var file = GetFileById(id);
+            var file = await GetFileById(id);
 
             var fileDto = new FileModelDto()
             {
@@ -51,16 +51,16 @@ namespace DieteticConsultationAPI.Services
             return fileDto;
         }
 
-        public void DeleteFile(int id)
+        public async Task DeleteFile(int id)
         {
-            var file = GetFileById(id);
+            var file = await GetFileById(id);
             
-            _fileRepository.Delete(file.Id);
+            await _fileRepository.Delete(file.Id);
         }
 
-        private FileModel GetFileById(int id)
+        private async Task<FileModel> GetFileById(int id)
         {
-            var file = _fileRepository.GetById(id);
+            var file = await _fileRepository.GetById(id);
 
             if (file is null)
                 throw new NotFoundException("File not found");
