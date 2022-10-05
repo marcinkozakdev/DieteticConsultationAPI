@@ -5,7 +5,9 @@ using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace DieteticConsultationAPI.UnitTest
@@ -24,7 +26,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void RegisterUser_CorrectDataProvider_ReturnNewUser()
+        public async Task RegisterUser_CorrectDataProvider_ReturnNewUser()
         {
             // arrange
             var newUser = new RegisterUserDto()
@@ -43,7 +45,7 @@ namespace DieteticConsultationAPI.UnitTest
 
             //act
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
-            _sut.RegisterUser(newUser);
+            await _sut.RegisterUser(newUser);
 
             //assert
             _accountRepositoryMock
@@ -53,7 +55,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void GenerateJwt_WhenNull_ReturnBadRequestException()
+        public async Task GenerateJwt_WhenNull_ReturnBadRequestException()
         {
             // arrange
             var loginDto = new LoginDto();
@@ -61,13 +63,13 @@ namespace DieteticConsultationAPI.UnitTest
             _accountRepositoryMock
                 .Setup(x => x.Login(
                     It.IsAny<LoginDto>()))
-                .Returns((User?)null);
+                .ReturnsAsync((User?)null);
 
             //act
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
 
             //assert
-            Assert.Throws<BadReguestException>(() => _sut.GenerateJwt(loginDto));
+            await Assert.ThrowsAsync<BadReguestException>(() => _sut.GenerateJwt(loginDto));
         }
 
         [Theory]
@@ -76,15 +78,19 @@ namespace DieteticConsultationAPI.UnitTest
         [InlineData("test@test.com", null)]
         [InlineData(null, "password123")]
         [InlineData(null, null)]
-        public void GenerateJwt_WhenInvalidUserNameOrPasswordOrNull_ReturnBadRequestException(string email, string password)
+        public async Task GenerateJwt_WhenInvalidUserNameOrPasswordOrNull_ReturnBadRequestException(string email, string password)
         {
             // arrange
-            var loginDto = new LoginDto();
+            var loginDto = new LoginDto()
+            {
+                Email = email,
+                Password = password,
+            };
 
             _accountRepositoryMock
                 .Setup(x => x.Login(
                     It.IsAny<LoginDto>()))
-                .Returns(new User());
+                .ReturnsAsync(new User());
 
             _passwordHasherMock
                 .Setup(x => x.VerifyHashedPassword(
@@ -97,7 +103,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
 
             //assert
-            Assert.Throws<BadReguestException>(() => _sut.GenerateJwt(loginDto));
+            await Assert.ThrowsAsync<BadReguestException>(() => _sut.GenerateJwt(loginDto));
         }
     }
 }
