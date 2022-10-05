@@ -27,7 +27,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new FileService(_fileRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundException>(() => _sut.UploadFile(file));
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.UploadFile(file));
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new FileService(_fileRepositoryMock.Object);
 
             // arrange
-            await Assert.ThrowsAsync<NotFoundException>(() => _sut.DownloadFile(file.Id));
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.DownloadFile(file.Id));
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new FileService(_fileRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundException>(()=> _sut.DeleteFile(file.Id));
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.DeleteFile(file.Id));
         }
 
         private FileModel SampleFile()

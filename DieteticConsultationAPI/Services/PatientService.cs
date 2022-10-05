@@ -53,7 +53,7 @@ namespace DieteticConsultationAPI.Services
         {
             var baseQuery = await _patientRepository.GetAllPatientsWithDiet(query);
 
-            if(!string.IsNullOrEmpty(query.SortBy))
+            if (!string.IsNullOrEmpty(query.SortBy))
             {
                 var columnsSelector = new Dictionary<string, Expression<Func<Patient, object>>>
                 {
@@ -63,7 +63,7 @@ namespace DieteticConsultationAPI.Services
 
                 var selectedColumn = columnsSelector[query.SortBy];
 
-                baseQuery = query.SortDirection == SortDirection.ASC 
+                baseQuery = query.SortDirection == SortDirection.ASC
                     ? baseQuery.OrderBy(selectedColumn)
                     : baseQuery.OrderByDescending(selectedColumn);
             }
@@ -89,7 +89,7 @@ namespace DieteticConsultationAPI.Services
                 Diet = Map(p.Diet)
             }).ToList();
 
-            var result = new PagedResult<PatientDto>(patientsDtos, totaItemsCount , query.PageSize, query.PageNumber);
+            var result = new PagedResult<PatientDto>(patientsDtos, totaItemsCount, query.PageSize, query.PageNumber);
 
             return result;
         }
@@ -100,7 +100,7 @@ namespace DieteticConsultationAPI.Services
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Read)).Result;
 
             if (!authorizationResult.Succeeded)
-                throw new ForbidException();
+                ForbidHttpException.For("Authorization failed");
 
             var patientDto = new PatientDto()
             {
@@ -126,7 +126,7 @@ namespace DieteticConsultationAPI.Services
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
 
             if (!authorizationResult.Succeeded)
-                throw new ForbidException();
+                ForbidHttpException.For("Authorization failed");
 
             patient.Id = id;
             patient.FirstName = dto.FirstName;
@@ -149,7 +149,7 @@ namespace DieteticConsultationAPI.Services
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
 
             if (!authorizationResult.Succeeded)
-                throw new ForbidException();
+                ForbidHttpException.For("Authorization failed");
 
             await _patientRepository.Delete(id);
         }
@@ -172,7 +172,7 @@ namespace DieteticConsultationAPI.Services
             var patient = await _patientRepository.GetPatientWithDiet(id);
 
             if (patient is null)
-                throw new NotFoundException("Patient not found");
+                NotFoundHttpException.For("Patient not found");
 
             return patient;
         }

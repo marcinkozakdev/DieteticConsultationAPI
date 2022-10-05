@@ -115,7 +115,8 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<ForbidException>(() => _sut.GetPatient(patient.Id));
+
+            await Assert.ThrowsAsync<ForbidHttpException>(() => _sut.GetPatient(patient.Id));
         }
 
         [Fact]
@@ -133,7 +134,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundException>(()=> _sut.GetPatient(patient.Id));
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.GetPatient(patient.Id));
         }
 
         [Fact]
@@ -250,7 +251,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<ForbidException>(() => _sut.UpdatePatient(updatePatient, patient.Id));
+            await Assert.ThrowsAsync<ForbidHttpException>(() => _sut.UpdatePatient(updatePatient, patient.Id));
         }
 
         [Fact]
@@ -284,7 +285,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundException>(() => _sut.UpdatePatient(updatePatient, patient.Id));
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.UpdatePatient(updatePatient, patient.Id));
         }
 
 
@@ -344,7 +345,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<ForbidException>(()=> _sut.DeletePatient(patient.Id));
+            await Assert.ThrowsAsync<ForbidHttpException>(()=> _sut.DeletePatient(patient.Id));
         }
 
         [Fact]
@@ -365,7 +366,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new PatientService(_loggerMock.Object, _authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundException>(()=> _sut.DeletePatient(patient.Id));
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.DeletePatient(patient.Id));
         }
 
         private Patient SamplePatient()

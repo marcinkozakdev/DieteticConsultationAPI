@@ -86,7 +86,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
 
             // arrange
-            await Assert.ThrowsAsync<NotFoundException>(() => _sut.GetAllDiets());
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.GetAllDiets());
         }
 
         [Fact]
@@ -124,7 +124,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
 
             // arrange
-            await Assert.ThrowsAsync<NotFoundException>(()=> _sut.GetDiet(diet.Id)); 
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.GetDiet(diet.Id)); 
         }
 
         [Fact]
@@ -189,7 +189,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
 
             // arrange
-            await Assert.ThrowsAsync<NotFoundException>(() => _sut.UpdateDiet(updateDiet, diet.Id));
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.UpdateDiet(updateDiet, diet.Id));
         }
 
         [Fact]
@@ -233,7 +233,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
 
             // arrange
-            await Assert.ThrowsAsync<NotFoundException>(()=> _sut.DeleteDiet(diet.Id)); 
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.DeleteDiet(diet.Id)); 
         }
 
         private Diet SampleDiet()
