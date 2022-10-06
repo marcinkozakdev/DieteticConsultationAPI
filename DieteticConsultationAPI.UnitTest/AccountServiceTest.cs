@@ -1,13 +1,10 @@
-﻿using DieteticConsultationAPI;
-using DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
-using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace DieteticConsultationAPI.UnitTest
@@ -69,7 +66,6 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
 
             //assert
-
             await Assert.ThrowsAsync<BadRequestHttpException>(() => _sut.GenerateJwt(loginDto));
         }
 
@@ -104,7 +100,6 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
 
             //assert
-
             await Assert.ThrowsAsync<BadRequestHttpException>(() => _sut.GenerateJwt(loginDto));
         }
     }
