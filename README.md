@@ -18,9 +18,17 @@ DieteticConsultationAPI is an application developed for dieticians and their pat
 - Moq 4.18.2
 
 ## Features
-- registering and linking through the generated token,
+- registration and logging in via the generated token,
 - authorization based on the rights granted by the administrator.
 
+### Features for a dietitian:
+- creating a profile, providing the most important contact details and a short biography, in which he has the opportunity to specify his specialization and scope of services. Thanks to this, patients will be able to choose the dietitian best suited to their needs.
+- searching for a patient in his dietician's database,
+- viewing the list of your patients,
+- viewing, uploading and downloading files on the patient's account,
+- editing your profile, information about yourself, changing your specialization, etc.
+- editing changes in dimensions or weight, as well as uploading files to the patient's profile, incl. individual recommendations or menus.
+- adding and removing a patient
 
 
 
