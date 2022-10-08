@@ -30,5 +30,11 @@ DieteticConsultationAPI is an application developed for dieticians and their pat
 - editing changes in dimensions or weight, as well as uploading files to the patient's profile, incl. individual recommendations or menus.
 - adding and removing a patient
 
+### Features for the patient:
+- creating a profile, providing the most important information about yourself and your dietary requirements, such as your favorite or prohibited products. This information will be added to the patient's database in his part of the system, thanks to which the visiting dietitian will learn about his ailments and needs faster, and during the visit, the specialist will be able to familiarize him with a new, more effective nutritional program.
+- editing changes in weight and dimensions, which can be observed both by himself and the specialist taking care of him.
+- uploading and downloading files attached by a dietitian, i.e. an individual menu or recommendations.
+
+
 
 
