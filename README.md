@@ -4,6 +4,8 @@
 * [General Info](#general-information)
 * [Technologies Used](#technologies-used)
 * [Features](#features)
+* [Project Status](#project-status)
+* [Room for Improvement](#features-to-be-added-in-the-future)
 
 ## General Information
 DieteticConsultationAPI is an application developed for dieticians and their patients for better cooperation and communication, also for support during the diet. This application created for educational purposes. I chose this kind of application because I would like to make the work of my wife who is a dietician, so that she will be happier and have more time for me.
@@ -34,6 +36,17 @@ DieteticConsultationAPI is an application developed for dieticians and their pat
 - creating a profile, providing the most important information about yourself and your dietary requirements, such as your favorite or prohibited products. This information will be added to the patient's database in his part of the system, thanks to which the visiting dietitian will learn about his ailments and needs faster, and during the visit, the specialist will be able to familiarize him with a new, more effective nutritional program.
 - editing changes in weight and dimensions, which can be observed both by himself and the specialist taking care of him.
 - uploading and downloading files attached by a dietitian, i.e. an individual menu or recommendations.
+
+## Project Status
+The application is under development.
+
+## Features to be added in the future:
+- the possibility of contacting a selected dietitian or chatting with other people on the diet.
+- the possibility of registering an online visit to a given dietitian
+- implementation of a notification system
+- adding a BMI calculator for a dietitian
+- adding a database of sample recipes and diets
+- the possibility of issuing an opinion to a dietitian
 
 
 
