@@ -18,16 +18,30 @@ namespace DieteticConsultationAPI.Services
             _logger = logger;
             _dieticianRepository = dieticianRepository;
         }
-        public async Task<int> CreateDietician(CreateDieticianDto dto)
+        public async Task<int> AddOrUpdateDietician(DieticianDto dto, int id)
         {
-            var dietician = new Dietician()
+            var dietician = await _dieticianRepository.GetById(id);
+
+            if (dietician is null)
             {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Specialization = dto.Specialization,
-                ContactEmail = dto.ContactEmail,
-                ContactNumber = dto.ContactNumber
-            };
+                dietician = new Dietician()
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
+                    Specialization = dto.Specialization,
+                    ContactEmail = dto.ContactEmail,
+                    ContactNumber = dto.ContactNumber
+                };
+            }
+
+            else
+            {
+                dietician.FirstName = dto.FirstName;
+                dietician.LastName = dto.LastName;
+                dietician.Specialization = dto.Specialization;
+                dietician.ContactEmail = dto.ContactEmail;
+                dietician.ContactNumber = dto.ContactNumber;
+            }
 
             await _dieticianRepository.AddOrUpdate(dietician);
 
@@ -63,7 +77,7 @@ namespace DieteticConsultationAPI.Services
 
             return dieticianDto;
         }
-        
+
         // use just one method like create Dietetican, when it is exist then it  will update if not then it will create new 
 
         // public async Task UpdateDietician(UpdateDieticianDto dto, int id)
