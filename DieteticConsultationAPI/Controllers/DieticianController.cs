@@ -23,7 +23,7 @@ namespace DieteticConsultationAPI.Controllers
         {
             var id = await _dieticianService.CreateDietician(dto);
 
-            // from where you will get id, if you are creating new dietetican ?
+            // from where you will get id, if you are creating new dietetican ? First needs to be created. Sql wil generate id for it 
             return Created($"/api/dietician/{id}", null);
         }
 
@@ -49,6 +49,7 @@ namespace DieteticConsultationAPI.Controllers
         [Authorize(Roles = "Admin,Dietician")]
         public async Task<IActionResult> Update([FromBody] UpdateDieticianDto dto, [FromRoute] int id)
         {
+            // try like this, please refactor it
            await _dieticianService.CreateDietician(dto);
 
             return Ok();
