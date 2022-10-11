@@ -34,8 +34,8 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(dieticians);
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
-            var result = await _sut.GetAllDieticians();
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
+            var result = await _sut.GetAll();
 
             // arrange
             _dieticianRepositoryMock
@@ -56,8 +56,8 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(dietician);
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
-            var result = await _sut.GetDietician(dietician.Id);
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
+            var result = await _sut.GetById(dietician.Id);
 
             // assert
             result.FirstName.Should().NotBe(null);
@@ -75,11 +75,11 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(dietician);
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
 
             // assert
 
-            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.GetDietician(dietician.Id)); 
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.GetById(dietician.Id)); 
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(dietician);
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
             var result = await _sut.GetDieticianById(dietician.Id);
 
             // assert
@@ -114,7 +114,7 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(dietician);
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
 
             // assert
             await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.GetDieticianById(dietician.Id)); 
@@ -138,7 +138,7 @@ namespace DieteticConsultationAPI.UnitTest
                 .Setup(x => x.AddOrUpdate(It.IsAny<Dietician>()));
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
             var result = await _sut.AddOrUpdateDietician(dietician, dietician.Id);
 
             // assert
@@ -174,7 +174,7 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(dietician);
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
            await _sut.AddOrUpdateDietician(updateDietician, dietician.Id);
 
             // assert
@@ -209,7 +209,7 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(dietician);
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
             await _sut.AddOrUpdateDietician(createDietician, dietician.Id);
 
             // assert
@@ -230,8 +230,8 @@ namespace DieteticConsultationAPI.UnitTest
                 .Setup(x => x.Delete(It.IsAny<int>())));
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
-            await _sut.DeleteDietician(dietician.Id);
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
+            await _sut.Delete(dietician.Id);
 
             // assert
             _dieticianRepositoryMock.Verify(x => x.Delete(dietician.Id), Times.Once);
@@ -252,10 +252,10 @@ namespace DieteticConsultationAPI.UnitTest
                 .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
-            var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.DeleteDietician(dietician.Id));
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.Delete(dietician.Id));
         }
 
         private Dietician SampleDietician()

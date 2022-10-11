@@ -1,5 +1,4 @@
-﻿
-using DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,19 +7,21 @@ namespace DieteticConsultationAPI.Repositories
     public class DieticianRepository : IDieticianRepository
     {
         private readonly DieteticConsultationDbContext _context;
-
-        public DieticianRepository(DieteticConsultationDbContext context)
-        {
+        public DieticianRepository(DieteticConsultationDbContext context) =>
             _context = context;
-        }
 
         public async Task<ICollection<Dietician>> GetAll() =>
-            await _context.Dieticians.Include(d => d.Patients).ToListAsync();
+            await _context
+                .Dieticians
+                .Include(d => d.Patients)
+                .ToListAsync();
 
-        public async Task<Dietician> GetById(int? id) =>
-            await _context.Dieticians.FirstOrDefaultAsync(d => d.Id == id);
+        public async Task<Dietician> GetById(int id) =>
+            await _context
+                .Dieticians
+                .FirstOrDefaultAsync(d => d.Id == id);
 
-        public async Task<Dietician> AddOrUpdate(Dietician dietician)
+        public async Task AddOrUpdate(Dietician dietician)
         {
             if (await _context.Dieticians.FirstOrDefaultAsync(d => d.Id.Equals(dietician.Id)) is { } obj)
             {
@@ -34,21 +35,18 @@ namespace DieteticConsultationAPI.Repositories
             }
 
             else
-                await _context.AddAsync(dietician);
+                await _context.Dieticians.AddAsync(dietician);
 
             await _context.SaveChangesAsync();
-
-            return dietician;
         }
 
-        public async Task Delete(int? id)
+        public async Task Delete(int id)
         {
-            var dietician = await _context.Dieticians.FirstOrDefaultAsync(d => d.Id == id);
-            if (dietician is null)
-                return;
-
-            _context.Dieticians.Remove(dietician);
-            await _context.SaveChangesAsync();
+            if (await _context.Dieticians.FirstOrDefaultAsync(d => d.Id == id) is { } dietician)
+            {
+                _context.Dieticians.Remove(dietician);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

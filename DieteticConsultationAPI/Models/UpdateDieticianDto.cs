@@ -1,7 +1,8 @@
 ﻿namespace DieteticConsultationAPI.Models
 {
-    public class UpdateDieticianDto
+    public sealed record UpdateDieticianDto
     {
+        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Specialization { get; set; }
