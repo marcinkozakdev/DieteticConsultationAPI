@@ -6,10 +6,21 @@ namespace DieteticConsultationAPI.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string? Description { get; set; }
+        public string Description { get; set; }
         public int CalorificValue { get; set; }
-        public string? ProhibitedProducts { get; set; }
-        public string? RecommendedProducts { get; set; }
-        public virtual List<FileModelDto>? Files { get; set; }
+        public string ProhibitedProducts { get; set; }
+        public string RecommendedProducts { get; set; }
+        public virtual List<FileModelDto> Files { get; set; }
+
+        public static DietDto For(Diet diet)
+            => new()
+            {
+                Id = diet.Id,
+                Name = diet.Name,
+                Description = diet.Description,
+                CalorificValue = diet.CalorificValue,
+                ProhibitedProducts = diet.ProhibitedProducts,
+                RecommendedProducts = diet.RecommendedProducts
+            };
     }
 }
