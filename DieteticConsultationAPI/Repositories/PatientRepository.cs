@@ -15,9 +15,9 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-        public Patient? AddOrUpdate(Patient patient)
+        public async Task<Patient> AddOrUpdate(Patient patient)
         {
-            if (_context.Patients.FirstOrDefault(d => d.Id.Equals(patient.Id)) is { } obj)
+            if (await _context.Patients.FirstOrDefaultAsync(d => d.Id.Equals(patient.Id)) is { } obj)
             {
                 obj.FirstName = patient.FirstName;
                 obj.LastName = patient.LastName;
@@ -35,31 +35,31 @@ namespace DieteticConsultationAPI.Repositories
             else
                 _context.Patients.Add(patient);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return patient;
         }
 
-        public void Delete(int? id)
+        public async Task Delete(int? id)
         {
-            Patient? patient = _context
+            Patient patient = await _context
                 .Patients
-                .FirstOrDefault(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             _context.Patients.Remove(patient);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public IQueryable<Patient> GetAllPatientsWithDiet(PatientQuery query) => _context
+        public async Task<IQueryable<Patient>> GetAllPatientsWithDiet(PatientQuery query) => await Task.FromResult( _context
         .Patients
         .Include(p => p.Diet)
         .Where(r => query.SearchPhrase == null
                                 || r.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
-                                || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()));
+                                || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()))); 
 
-        public Patient? GetPatientWithDiet(int? id) => _context
+        public async Task<Patient> GetPatientWithDiet(int? id) => await _context
             .Patients
             .Include(p => p.Diet)
-            .FirstOrDefault(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 }

@@ -14,15 +14,15 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-        public User? Login(LoginDto dto) => _context
+        public async Task<User> Login(LoginDto dto) => await _context
             .Users
             .Include(u => u.Role)
-            .FirstOrDefault(x => x.Email == dto.Email);
+            .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-        public void Register(User newUser)
+        public async Task Register(User newUser)
         {
-            _context.Users.Add(newUser);
-            _context.SaveChanges();
+            await _context.Users.AddAsync(newUser);
+            await _context.SaveChangesAsync();
         } 
     }
 }

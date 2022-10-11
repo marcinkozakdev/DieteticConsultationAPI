@@ -5,7 +5,7 @@ namespace DieteticConsultationAPI.Repositories.Abstractions
 {
     public interface IAccountRepository
     {
-        void Register(User newUser);
-        User? Login(LoginDto dto);
+        Task Register(User newUser);
+        Task <User> Login(LoginDto dto);
     }
 }

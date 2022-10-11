@@ -24,7 +24,7 @@ namespace DieteticConsultationAPI.Services
             _accountRepository = accountRepository;
         }
 
-        public void RegisterUser(RegisterUserDto dto)
+        public async Task RegisterUser(RegisterUserDto dto)
         {
             var newUser = new User()
             {
@@ -38,12 +38,12 @@ namespace DieteticConsultationAPI.Services
 
             newUser.PasswordHash = hashedPassword;
 
-            _accountRepository.Register(newUser);
+            await _accountRepository.Register(newUser);
         }
 
-        public string GenerateJwt(LoginDto dto)
+        public async Task<string> GenerateJwt(LoginDto dto)
         {
-            var user = _accountRepository.Login(dto);
+            var user = await _accountRepository.Login(dto);
 
             if (user is null)
                 BadRequestHttpException.For("Invalid username or password");

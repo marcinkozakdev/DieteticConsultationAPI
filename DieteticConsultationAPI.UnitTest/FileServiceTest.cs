@@ -18,21 +18,20 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void UploadFile_FileIsNullAndFileLengthIsZero_ReturnNotFoundException()
+        public async Task UploadFile_FileIsNullAndFileLengthIsZero_ReturnNotFoundException()
         {
             // arrange
             var file = new FormFile(Stream.Null, 0, 0, null, null);
 
             // act
             var _sut = new FileService(_fileRepositoryMock.Object);
-            Action result = () => _sut.UploadFile(file);
 
             // assert
-            Assert.Throws<NotFoundHttpException>(result);
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.UploadFile(file));
         }
 
         [Fact]
-        public void DownloadFile_FileFoundById_ReturnFile()
+        public async Task DownloadFile_FileFoundById_ReturnFile()
         {
             // arrange
             int id = 1;
@@ -40,21 +39,21 @@ namespace DieteticConsultationAPI.UnitTest
 
             _fileRepositoryMock
                 .Setup(x => x.GetById(id))
-                .Returns(file);
+                .ReturnsAsync(file);
 
             // act
             var _sut = new FileService(_fileRepositoryMock.Object);
-            var result = _sut.DownloadFile(file.Id);
+            var result = await _sut.DownloadFile(file.Id);
 
             // assert
             _fileRepositoryMock
                 .Verify(x => x.GetById(file.Id), Times.Once());
 
-            result.FileName.Should().NotBe(null);
+            await Task.FromResult(result.FileName.Should().NotBe(null));
         }
 
         [Fact]
-        public void DownloadFile_FileNotFound_ReturnNotFoundException()
+        public async Task DownloadFile_FileNotFound_ReturnNotFoundException()
         {
             // arrange
             int id = 2;
@@ -62,18 +61,17 @@ namespace DieteticConsultationAPI.UnitTest
 
             _fileRepositoryMock
                 .Setup(x => x.GetById(id))
-                .Returns(file);
+                .ReturnsAsync(file);
 
             // act
             var _sut = new FileService(_fileRepositoryMock.Object);
-            Action result = () => _sut.DownloadFile(file.Id);
 
             // arrange
-            Assert.Throws<NotFoundHttpException>(result);
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.DownloadFile(file.Id));
         }
 
         [Fact]
-        public void DeleteFile_FileFoundById_DeleteFile()
+        public async Task DeleteFile_FileFoundById_DeleteFile()
         {
             // arrange
             int id = 1;
@@ -81,14 +79,14 @@ namespace DieteticConsultationAPI.UnitTest
 
             _fileRepositoryMock
                 .Setup(x => x.GetById(id))
-                .Returns(file);
+                .ReturnsAsync(file);
 
             _fileRepositoryMock
                 .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
             var _sut = new FileService(_fileRepositoryMock.Object);
-            _sut.DeleteFile(file.Id);
+            await _sut.DeleteFile(file.Id);
 
             // assert
             _fileRepositoryMock
@@ -96,7 +94,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void DeleteFile_FileNotFound_ReturnNotFoundException()
+        public async Task DeleteFile_FileNotFound_ReturnNotFoundException()
         {
             // arrange
             int id = 2;
@@ -104,17 +102,16 @@ namespace DieteticConsultationAPI.UnitTest
 
             _fileRepositoryMock
                 .Setup(x => x.GetById(id))
-                .Returns(file);
+                .ReturnsAsync(file);
 
             _fileRepositoryMock
                 .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
             var _sut = new FileService(_fileRepositoryMock.Object);
-            Action result = () => _sut.DeleteFile(file.Id);
 
             // assert
-            Assert.Throws<NotFoundHttpException>(result);
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.DeleteFile(file.Id));
         }
 
         private FileModel SampleFile()

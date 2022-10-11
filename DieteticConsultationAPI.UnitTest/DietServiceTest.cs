@@ -22,7 +22,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void CreateDiet_InputDietForTheFoundPatient_ReturnDiet()
+        public async Task CreateDiet_InputDietForTheFoundPatient_ReturnDiet()
         {
             // arrange
             var diet = new CreateDietDto()
@@ -41,7 +41,7 @@ namespace DieteticConsultationAPI.UnitTest
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            var result = _sut.CreateDiet(diet);
+            var result = await _sut.CreateDiet(diet);
 
             // assert
             _dietRepositoryMock
@@ -51,7 +51,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void GetAllDiets_DietFound_ReturnAllDiets()
+        public async Task GetAllDiets_DietFound_ReturnAllDiets()
         {
             // arrange
             List<Diet> diets = new List<Diet>()
@@ -60,11 +60,11 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _dietRepositoryMock
-                .Setup(x => x.GetAllDietsWithPatientsAndFiles()).Returns(diets);
+                .Setup(x => x.GetAllDietsWithPatientsAndFiles()).ReturnsAsync(diets);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            var result = _sut.GetAllDiets();
+            var result = await _sut.GetAllDiets();
 
             // arrange
             _dietRepositoryMock
@@ -74,35 +74,34 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void GetAllDiets_DietsListIsEmpty_ReturnNotFoundException()
+        public async Task GetAllDiets_DietsListIsEmpty_ReturnNotFoundException()
         {
             // arrange
             List<Diet>? diets = null;
 
             _dietRepositoryMock
-                .Setup(x => x.GetAllDietsWithPatientsAndFiles()).Returns(diets);
+                .Setup(x => x.GetAllDietsWithPatientsAndFiles()).ReturnsAsync(diets);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            Action result = () => _sut.GetAllDiets();
 
             // arrange
-            Assert.Throws<NotFoundHttpException>(result);
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.GetAllDiets());
         }
 
         [Fact]
-        public void GetDiet_DietFound_ReturnDiet()
+        public async Task GetDiet_DietFound_ReturnDiet()
         {
             // arrange
             int id = 1;
             var diet = SampleDiet();
 
             _dietRepositoryMock
-                .Setup(x => x.GetDietWithPatientAndFiles(id)).Returns(diet);
+                .Setup(x => x.GetDietWithPatientAndFiles(id)).ReturnsAsync(diet);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            DietDto result = _sut.GetDiet(diet.Id);
+            DietDto result = await _sut.GetDiet(diet.Id);
 
             // arrange
             _dietRepositoryMock
@@ -112,25 +111,24 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void GetDiet_DietNotFound_ReturnNotFoundException()
+        public async Task GetDiet_DietNotFound_ReturnNotFoundException()
         {
             // arrange
             int id = 2;
             var diet = SampleDiet();
 
             _dietRepositoryMock
-                .Setup(x => x.GetDietWithPatientAndFiles(id)).Returns(diet);
+                .Setup(x => x.GetDietWithPatientAndFiles(id)).ReturnsAsync(diet);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            Action result = () => _sut.GetDiet(diet.Id);
 
             // arrange
-            Assert.Throws<NotFoundHttpException>(result);
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.GetDiet(diet.Id)); 
         }
 
         [Fact]
-        public void UpdateDiet_DietFound_ReturnDiet()
+        public async Task UpdateDiet_DietFound_ReturnDiet()
         {
             // arrange
             int id = 1;
@@ -146,15 +144,15 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _dietRepositoryMock
-                .Setup(x => x.GetDietWithPatientAndFiles(id)).Returns(diet);
+                .Setup(x => x.GetDietWithPatientAndFiles(id)).ReturnsAsync(diet);
 
             _dietRepositoryMock
                 .Setup(x => x.AddOrUpdate(It.IsAny<Diet>()))
-                .Returns(diet);
+                .ReturnsAsync(diet);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            _sut.UpdateDiet(updateDiet, diet.Id);
+            await _sut.UpdateDiet(updateDiet, diet.Id);
 
             // arrange
             _dietRepositoryMock
@@ -164,7 +162,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void UpdateDiet_DietNotFound_ReturnNotFoundException()
+        public async Task UpdateDiet_DietNotFound_ReturnNotFoundException()
         {
             // arrange
             var id = 2;
@@ -181,22 +179,21 @@ namespace DieteticConsultationAPI.UnitTest
 
             _dietRepositoryMock
                 .Setup(x => x.GetDietWithPatientAndFiles(id))
-                .Returns(diet);
+                .ReturnsAsync(diet);
 
             _dietRepositoryMock
                 .Setup(x => x.AddOrUpdate(It.IsAny<Diet>()))
-                .Returns(diet);
+                .ReturnsAsync(diet);
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            Action result = () => _sut.UpdateDiet(updateDiet, diet.Id);
 
             // arrange
-            Assert.Throws<NotFoundHttpException>(result);
+            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.UpdateDiet(updateDiet, diet.Id));
         }
 
         [Fact]
-        public void DeleteDiet_DietFound_ReturnDiet()
+        public async Task DeleteDiet_DietFound_ReturnDiet()
         {
             // arrange
             int id = 1;
@@ -204,14 +201,14 @@ namespace DieteticConsultationAPI.UnitTest
 
             _dietRepositoryMock
                 .Setup(x => x.GetDietWithPatientAndFiles(id))
-                .Returns(diet);
+                .ReturnsAsync(diet);
 
             _dietRepositoryMock
                 .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            _sut.DeleteDiet(diet.Id);
+            await _sut.DeleteDiet(diet.Id);
 
             // arrange
             _dietRepositoryMock
@@ -219,7 +216,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public void DeleteDiet_DietNotFound_ReturnNotFoundException()
+        public async Task DeleteDiet_DietNotFound_ReturnNotFoundException()
         {
             // arrange
             int id = 2;
@@ -227,17 +224,16 @@ namespace DieteticConsultationAPI.UnitTest
 
             _dietRepositoryMock
                 .Setup(x => x.GetDietWithPatientAndFiles(id))
-                .Returns(diet);
+                .ReturnsAsync(diet);
 
             _dietRepositoryMock
                 .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
             var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            Action result = () => _sut.DeleteDiet(diet.Id);
 
             // arrange
-            Assert.Throws<NotFoundHttpException>(result);
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.DeleteDiet(diet.Id)); 
         }
 
         private Diet SampleDiet()

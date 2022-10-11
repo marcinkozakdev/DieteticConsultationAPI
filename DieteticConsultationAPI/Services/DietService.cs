@@ -18,7 +18,7 @@ namespace DieteticConsultationAPI.Services
             _dietRepository = dietRepository;
         }
 
-        public int CreateDiet(CreateDietDto dto)
+        public async Task<int> CreateDiet(CreateDietDto dto)
         {
             var diet = new Diet
             {
@@ -31,14 +31,14 @@ namespace DieteticConsultationAPI.Services
                 PatientId = dto.PatientId,
             };
 
-            _dietRepository.AddOrUpdate(diet);
+            await _dietRepository.AddOrUpdate(diet);
 
             return diet.Id;
         }
 
-        public IEnumerable<DietDto> GetAllDiets()
+        public async Task<IEnumerable<DietDto>> GetAllDiets()
         {
-            var diets = _dietRepository.GetAllDietsWithPatientsAndFiles();
+            var diets = await _dietRepository.GetAllDietsWithPatientsAndFiles();
 
             if (diets is null)
                 NotFoundHttpException.For("The diet list is empty");
@@ -57,9 +57,9 @@ namespace DieteticConsultationAPI.Services
             return dietsDtos;
         }
 
-        public DietDto GetDiet(int id)
+        public async Task<DietDto> GetDiet(int id)
         {
-            var diet = GetDietById(id);
+            var diet = await GetDietById(id);
 
             var dietDto = new DietDto()
             {
@@ -75,9 +75,9 @@ namespace DieteticConsultationAPI.Services
             return dietDto;
         }
 
-        public void UpdateDiet(UpdateDietDto dto, int id)
+        public async Task UpdateDiet(UpdateDietDto dto, int id)
         {
-            var diet = GetDietById(id);
+            var diet = await GetDietById(id);
 
             diet.Id = id;
             diet.Name = dto.Name;
@@ -86,21 +86,21 @@ namespace DieteticConsultationAPI.Services
             diet.ProhibitedProducts = dto.ProhibitedProducts;
             diet.RecommendedProducts = dto.RecommendedProducts;
 
-            _dietRepository.AddOrUpdate(diet);
+            await _dietRepository.AddOrUpdate(diet);
         }
 
-        public void DeleteDiet(int id)
+        public async Task DeleteDiet(int id)
         {
             _logger.LogWarning($"Diet with id: {id} DELETE action invoked");
 
-            GetDietById(id);
+            await GetDietById(id);
 
-            _dietRepository.Delete(id);
+            await _dietRepository.Delete(id);
         }
 
-        private Diet GetDietById(int id)
+        private async Task<Diet> GetDietById(int id)
         {
-            var diet = _dietRepository.GetDietWithPatientAndFiles(id);
+            var diet = await _dietRepository.GetDietWithPatientAndFiles(id);
 
             if (diet == null)
                 NotFoundHttpException.For("Diet not found");
@@ -108,7 +108,7 @@ namespace DieteticConsultationAPI.Services
             return diet;
         }
 
-        private static FileModelDto? Map(FileModel? file) => file is null
+        private static FileModelDto Map(FileModel file) => file is null
             ? null
             : new FileModelDto
             {

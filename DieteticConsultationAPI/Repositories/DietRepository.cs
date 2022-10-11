@@ -13,9 +13,9 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-        public Diet? AddOrUpdate(Diet? diet)
+        public async Task<Diet> AddOrUpdate(Diet diet)
         {
-            if (_context.Diets.FirstOrDefault(d => d.Id.Equals(diet.Id)) is { } obj)
+            if (await _context.Diets.FirstOrDefaultAsync(d => d.Id.Equals(diet.Id)) is { } obj)
             {
                 obj.Description = diet?.Description;
                 obj.CalorificValue = diet.CalorificValue;
@@ -28,33 +28,33 @@ namespace DieteticConsultationAPI.Repositories
             }
 
             else
-                _context.Add(diet);
+               await _context.AddAsync(diet);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return diet;
         }
 
-        public void Delete(int? id)
+        public async Task Delete(int id)
         {
-            Diet? diet = _context
+            Diet diet = await _context
                 .Diets
-                .FirstOrDefault(d => d.Id == id);
+                .FirstOrDefaultAsync(d => d.Id == id);
 
             _context.Diets.Remove(diet);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public IEnumerable<Diet>? GetAllDietsWithPatientsAndFiles() => _context
+        public async Task<IEnumerable<Diet>> GetAllDietsWithPatientsAndFiles() => await _context
             .Diets
             .Include(d => d.Patient)
             .Include(d => d.Files)?
-            .ToList();
+            .ToListAsync();
 
-        public Diet? GetDietWithPatientAndFiles(int? id) => _context
+        public async Task<Diet> GetDietWithPatientAndFiles(int id) => await _context
             .Diets
             .Include(d => d.Patient)
             .Include(d => d.Files)?
-            .FirstOrDefault(d => d.Id == id);
+            .FirstOrDefaultAsync(d => d.Id == id);
     }
 }

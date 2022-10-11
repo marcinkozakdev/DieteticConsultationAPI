@@ -26,7 +26,7 @@ namespace DieteticConsultationAPI.Services
             _patientRepository = patientRepository;
         }
 
-        public int CreatePatient(CreatePatientDto dto)
+        public async Task<int> CreatePatient(CreatePatientDto dto)
         {
             var patient = new Patient
             {
@@ -44,14 +44,14 @@ namespace DieteticConsultationAPI.Services
 
             patient.CreatedById = _userContextService.GetUserId;
 
-            _patientRepository.AddOrUpdate(patient);
+            await _patientRepository.AddOrUpdate(patient);
 
             return patient.Id;
         }
 
-        public PagedResult<PatientDto> GetAllPatients(PatientQuery query)
+        public async Task<PagedResult<PatientDto>> GetAllPatients(PatientQuery query)
         {
-            var baseQuery = _patientRepository.GetAllPatientsWithDiet(query);
+            var baseQuery = await _patientRepository.GetAllPatientsWithDiet(query);
 
             if (!string.IsNullOrEmpty(query.SortBy))
             {
@@ -93,9 +93,9 @@ namespace DieteticConsultationAPI.Services
 
             return result;
         }
-        public PatientDto GetPatient(int id)
+        public async Task<PatientDto> GetPatient(int id)
         {
-            var patient = GetPatientById(id);
+            var patient = await GetPatientById(id);
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Read)).Result;
 
@@ -119,9 +119,9 @@ namespace DieteticConsultationAPI.Services
             return patientDto;
         }
 
-        public void UpdatePatient(UpdatePatientDto dto, int id)
+        public async Task UpdatePatient(UpdatePatientDto dto, int id)
         {
-            var patient = GetPatientById(id);
+            var patient = await GetPatientById(id);
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
 
@@ -137,24 +137,24 @@ namespace DieteticConsultationAPI.Services
             patient.Height = dto.Height;
             patient.Age = dto.Age;
 
-            _patientRepository.AddOrUpdate(patient);
+            await _patientRepository.AddOrUpdate(patient);
         }
 
-        public void DeletePatient(int id)
+        public async Task DeletePatient(int id)
         {
             _logger.LogError("Patient with id: {Id} DELETE action invoked", id);
 
-            var patient = GetPatientById(id);
+            var patient = await GetPatientById(id);
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
 
             if (!authorizationResult.Succeeded)
                 ForbidHttpException.For("Authorization failed");
 
-            _patientRepository.Delete(id);
+            await _patientRepository.Delete(id);
         }
 
-        private DietDto? Map(Diet? diet) =>
+        private DietDto Map(Diet diet) =>
             diet is null
             ? null
             : new DietDto
@@ -167,9 +167,9 @@ namespace DieteticConsultationAPI.Services
                 RecommendedProducts = diet.RecommendedProducts
             };
 
-        private Patient GetPatientById(int id)
+        private async Task<Patient> GetPatientById(int id)
         {
-            var patient = _patientRepository.GetPatientWithDiet(id);
+            var patient = await _patientRepository.GetPatientWithDiet(id);
 
             if (patient is null)
                 NotFoundHttpException.For("Patient not found");
