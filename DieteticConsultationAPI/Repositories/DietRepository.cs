@@ -28,7 +28,7 @@ namespace DieteticConsultationAPI.Repositories
             }
 
             else
-               await _context.AddAsync(diet);
+                await _context.Diets.AddAsync(diet);
 
             await _context.SaveChangesAsync();
 
@@ -37,24 +37,25 @@ namespace DieteticConsultationAPI.Repositories
 
         public async Task Delete(int id)
         {
-            Diet diet = await _context
-                .Diets
-                .FirstOrDefaultAsync(d => d.Id == id);
-
-            _context.Diets.Remove(diet);
-            await _context.SaveChangesAsync();
+            if (await _context.Diets.FirstOrDefaultAsync(d => d.Id == id) is { } diet)
+            {
+                _context.Diets.Remove(diet);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public async Task<IEnumerable<Diet>> GetAllDietsWithPatientsAndFiles() => await _context
-            .Diets
-            .Include(d => d.Patient)
-            .Include(d => d.Files)?
-            .ToListAsync();
+        public async Task<ICollection<Diet>> GetAll() =>
+            await _context
+                .Diets
+                .Include(d => d.Patient)
+                .Include(d => d.Files)?
+                .ToListAsync();
 
-        public async Task<Diet> GetDietWithPatientAndFiles(int id) => await _context
-            .Diets
-            .Include(d => d.Patient)
-            .Include(d => d.Files)?
-            .FirstOrDefaultAsync(d => d.Id == id);
+        public async Task<Diet> GetById(int id) =>
+            await _context
+                .Diets
+                .Include(d => d.Patient)
+                .Include(d => d.Files)?
+                .FirstOrDefaultAsync(d => d.Id == id);
     }
 }

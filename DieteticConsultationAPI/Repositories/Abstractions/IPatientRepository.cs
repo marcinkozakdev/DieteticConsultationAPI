@@ -5,10 +5,10 @@ namespace DieteticConsultationAPI.Repositories.Abstractions
 {
     public interface IPatientRepository
     {
-        Task<IQueryable<Patient>> GetAllPatientsWithDiet(PatientQuery query);
-        Task<Patient> GetPatientWithDiet(int? id);
-        Task<Patient> AddOrUpdate(Patient patient);
-        Task Delete(int? id);
+        Task<IQueryable<Patient>> GetAll(PatientQuery query);
+        Task<Patient> GetById(int id);
+        Task AddOrUpdate(Patient patient);
+        Task Delete(int id);
     }
 }
 

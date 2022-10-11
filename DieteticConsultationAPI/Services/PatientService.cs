@@ -4,6 +4,7 @@ using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Models.Pagination;
+using DieteticConsultationAPI.Repositories;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -13,45 +14,24 @@ namespace DieteticConsultationAPI.Services
 {
     public class PatientService : IPatientService
     {
-        private readonly ILogger<PatientService> _logger;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUserContextService _userContextService;
         private readonly IPatientRepository _patientRepository;
 
-        public PatientService(ILogger<PatientService> logger, IAuthorizationService authorizationService, IUserContextService userContextService, IPatientRepository patientRepository)
+        public PatientService(IAuthorizationService authorizationService, IUserContextService userContextService, IPatientRepository patientRepository)
         {
-            _logger = logger;
             _authorizationService = authorizationService;
             _userContextService = userContextService;
             _patientRepository = patientRepository;
         }
 
-        public async Task<int> CreatePatient(CreatePatientDto dto)
-        {
-            var patient = new Patient
-            {
-                Id = dto.Id,
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                ContactEmail = dto.ContactEmail,
-                ContactNumber = dto.ContactNumber,
-                Sex = dto.Sex,
-                Age = dto.Age,
-                Weight = dto.Weight,
-                Height = dto.Height,
-                DieticianId = dto.DieticianId,
-            };
-
-            patient.CreatedById = _userContextService.GetUserId;
-
-            await _patientRepository.AddOrUpdate(patient);
-
-            return patient.Id;
+        public Task CreatePatient(PatientDto patientDto) =>
+         _patientRepository.AddOrUpdate(Patient.For(patientDto));
         }
 
-        public async Task<PagedResult<PatientDto>> GetAllPatients(PatientQuery query)
+        public async Task<PagedResult<PatientDto>> GetAll(PatientQuery query)
         {
-            var baseQuery = await _patientRepository.GetAllPatientsWithDiet(query);
+        var baseQuery = await _patientRepository.GetAll(query);
 
             if (!string.IsNullOrEmpty(query.SortBy))
             {
@@ -93,7 +73,7 @@ namespace DieteticConsultationAPI.Services
 
             return result;
         }
-        public async Task<PatientDto> GetPatient(int id)
+        public async Task<PatientDto> GetById(int id)
         {
             var patient = await GetPatientById(id);
 
@@ -119,7 +99,7 @@ namespace DieteticConsultationAPI.Services
             return patientDto;
         }
 
-        public async Task UpdatePatient(UpdatePatientDto dto, int id)
+        public async Task Update(UpdatePatientDto dto, int id)
         {
             var patient = await GetPatientById(id);
 
@@ -140,13 +120,9 @@ namespace DieteticConsultationAPI.Services
             await _patientRepository.AddOrUpdate(patient);
         }
 
-        public async Task DeletePatient(int id)
+        public async Task Delete(int id)
         {
-            _logger.LogError("Patient with id: {Id} DELETE action invoked", id);
-
-            var patient = await GetPatientById(id);
-
-            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
+        var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
 
             if (!authorizationResult.Succeeded)
                 ForbidHttpException.For("Authorization failed");
@@ -169,7 +145,7 @@ namespace DieteticConsultationAPI.Services
 
         private async Task<Patient> GetPatientById(int id)
         {
-            var patient = await _patientRepository.GetPatientWithDiet(id);
+            var patient = await _patientRepository.GetById(id);
 
             if (patient is null)
                 NotFoundHttpException.For("Patient not found");

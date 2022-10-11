@@ -4,13 +4,13 @@ namespace DieteticConsultationAPI.Models.Pagination
 {
     public class PagedResult<T>
     {
-        public List<T> Items { get; set; }
+        public ICollection<T> Items { get; set; }
         public int TotalPages { get; set; }
         public int ItemFrom { get; set; }
         public int ItemsTo { get; set; }
         public int TotalItemsCount { get; set; }
 
-        public PagedResult(List<T> items, int totalCount, int pageSize, int pageNumber)
+        public PagedResult(ICollection<T> items, int totalCount, int pageSize, int pageNumber)
         {
             Items = items;
             TotalItemsCount = totalCount;

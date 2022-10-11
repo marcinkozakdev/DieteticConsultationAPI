@@ -10,12 +10,10 @@ namespace DieteticConsultationAPI.Repositories
     {
         private readonly DieteticConsultationDbContext _context;
 
-        public PatientRepository(DieteticConsultationDbContext context)
-        {
-            _context = context;
-        }
+        public PatientRepository(DieteticConsultationDbContext context) => _context = context;
+        
 
-        public async Task<Patient> AddOrUpdate(Patient patient)
+        public async Task AddOrUpdate(Patient patient)
         {
             if (await _context.Patients.FirstOrDefaultAsync(d => d.Id.Equals(patient.Id)) is { } obj)
             {
@@ -33,33 +31,32 @@ namespace DieteticConsultationAPI.Repositories
             }
 
             else
-                _context.Patients.Add(patient);
+                await _context.Patients.AddAsync(patient);
 
             await _context.SaveChangesAsync();
-
-            return patient;
         }
 
-        public async Task Delete(int? id)
+        public async Task Delete(int id)
         {
-            Patient patient = await _context
-                .Patients
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            _context.Patients.Remove(patient);
-            await _context.SaveChangesAsync();
+            if (await _context.Patients.FirstOrDefaultAsync(d => d.Id == id) is { } patients)
+            {
+                _context.Patients.Remove(patients);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public async Task<IQueryable<Patient>> GetAllPatientsWithDiet(PatientQuery query) => await Task.FromResult( _context
-        .Patients
-        .Include(p => p.Diet)
-        .Where(r => query.SearchPhrase == null
+        public async Task<IQueryable<Patient>> GetAll(PatientQuery query) => 
+            await Task.FromResult( _context
+                .Patients
+                .Include(p => p.Diet)
+                .Where(r => query.SearchPhrase == null
                                 || r.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
                                 || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()))); 
 
-        public async Task<Patient> GetPatientWithDiet(int? id) => await _context
-            .Patients
-            .Include(p => p.Diet)
-            .FirstOrDefaultAsync(p => p.Id == id);
+        public async Task<Patient> GetById(int id) => 
+            await _context
+                .Patients
+                .Include(p => p.Diet)
+                .FirstOrDefaultAsync(p => p.Id == id);
     }
 }

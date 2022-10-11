@@ -18,11 +18,11 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Dietician")]
-        public async Task<ActionResult> Create([FromBody] CreateDietDto dto)
+        public async Task<ActionResult> Create([FromBody] DietDto command)
         {
-            var diet = await _dietService.CreateDiet(dto);
+            await _dietService.Create(command);
 
-            return Created(diet.ToString(), null);
+            return Created("api/diet", null);
         }
 
         [HttpGet]
@@ -30,7 +30,7 @@ namespace DieteticConsultationAPI.Controllers
 
         public async Task<IActionResult> GetAll()
         {
-            var diets = await _dietService.GetAllDiets();
+            var diets = await _dietService.GetAll();
 
             return Ok(diets);
         }
@@ -39,16 +39,16 @@ namespace DieteticConsultationAPI.Controllers
         [Authorize(Roles = "Admin,Dietician,Patient")]
         public async Task<IActionResult> Get(int id)
         {
-            var diet = await _dietService.GetDiet(id);
+            var diet = await _dietService.GetById(id);
 
             return Ok(diet);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Dietician")]
-        public async Task<IActionResult> Update([FromBody] UpdateDietDto dto, int id)
+        public async Task<IActionResult> Update([FromBody] DietDto command, int id)
         {
-            await _dietService.UpdateDiet(dto, id);
+            await _dietService.Update(command);
 
             return Ok();
         }
@@ -57,7 +57,7 @@ namespace DieteticConsultationAPI.Controllers
         [Authorize(Roles = "Admin,Dietician")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _dietService.DeleteDiet(id);
+            await _dietService.Delete(id);
 
             return NoContent();
         }

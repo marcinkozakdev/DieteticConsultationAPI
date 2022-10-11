@@ -1,4 +1,6 @@
-﻿namespace DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Models;
+
+namespace DieteticConsultationAPI.Entities;
 
 public class Diet
 {
@@ -11,4 +13,14 @@ public class Diet
     public int? PatientId { get; set; }
     public virtual Patient? Patient { get; set; }
     public virtual List<FileModel>? Files { get; set; }
+    public static Diet For(DietDto dietDto) =>
+        new()
+        {
+            Id = dietDto.Id,
+            Name = dietDto.Name,
+            Description = dietDto.Description,
+            CalorificValue = dietDto.CalorificValue,
+            ProhibitedProducts = dietDto.ProhibitedProducts,
+            RecommendedProducts = dietDto.RecommendedProducts
+        };
 }
