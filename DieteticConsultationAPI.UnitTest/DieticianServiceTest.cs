@@ -124,7 +124,7 @@ namespace DieteticConsultationAPI.UnitTest
         public async Task CreateDietician_InputDieticianData_ReturnDietician()
         {
             // arrange
-            var dietician = new CreateDieticianDto()
+            var dietician = new DieticianDto()
             {
                 FirstName = "Dominika",
                 LastName = "Kozak",
@@ -139,7 +139,7 @@ namespace DieteticConsultationAPI.UnitTest
 
             // act
             var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
-            var result = await _sut.CreateDietician(dietician);
+            var result = await _sut.AddOrUpdateDietician(dietician, dietician.Id);
 
             // assert
             _dieticianRepositoryMock
@@ -156,7 +156,7 @@ namespace DieteticConsultationAPI.UnitTest
             int id = 1;
             var dietician = SampleDietician();
 
-            UpdateDieticianDto updateDietician = new UpdateDieticianDto()
+            DieticianDto updateDietician = new DieticianDto()
             {
                 FirstName = "Dominika",
                 LastName = "Olszowy",
@@ -175,7 +175,7 @@ namespace DieteticConsultationAPI.UnitTest
 
             // act
             var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
-           await _sut.UpdateDietician(updateDietician, dietician.Id);
+           await _sut.AddOrUpdateDietician(updateDietician, dietician.Id);
 
             // assert
             _dieticianRepositoryMock
@@ -185,13 +185,13 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public async Task UpdateDietician_DieticianNotFound_ReturnNotFoundException()
+        public async Task UpdateDietician_DieticianNotFound_CreateDietician()
         {
             // arrange
             int id = 2;
             var dietician = SampleDietician();
 
-            UpdateDieticianDto updateDietician = new UpdateDieticianDto()
+            DieticianDto createDietician = new DieticianDto()
             {
                 FirstName = "Dominika",
                 LastName = "Olszowy",
@@ -210,16 +210,16 @@ namespace DieteticConsultationAPI.UnitTest
 
             // act
             var _sut = new DieticianService(_loggerMock.Object, _dieticianRepositoryMock.Object);
+            await _sut.AddOrUpdateDietician(createDietician, dietician.Id);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.UpdateDietician(updateDietician, dietician.Id));
+            Assert.Equal("Olszowy", createDietician.LastName);
         }
 
         [Fact]
         public async Task DeleteDietician_DieticianFound_ReturnNull()
         {
             // arrange
-            //int id = 1;
             var dietician = SampleDietician();
 
             await Task.FromResult(_dieticianRepositoryMock
@@ -280,8 +280,7 @@ namespace DieteticConsultationAPI.UnitTest
                         Weight = 60,
                         Height = 168,
                         Age = 28,
-                        Id = 1,
-                        DieticianId = 1
+                        Diet =  new Diet()
                     }
                 }
             };

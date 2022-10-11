@@ -11,7 +11,7 @@ namespace DieteticConsultationAPI.Controllers
     public class DieticianController : ControllerBase
     {
         private readonly IDieticianService _dieticianService;
-       
+
         public DieticianController(IDieticianService dieticianService)
         {
             _dieticianService = dieticianService;
@@ -19,12 +19,11 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> Create([FromBody] CreateDieticianDto dto)
+        public async Task<ActionResult> Create([FromBody] DieticianDto dto, int id)
         {
-            var id = await _dieticianService.CreateDietician(dto);
+            var dietician = await _dieticianService.AddOrUpdateDietician(dto, id);
 
-            // from where you will get id, if you are creating new dietetican ? First needs to be created. Sql wil generate id for it 
-            return Created($"/api/dietician/{id}", null);
+            return Created(dietician.ToString(), null);
         }
 
         [HttpGet]
@@ -47,21 +46,20 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Dietician")]
-        public async Task<IActionResult> Update([FromBody] UpdateDieticianDto dto, [FromRoute] int id)
+        public async Task<IActionResult> Update([FromBody] DieticianDto dto, [FromRoute] int id)
         {
-            // try like this, please refactor it
-           await _dieticianService.CreateDietician(dto);
+            await _dieticianService.AddOrUpdateDietician(dto, id);
 
             return Ok();
         }
-        
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             await _dieticianService.DeleteDietician(id);
 
-            return NoContent(); 
+            return NoContent();
         }
     }
 }

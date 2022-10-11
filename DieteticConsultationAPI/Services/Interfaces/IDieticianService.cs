@@ -4,7 +4,7 @@ namespace DieteticConsultationAPI.Services.Interfaces;
 
 public interface IDieticianService
 {
-    Task<int> CreateDietician(CreateDieticianDto dto);
+    Task<int> AddOrUpdateDietician(DieticianDto dto, int id);
     Task<IEnumerable<DieticianDto>> GetAllDieticians();
     Task<DieticianDto> GetDietician(int id);
     Task DeleteDietician(int id);
