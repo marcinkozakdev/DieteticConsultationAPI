@@ -1,4 +1,5 @@
-﻿namespace DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Models;
+namespace DieteticConsultationAPI.Entities;
 
 public class Dietician
 {
@@ -9,4 +10,9 @@ public class Dietician
     public string ContactEmail { get; set; }
     public string ContactNumber { get; set; }
     public virtual List<Patient> Patients { get; set; } = new();
+    public static Dietician For(DieticianDto dieticianDto) =>
+        new()
+        {
+
+        };
 }

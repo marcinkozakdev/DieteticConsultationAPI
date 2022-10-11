@@ -19,18 +19,18 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> Create([FromBody] DieticianDto dto, int id)
+        public async Task<ActionResult> Create([FromBody] DieticianDto command)
         {
-            var dietician = await _dieticianService.AddOrUpdateDietician(dto, id);
+            await _dieticianService.Create(command);
 
-            return Created(dietician.ToString(), null);
+            return Created("api/dietician", null);
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
-            var dieticians = await _dieticianService.GetAllDieticians();
+            var dieticians = await _dieticianService.GetAll();
 
             return Ok(dieticians);
         }
@@ -39,25 +39,25 @@ namespace DieteticConsultationAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
-            var dietician = await _dieticianService.GetDietician(id);
+            var dietician = await _dieticianService.GetById(id);
 
             return Ok(dietician);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Dietician")]
-        public async Task<IActionResult> Update([FromBody] DieticianDto dto, [FromRoute] int id)
+        public async Task<IActionResult> Update([FromBody] DieticianDto command)
         {
-            await _dieticianService.AddOrUpdateDietician(dto, id);
+            await _dieticianService.Update(command);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            await _dieticianService.DeleteDietician(id);
+            await _dieticianService.Delete(id);
 
             return NoContent();
         }
