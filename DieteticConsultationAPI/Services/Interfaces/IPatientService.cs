@@ -6,10 +6,10 @@ namespace DieteticConsultationAPI.Services.Interfaces
 {
     public interface IPatientService
     {
-        Task<int> CreatePatient(CreatePatientDto dto);
-        Task<PagedResult<PatientDto>> GetAllPatients(PatientQuery query);
-        Task<PatientDto> GetPatient(int id);
-        Task DeletePatient(int id);
-        Task UpdatePatient(UpdatePatientDto dto, int id);
+        Task<int> Create(PatientDto dto);
+        Task<PagedResult<PatientDto>> GetAll(PatientQuery query);
+        Task<PatientDto> GetById(int id);
+        Task Delete(int id);
+        Task Update(PatientDto dto, int id);
     }
 }

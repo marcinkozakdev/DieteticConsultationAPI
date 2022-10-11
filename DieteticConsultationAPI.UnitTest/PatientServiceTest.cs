@@ -49,7 +49,7 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _patientRepositoryMock
-                .Setup(x => x.GetAllPatientsWithDiet(query))
+                .Setup(x => x.GetAll(query))
                 .ReturnsAsync((IQueryable<Patient>)patients.AsQueryable());
 
             // act
@@ -59,7 +59,7 @@ namespace DieteticConsultationAPI.UnitTest
 
             // arrange
             _patientRepositoryMock
-                .Verify(x => x.GetAllPatientsWithDiet(query), Times.Once());
+                .Verify(x => x.GetAll(query), Times.Once());
             result.TotalItemsCount.Should().Be(2);
             result.TotalPages.Should().Be(1);
             result.ItemFrom.Should().Be(1);
@@ -74,7 +74,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetPatientWithDiet(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(patient);
 
             _authorizationServiceMock
@@ -101,7 +101,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetPatientWithDiet(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(patient);
 
             _authorizationServiceMock
@@ -127,7 +127,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetPatientWithDiet(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(patient);
 
             // act
@@ -188,7 +188,7 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _patientRepositoryMock
-                .Setup(x => x.GetPatientWithDiet(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(patient);
 
             _authorizationServiceMock
@@ -233,7 +233,7 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _patientRepositoryMock
-                .Setup(x => x.GetPatientWithDiet(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(patient);
 
             _authorizationServiceMock
@@ -274,7 +274,7 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _patientRepositoryMock
-                .Setup(x => x.GetPatientWithDiet(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(patient);
 
             _patientRepositoryMock
@@ -297,7 +297,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetPatientWithDiet(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(patient);
 
             _authorizationServiceMock
@@ -328,7 +328,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetPatientWithDiet(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(patient);
 
             _authorizationServiceMock
@@ -356,7 +356,7 @@ namespace DieteticConsultationAPI.UnitTest
             var patient = SamplePatient();
 
             _patientRepositoryMock
-                .Setup(x => x.GetPatientWithDiet(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(patient);
 
             _patientRepositoryMock

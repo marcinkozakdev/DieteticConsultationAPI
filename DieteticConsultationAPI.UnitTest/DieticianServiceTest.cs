@@ -95,7 +95,7 @@ namespace DieteticConsultationAPI.UnitTest
 
             // act
             var _sut = new DieticianService(_dieticianRepositoryMock.Object);
-            var result = await _sut.GetDieticianById(dietician.Id);
+            var result = await _sut.GetById(dietician.Id);
 
             // assert
             _dieticianRepositoryMock
@@ -117,7 +117,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new DieticianService(_dieticianRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.GetDieticianById(dietician.Id)); 
+            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.GetById(dietician.Id)); 
         }
 
         [Fact]

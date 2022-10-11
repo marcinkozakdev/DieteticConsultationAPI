@@ -20,7 +20,7 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Dietician,Patient")]
-        public async Task<ActionResult> Create([FromBody] CreatePatientDto dto)
+        public async Task<ActionResult> Create([FromBody] PatientDto dto)
         {
             var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -49,7 +49,7 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Dietician,Patient")]
-        public async Task<IActionResult> Update([FromBody] UpdatePatientDto dto, int id)
+        public async Task<IActionResult> Update([FromBody] PatientDto dto, int id)
         {
             await _patientService.UpdatePatient(dto, id);
 

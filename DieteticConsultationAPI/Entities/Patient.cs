@@ -1,4 +1,5 @@
-﻿namespace DieteticConsultationAPI.Entities;
+﻿using DieteticConsultationAPI.Models;
+namespace DieteticConsultationAPI.Entities;
 
 public class Patient
 {
@@ -16,4 +17,18 @@ public class Patient
     public int DieticianId { get; set; }
     public virtual Dietician Dietician { get; set; }
     public virtual Diet? Diet { get; set; }
+    public static Patient For(PatientDto patientdto) =>
+        new()
+        {
+            Id = patientdto.Id,
+            FirstName = patientdto.FirstName,
+            LastName = patientdto.LastName,
+            ContactEmail = patientdto.ContactEmail,
+            ContactNumber = patientdto.ContactNumber,
+            Sex = patientdto.Sex,
+            Weight = patientdto.Weight,
+            Height = patientdto.Height,
+            Age = patientdto.Age,
+            Diet = Diet.For(patientdto.Diet)
+        };
 }

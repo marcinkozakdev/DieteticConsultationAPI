@@ -41,6 +41,5 @@ namespace DieteticConsultationAPI.Controllers
 
             return NoContent();
         }
-        
     }
 }

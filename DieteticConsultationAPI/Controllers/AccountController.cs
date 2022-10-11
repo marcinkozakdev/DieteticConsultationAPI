@@ -16,7 +16,7 @@ namespace DieteticConsultationAPI.Controllers
         }
         
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto dto)
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
             await _accountService.RegisterUser(dto);
 
