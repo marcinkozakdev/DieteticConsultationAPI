@@ -14,7 +14,7 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Dietician>> GetAll() =>
+        public async Task<ICollection<Dietician>> GetAll() =>
             await _context.Dieticians.Include(d => d.Patients).ToListAsync();
 
         public async Task<Dietician> GetById(int? id) =>
@@ -43,7 +43,10 @@ namespace DieteticConsultationAPI.Repositories
 
         public async Task Delete(int? id)
         {
-            Dietician dietician = await _context.Dieticians.FirstOrDefaultAsync(d => d.Id == id);
+            var dietician = await _context.Dieticians.FirstOrDefaultAsync(d => d.Id == id);
+            if (dietician is null)
+                return;
+
             _context.Dieticians.Remove(dietician);
             await _context.SaveChangesAsync();
         }

@@ -23,6 +23,7 @@ namespace DieteticConsultationAPI.Controllers
         {
             var id = await _dieticianService.CreateDietician(dto);
 
+            // from where you will get id, if you are creating new dietetican ?
             return Created($"/api/dietician/{id}", null);
         }
 
@@ -48,7 +49,7 @@ namespace DieteticConsultationAPI.Controllers
         [Authorize(Roles = "Admin,Dietician")]
         public async Task<IActionResult> Update([FromBody] UpdateDieticianDto dto, [FromRoute] int id)
         {
-           await _dieticianService.UpdateDietician(dto, id);
+           await _dieticianService.CreateDietician(dto);
 
             return Ok();
         }
