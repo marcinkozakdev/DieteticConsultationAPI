@@ -16,5 +16,4 @@ public static class FormCollectionExtensions
             ? JsonSerializer.Deserialize<TResult>(strValue)
             : parser.Invoke(strValue);
     }
-    
 }

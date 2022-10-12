@@ -25,13 +25,13 @@ namespace DieteticConsultationAPI.Services
             _patientRepository = patientRepository;
         }
 
-        public Task CreatePatient(PatientDto patientDto) =>
+        public Task Create(PatientDto patientDto) =>
          _patientRepository.AddOrUpdate(Patient.For(patientDto));
-        }
+
 
         public async Task<PagedResult<PatientDto>> GetAll(PatientQuery query)
         {
-        var baseQuery = await _patientRepository.GetAll(query);
+            var baseQuery = await _patientRepository.GetAll(query);
 
             if (!string.IsNullOrEmpty(query.SortBy))
             {
@@ -55,19 +55,7 @@ namespace DieteticConsultationAPI.Services
 
             var totaItemsCount = baseQuery.Count();
 
-            var patientsDtos = patients.Select(p => new PatientDto()
-            {
-                Id = p.Id,
-                FirstName = p.FirstName,
-                LastName = p.LastName,
-                ContactEmail = p.ContactEmail,
-                ContactNumber = p.ContactNumber,
-                Sex = p.Sex,
-                Age = p.Age,
-                Weight = p.Weight,
-                Height = p.Height,
-                Diet = Map(p.Diet)
-            }).ToList();
+            var patientsDtos = patients.Select(PatientDto.For).ToArray();
 
             var result = new PagedResult<PatientDto>(patientsDtos, totaItemsCount, query.PageSize, query.PageNumber);
 
@@ -75,82 +63,47 @@ namespace DieteticConsultationAPI.Services
         }
         public async Task<PatientDto> GetById(int id)
         {
-            var patient = await GetPatientById(id);
+            var patient = PatientDto.For(await _patientRepository.GetById(id));
+
+            if (patient is null)
+                CannotFindResourceException.For(id);
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Read)).Result;
 
             if (!authorizationResult.Succeeded)
                 ForbidHttpException.For("Authorization failed");
 
-            var patientDto = new PatientDto()
-            {
-                Id = id,
-                FirstName = patient.FirstName,
-                LastName = patient.LastName,
-                ContactEmail = patient.ContactEmail,
-                ContactNumber = patient.ContactNumber,
-                Sex = patient.Sex,
-                Age = patient.Age,
-                Weight = patient.Weight,
-                Height = patient.Height,
-                Diet = Map(patient.Diet)
-            };
-
-            return patientDto;
+            return patient;
         }
 
-        public async Task Update(UpdatePatientDto dto, int id)
+        public async Task Update(PatientDto patientDto)
         {
-            var patient = await GetPatientById(id);
+            var patient = PatientDto.For(await _patientRepository.GetById(patientDto.Id));
+
+            if (patient is null)
+                CannotFindResourceException.For(patientDto.Id);
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
 
             if (!authorizationResult.Succeeded)
                 ForbidHttpException.For("Authorization failed");
 
-            patient.Id = id;
-            patient.FirstName = dto.FirstName;
-            patient.LastName = dto.LastName;
-            patient.ContactNumber = dto.ContactNumber;
-            patient.ContactEmail = dto.ContactEmail;
-            patient.Weight = dto.Weight;
-            patient.Height = dto.Height;
-            patient.Age = dto.Age;
-
-            await _patientRepository.AddOrUpdate(patient);
+            await _patientRepository.AddOrUpdate(Patient.For(patientDto));
         }
 
         public async Task Delete(int id)
         {
-        var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
+            var patient = PatientDto.For(await _patientRepository.GetById(id));
+
+            if (patient is null)
+                CannotFindResourceException.For(id);
+
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
 
             if (!authorizationResult.Succeeded)
                 ForbidHttpException.For("Authorization failed");
 
             await _patientRepository.Delete(id);
-        }
-
-        private DietDto Map(Diet diet) =>
-            diet is null
-            ? null
-            : new DietDto
-            {
-                Id = diet.Id,
-                Name = diet.Name,
-                Description = diet.Description,
-                CalorificValue = diet.CalorificValue,
-                ProhibitedProducts = diet.ProhibitedProducts,
-                RecommendedProducts = diet.RecommendedProducts
-            };
-
-        private async Task<Patient> GetPatientById(int id)
-        {
-            var patient = await _patientRepository.GetById(id);
-
-            if (patient is null)
-                NotFoundHttpException.For("Patient not found");
-
-            return patient;
         }
     }
 }

@@ -30,6 +30,5 @@ namespace DieteticConsultationAPI.Controllers
 
             return Ok(token);
         }
-
     }
 }

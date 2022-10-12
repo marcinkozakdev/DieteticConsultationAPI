@@ -1,4 +1,4 @@
-using DieteticConsultationAPI;
+using DieteticConsultationAPI.Extensions;
 using FluentValidation.AspNetCore;
 using NLog.Web;
 using System.Runtime.CompilerServices;

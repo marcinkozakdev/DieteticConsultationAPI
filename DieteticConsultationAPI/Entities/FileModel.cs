@@ -1,4 +1,6 @@
-﻿namespace DieteticConsultationAPI.Entities
+﻿using System.Net.Mail;
+
+namespace DieteticConsultationAPI.Entities
 {
     public class FileModel
     {
@@ -9,5 +11,17 @@
         public DateTime Date { get; set; }
         public int? DietId { get; set; }
         public virtual Diet? Diet { get; set; }
+
+        public static FileModel For(FileModelDto fileDto)
+            =>
+            new()
+            {
+                DietId = fileDto.DietId,
+                FileName = fileDto.FileName,
+                FileType = fileDto.FileType,
+                Attachment = fileDto.Attachment,
+                Date = fileDto.Date,
+                Diet = fileDto.Diet,
+            };
     }
 }

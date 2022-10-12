@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace DieteticConsultationAPI
+namespace DieteticConsultationAPI.Extensions
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseSeeder (this IApplicationBuilder app)
+        public static IApplicationBuilder UseSeeder(this IApplicationBuilder app)
         {
             var scope = app.ApplicationServices.CreateScope();
             var seeder = scope.ServiceProvider.GetRequiredService<DieteticConsultationSeeder>();

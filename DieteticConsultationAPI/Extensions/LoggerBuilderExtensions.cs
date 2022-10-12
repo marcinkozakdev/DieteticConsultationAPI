@@ -5,14 +5,14 @@ using NLog.Web;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace DieteticConsultationAPI
+namespace DieteticConsultationAPI.Extensions
 {
-    public static class LoggerBuilderExtension
+    public static class LoggerBuilderExtensions
     {
         public static ILoggingBuilder AddCustomLogging(this ILoggingBuilder builder)
         {
             builder.ClearProviders();
-            builder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+            builder.SetMinimumLevel(LogLevel.Trace);
             return builder;
         }
     }

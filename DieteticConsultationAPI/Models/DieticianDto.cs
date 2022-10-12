@@ -24,21 +24,19 @@ public class DieticianDto
                     Specialization = dietician.Specialization,
                     ContactEmail = dietician.ContactEmail,
                     ContactNumber = dietician.ContactNumber,
-                    Patients = dietician.Patients.Select(PatientDto.For).ToList()
+                    Patients = dietician.Patients?.Select(PatientDto.For).ToList()
                 };
-    public static async ValueTask<DieticianDto?> BindAsync(HttpContext context)
+    public static async ValueTask<DieticianDto> BindAsync(HttpContext context)
     {
         var form = await context.Request.ReadFormAsync();
 
         form.TryGetValue(nameof(Id), out var id);
+        form.TryGetValue(nameof(FirstName), out var firstName);
+        form.TryGetValue(nameof(LastName), out var lastName);
         form.TryGetValue(nameof(Specialization), out var specialization);
         form.TryGetValue(nameof(ContactEmail), out var contactEmail);
-        form.TryGetValue(nameof(FirstName), out var firstName);
         form.TryGetValue(nameof(ContactNumber), out var contactNumber);
-        form.TryGetValue(nameof(LastName), out var lastName);
-
-        //var a = form.Deserialize<ICollection<PatientDto>>(nameof(Patients));
-
+       
         var result = new DieticianDto
         {
             Id = int.TryParse(id, out var parsedId) ? parsedId : 0,

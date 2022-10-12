@@ -14,7 +14,6 @@ namespace DieteticConsultationAPI.Services
         public DietService(IDietRepository dietRepository) =>
             _dietRepository = dietRepository;
 
-
         public Task Create(DietDto dietDto) =>
             _dietRepository.AddOrUpdate(Diet.For(dietDto));
 
