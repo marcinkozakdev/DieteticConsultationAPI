@@ -11,15 +11,16 @@
         public virtual Diet? Diet { get; set; }
 
         public static FileModelDto For(FileModel file)
-            =>
-            new()
+            => 
+            file is null
+            ? null
+            : new()
             {
                 DietId = file.DietId,
                 FileName = file.FileName,
                 FileType = file.FileType,
                 Attachment = file.Attachment,
                 Date = file.Date,
-                Diet = file.Diet,
             };
     }
 }

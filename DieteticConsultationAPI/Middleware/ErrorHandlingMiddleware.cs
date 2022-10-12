@@ -18,17 +18,21 @@ namespace DieteticConsultationAPI.Middleware
             {
                 await next.Invoke(context);
             }
-            catch (ForbidHttpException forbidException)
+            catch (ForbiddenResourceException forbiddenException)
             {
-                await BuildResponse(context, forbidException, HttpStatusCode.BadRequest);
+                await BuildResponse(context, forbiddenException, HttpStatusCode.BadRequest);
             }
-            catch (BadRequestHttpException badRequestException)
+            catch (IncorrectLogginException incorrectLogginException)
             {
-                await BuildResponse(context, badRequestException, HttpStatusCode.BadRequest);
+                await BuildResponse(context, incorrectLogginException, HttpStatusCode.NotFound);
             }
-            catch (NotFoundHttpException notFoundException)
+            catch (CannotCreateResourceException cannotCreateResourceException)
             {
-                await BuildResponse(context, notFoundException, HttpStatusCode.NotFound);
+                await BuildResponse(context, cannotCreateResourceException, HttpStatusCode.BadRequest);
+            }
+            catch (CannotFindResourceException cannotfindResourceException)
+            {
+                await BuildResponse(context, cannotfindResourceException, HttpStatusCode.NotFound);
             }
             catch (CommonHttpException ex)
             {

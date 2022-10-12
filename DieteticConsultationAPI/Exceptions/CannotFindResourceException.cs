@@ -1,13 +1,21 @@
 using System.Net;
 namespace DieteticConsultationAPI.Exceptions;
 
-internal sealed class CannotFindResourceException : CommonHttpException
+public sealed class CannotFindResourceException : CommonHttpException
 {
     private CannotFindResourceException(int id) : base($"Cannot find resource for id:{id}", HttpStatusCode.NotFound)
     {
 
     }
 
+    private CannotFindResourceException(string message) : base(message, HttpStatusCode.NotFound)
+    {
+
+    }
+
     public static void For(int id) =>
         throw new CannotFindResourceException(id);
+
+    public static void For(string message) =>
+        throw new CannotFindResourceException(message);
 }
