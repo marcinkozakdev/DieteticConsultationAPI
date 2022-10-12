@@ -46,11 +46,11 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Dietician")]
-        public async Task<IActionResult> Update([FromBody] DietDto command, int id)
+        public async Task<IActionResult> Update([FromBody] DietDto command)
         {
             await _dietService.Update(command);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]

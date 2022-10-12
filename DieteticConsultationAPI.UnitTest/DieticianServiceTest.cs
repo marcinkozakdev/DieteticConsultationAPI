@@ -12,19 +12,17 @@ namespace DieteticConsultationAPI.UnitTest
     public class DieticianServiceTest
     {
         private readonly Mock<IDieticianRepository> _dieticianRepositoryMock;
-        private readonly Mock<ILogger<DieticianService>> _loggerMock;
 
         public DieticianServiceTest()
         {
             _dieticianRepositoryMock = new Mock<IDieticianRepository>();
-            _loggerMock = new Mock<ILogger<DieticianService>>();
         }
 
         [Fact]
         public async Task GetAllDieticians_DieticiansFound_ReturnAllDieticians()
         {
             // arrange
-            List<Dietician> dieticians = new List<Dietician>()
+            ICollection<Dietician> dieticians = new List<Dietician>()
             {
                SampleDietician()
             };
@@ -50,7 +48,7 @@ namespace DieteticConsultationAPI.UnitTest
             // arrange
             int id = 1;
             var dietician = SampleDietician();
-            
+
             _dieticianRepositoryMock
                 .Setup(x => x.GetById(id))
                 .ReturnsAsync(dietician);
@@ -64,7 +62,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public async Task GetDietician_DieticianNotFound_ReturnNotFoundException()
+        public async Task GetDietician_DieticianNotFound_CannotFindResourceException()
         {
             // arrange
             int id = 2;
@@ -79,7 +77,7 @@ namespace DieteticConsultationAPI.UnitTest
 
             // assert
 
-            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.GetById(dietician.Id)); 
+            await Assert.ThrowsAsync<CannotFindResourceException>(() => _sut.GetById(dietician.Id));
         }
 
         [Fact]
@@ -103,7 +101,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public async Task GetDieticianById_DieticianNotFound_ReturnNotFoundException()
+        public async Task GetDieticianById_DieticianNotFound_CannotFindResourceException()
         {
             // arrange
             int id = 2;
@@ -117,7 +115,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new DieticianService(_dieticianRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.GetById(dietician.Id)); 
+            await Assert.ThrowsAsync<CannotFindResourceException>(() => _sut.GetById(dietician.Id));
         }
 
         [Fact]
@@ -126,12 +124,13 @@ namespace DieteticConsultationAPI.UnitTest
             // arrange
             var dietician = new DieticianDto()
             {
+                Id = 2,
                 FirstName = "Dominika",
                 LastName = "Kozak",
                 Specialization = "Dietician",
                 ContactEmail = "dominika.kozak@test.com",
                 ContactNumber = "111222333",
-                Id = 2,
+                Patients = new List<PatientDto>()
             };
 
             _dieticianRepositoryMock
@@ -139,7 +138,7 @@ namespace DieteticConsultationAPI.UnitTest
 
             // act
             var _sut = new DieticianService(_dieticianRepositoryMock.Object);
-            var result = await _sut.AddOrUpdateDietician(dietician, dietician.Id);
+            await _sut.Create(dietician);
 
             // assert
             _dieticianRepositoryMock
@@ -163,6 +162,7 @@ namespace DieteticConsultationAPI.UnitTest
                 Specialization = "Dietician",
                 ContactEmail = "dominika.olszowy@test.com",
                 ContactNumber = "111222333",
+                Patients = new List<PatientDto>()
             };
 
             _dieticianRepositoryMock
@@ -170,12 +170,11 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(dietician);
 
             _dieticianRepositoryMock
-                .Setup(x => x.AddOrUpdate(It.IsAny<Dietician>()))
-                .ReturnsAsync(dietician);
+                .Setup(x => x.AddOrUpdate(It.IsAny<Dietician>()));
 
             // act
             var _sut = new DieticianService(_dieticianRepositoryMock.Object);
-           await _sut.AddOrUpdateDietician(updateDietician, dietician.Id);
+            await _sut.Update(updateDietician);
 
             // assert
             _dieticianRepositoryMock
@@ -198,6 +197,7 @@ namespace DieteticConsultationAPI.UnitTest
                 Specialization = "Dietician",
                 ContactEmail = "dominika.olszowy@test.com",
                 ContactNumber = "111222333",
+                Patients= new List<PatientDto>()
             };
 
             _dieticianRepositoryMock
@@ -205,12 +205,11 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(dietician);
 
             _dieticianRepositoryMock
-                .Setup(x => x.AddOrUpdate(dietician))
-                .ReturnsAsync(dietician);
+                .Setup(x => x.AddOrUpdate(dietician));
 
             // act
             var _sut = new DieticianService(_dieticianRepositoryMock.Object);
-            await _sut.AddOrUpdateDietician(createDietician, dietician.Id);
+            await _sut.Create(createDietician);
 
             // assert
             Assert.Equal("Olszowy", createDietician.LastName);
@@ -237,52 +236,17 @@ namespace DieteticConsultationAPI.UnitTest
             _dieticianRepositoryMock.Verify(x => x.Delete(dietician.Id), Times.Once);
         }
 
-        [Fact]
-        public async Task DeleteDietician_DieticianNotFound_ReturnNotFoundException()
-        {
-            // arrange
-            var id = 2;
-            var dietician = SampleDietician();
-
-            _dieticianRepositoryMock
-                .Setup(x => x.GetById(id))
-                .ReturnsAsync(dietician);
-
-            _dieticianRepositoryMock
-                .Setup(x => x.Delete(It.IsAny<int>()));
-
-            // act
-            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
-
-            // assert
-            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.Delete(dietician.Id));
-        }
-
         private Dietician SampleDietician()
         {
             return new Dietician()
             {
+                Id = 1,
                 FirstName = "Dominika",
                 LastName = "Kozak",
                 Specialization = "Dietician",
                 ContactEmail = "dominika.kozak@test.com",
                 ContactNumber = "111222333",
-                Id = 1,
                 Patients = new List<Patient>()
-                {
-                    new Patient()
-                    {
-                        FirstName = "Marcin",
-                        LastName = "Kozak",
-                        ContactEmail = "marcinkozak@test.com",
-                        ContactNumber = "999888777",
-                        Sex = "Male",
-                        Weight = 60,
-                        Height = 168,
-                        Age = 28,
-                        Diet =  new Diet()
-                    }
-                }
             };
         }
     }

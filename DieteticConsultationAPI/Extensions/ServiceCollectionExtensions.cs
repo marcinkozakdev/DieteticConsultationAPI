@@ -17,12 +17,12 @@ using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Repositories;
 using DieteticConsultationAPI.Services.Interfaces;
 
-namespace DieteticConsultationAPI
+namespace DieteticConsultationAPI.Extensions
 {
     public static class ServiceCollectionExtensions
     {
 
-            public static IServiceCollection AddDbContextServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDbContextServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<DieteticConsultationDbContext>
                   (options => options.UseSqlServer(configuration.GetConnectionString("DieteticConsultationDbConnection")));
@@ -30,7 +30,7 @@ namespace DieteticConsultationAPI
             return services;
         }
 
-        public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration )
+        public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
             var authenticationSettings = new AuthenticationSettings();
             configuration.GetSection("Authentication").Bind(authenticationSettings);

@@ -1,10 +1,12 @@
 ﻿using AutoFixture;
 using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Exceptions;
+using DieteticConsultationAPI.Extensions;
 using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
@@ -25,7 +27,7 @@ namespace DieteticConsultationAPI.UnitTest
         public async Task CreateDiet_InputDietForTheFoundPatient_ReturnDiet()
         {
             // arrange
-            var diet = new CreateDietDto()
+            var diet = new DietDto()
             {
                 Id = 1,
                 Name = "High-protein diet",
@@ -33,15 +35,15 @@ namespace DieteticConsultationAPI.UnitTest
                 CalorificValue = 1800,
                 ProhibitedProducts = "greasy decoctions, margarine, lard, tallow, fast-food, fatty cheeses, blue cheeses, thick groats, pasta, noodles",
                 RecommendedProducts = "eggs, fishes, seafood. ,eat. soy products, dairy products",
-                PatientId = 2,
+                Files = new List<FileModelDto>()
             };
 
             _dietRepositoryMock
                 .Setup(x => x.AddOrUpdate(It.IsAny<Diet>()));
 
             // act
-            var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            var result = await _sut.CreateDiet(diet);
+            var _sut = new DietService(_dietRepositoryMock.Object);
+            await _sut.Create(diet);
 
             // assert
             _dietRepositoryMock
@@ -60,15 +62,15 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _dietRepositoryMock
-                .Setup(x => x.GetAllDietsWithPatientsAndFiles()).ReturnsAsync(diets);
+                .Setup(x => x.GetAll()).ReturnsAsync(diets);
 
             // act
-            var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            var result = await _sut.GetAllDiets();
+            var _sut = new DietService(_dietRepositoryMock.Object);
+            var result = await _sut.GetAll();
 
             // arrange
             _dietRepositoryMock
-                .Verify(x => x.GetAllDietsWithPatientsAndFiles(), Times.Once());
+                .Verify(x => x.GetAll(), Times.Once());
 
             result.Count().Should().Be(1);
         }
@@ -77,16 +79,21 @@ namespace DieteticConsultationAPI.UnitTest
         public async Task GetAllDiets_DietsListIsEmpty_ReturnNotFoundException()
         {
             // arrange
-            List<Diet>? diets = null;
+            List<Diet>? diets = new List<Diet>();
+
 
             _dietRepositoryMock
-                .Setup(x => x.GetAllDietsWithPatientsAndFiles()).ReturnsAsync(diets);
+                .Setup(x => x.GetAll()).ReturnsAsync(diets);
 
             // act
-            var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
+            var _sut = new DietService(_dietRepositoryMock.Object);
+            var result = await _sut.GetAll();
 
             // arrange
-            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.GetAllDiets());
+            _dietRepositoryMock
+                .Verify(x => x.GetAll(), Times.Once());
+
+            result.Count().Should().Be(0);
         }
 
         [Fact]
@@ -97,15 +104,15 @@ namespace DieteticConsultationAPI.UnitTest
             var diet = SampleDiet();
 
             _dietRepositoryMock
-                .Setup(x => x.GetDietWithPatientAndFiles(id)).ReturnsAsync(diet);
+                .Setup(x => x.GetById(id)).ReturnsAsync(diet);
 
             // act
-            var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            DietDto result = await _sut.GetDiet(diet.Id);
+            var _sut = new DietService(_dietRepositoryMock.Object);
+            DietDto result = await _sut.GetById(diet.Id);
 
             // arrange
             _dietRepositoryMock
-                .Verify(x => x.GetDietWithPatientAndFiles(diet.Id), Times.Once());
+                .Verify(x => x.GetById(diet.Id), Times.Once());
 
             result.Name.Should().NotBe(null);
         }
@@ -118,13 +125,13 @@ namespace DieteticConsultationAPI.UnitTest
             var diet = SampleDiet();
 
             _dietRepositoryMock
-                .Setup(x => x.GetDietWithPatientAndFiles(id)).ReturnsAsync(diet);
+                .Setup(x => x.GetById(id)).ReturnsAsync(diet);
 
             // act
-            var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
+            var _sut = new DietService(_dietRepositoryMock.Object);
 
             // arrange
-            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.GetDiet(diet.Id)); 
+            await Assert.ThrowsAsync<CannotFindResourceException>(() => _sut.GetById(diet.Id));
         }
 
         [Fact]
@@ -134,8 +141,9 @@ namespace DieteticConsultationAPI.UnitTest
             int id = 1;
             var diet = SampleDiet();
 
-            var updateDiet = new UpdateDietDto()
+            var updateDiet = new DietDto()
             {
+                Id = 1,
                 Name = "High-protein diet",
                 Description = "A diet where 20% or more of your daily calories come from protein. Most high-protein diets are high in saturated fat and severely limit carbohydrate intake.",
                 CalorificValue = 2200,
@@ -144,15 +152,15 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _dietRepositoryMock
-                .Setup(x => x.GetDietWithPatientAndFiles(id)).ReturnsAsync(diet);
+                .Setup(x => x.GetById(id)).ReturnsAsync(diet);
 
             _dietRepositoryMock
                 .Setup(x => x.AddOrUpdate(It.IsAny<Diet>()))
                 .ReturnsAsync(diet);
 
             // act
-            var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            await _sut.UpdateDiet(updateDiet, diet.Id);
+            var _sut = new DietService(_dietRepositoryMock.Object);
+            await _sut.Update(updateDiet);
 
             // arrange
             _dietRepositoryMock
@@ -162,13 +170,13 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public async Task UpdateDiet_DietNotFound_ReturnNotFoundException()
+        public async Task UpdateDiet_DietNotFound_CreateDiet()
         {
             // arrange
             var id = 2;
             var diet = SampleDiet();
 
-            var updateDiet = new UpdateDietDto()
+            var createDiet = new DietDto()
             {
                 Name = "High-protein diet",
                 Description = "A diet where 20% or more of your daily calories come from protein. Most high-protein diets are high in saturated fat and severely limit carbohydrate intake.",
@@ -178,7 +186,7 @@ namespace DieteticConsultationAPI.UnitTest
             };
 
             _dietRepositoryMock
-                .Setup(x => x.GetDietWithPatientAndFiles(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(diet);
 
             _dietRepositoryMock
@@ -186,10 +194,11 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(diet);
 
             // act
-            var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
+            var _sut = new DietService(_dietRepositoryMock.Object);
+            await _sut.Create(createDiet);
 
             // arrange
-            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.UpdateDiet(updateDiet, diet.Id));
+            Assert.Equal("High-protein diet", createDiet.Name);
         }
 
         [Fact]
@@ -200,40 +209,19 @@ namespace DieteticConsultationAPI.UnitTest
             var diet = SampleDiet();
 
             _dietRepositoryMock
-                .Setup(x => x.GetDietWithPatientAndFiles(id))
+                .Setup(x => x.GetById(id))
                 .ReturnsAsync(diet);
 
             _dietRepositoryMock
                 .Setup(x => x.Delete(It.IsAny<int>()));
 
             // act
-            var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-            await _sut.DeleteDiet(diet.Id);
+            var _sut = new DietService(_dietRepositoryMock.Object);
+            await _sut.Delete(diet.Id);
 
             // arrange
             _dietRepositoryMock
                 .Verify(x => x.Delete(diet.Id), Times.Once());
-        }
-
-        [Fact]
-        public async Task DeleteDiet_DietNotFound_ReturnNotFoundException()
-        {
-            // arrange
-            int id = 2;
-            var diet = SampleDiet();
-
-            _dietRepositoryMock
-                .Setup(x => x.GetDietWithPatientAndFiles(id))
-                .ReturnsAsync(diet);
-
-            _dietRepositoryMock
-                .Setup(x => x.Delete(It.IsAny<int>()));
-
-            // act
-            var _sut = new DietService(_loggerMock.Object, _dietRepositoryMock.Object);
-
-            // arrange
-            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.DeleteDiet(diet.Id)); 
         }
 
         private Diet SampleDiet()
@@ -246,6 +234,7 @@ namespace DieteticConsultationAPI.UnitTest
                 CalorificValue = 1800,
                 ProhibitedProducts = "greasy decoctions, margarine, lard, tallow, fast-food, fatty cheeses, blue cheeses, thick groats, pasta, noodles",
                 RecommendedProducts = "eggs, fishes, seafood. ,eat. soy products, dairy products",
+                Files = new List<FileModel>()
             };
         }
     }

@@ -13,6 +13,7 @@ public class Diet
     public int? PatientId { get; set; }
     public virtual Patient? Patient { get; set; }
     public virtual List<FileModel>? Files { get; set; }
+    
     public static Diet For(DietDto dietDto) =>
         new()
         {
@@ -21,6 +22,7 @@ public class Diet
             Description = dietDto.Description,
             CalorificValue = dietDto.CalorificValue,
             ProhibitedProducts = dietDto.ProhibitedProducts,
-            RecommendedProducts = dietDto.RecommendedProducts
+            RecommendedProducts = dietDto.RecommendedProducts,
+            Files = dietDto.Files?.Select(FileModel.For).ToList()
         };
 }

@@ -10,7 +10,9 @@ public class Dietician
     public string ContactEmail { get; set; }
     public string ContactNumber { get; set; }
     public ICollection<Patient> Patients { get; set; }
-    public static Dietician For(DieticianDto dieticianDto) =>
+    
+    public static Dietician For(DieticianDto dieticianDto) 
+        =>
         new()
         {
             Id = dieticianDto.Id,
@@ -19,6 +21,6 @@ public class Dietician
             Specialization = dieticianDto.Specialization,
             ContactEmail = dieticianDto.ContactEmail,
             ContactNumber = dieticianDto.ContactNumber,
-            //Patients= dieticianDto.Patients.Select(Patient.For).ToList()
+            Patients= dieticianDto.Patients.Select(Patient.For).ToList()
         };
 }

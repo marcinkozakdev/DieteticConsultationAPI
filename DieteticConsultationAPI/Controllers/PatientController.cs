@@ -1,4 +1,5 @@
-﻿using DieteticConsultationAPI.Models;
+﻿using DieteticConsultationAPI.Entities;
+using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -13,27 +14,24 @@ namespace DieteticConsultationAPI.Controllers
     {
         private readonly IPatientService _patientService;
 
-        public PatientController(IPatientService patientService)
-        {
+        public PatientController(IPatientService patientService) =>
             _patientService = patientService;
-        }
+
 
         [HttpPost]
         [Authorize(Roles = "Admin,Dietician,Patient")]
         public async Task<ActionResult> Create([FromBody] PatientDto dto)
         {
-            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            await _patientService.Create(dto);
 
-            var patientId = await _patientService.CreatePatient(dto);
-
-            return Created(patientId.ToString(), null);
+            return Created("api/patient", null);
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin,Dietician")]
-        public async Task<IActionResult> GetAll([FromQuery]PatientQuery query)
+        public async Task<IActionResult> GetAll([FromQuery] PatientQuery query)
         {
-            var patients = await _patientService.GetAllPatients(query);
+            var patients = await _patientService.GetAll(query);
 
             return Ok(patients);
         }
@@ -42,25 +40,25 @@ namespace DieteticConsultationAPI.Controllers
         [Authorize(Roles = "Admin,Dietician,Patient")]
         public async Task<IActionResult> Get(int id)
         {
-            var patient = await _patientService.GetPatient(id);
+            var patient = await _patientService.GetById(id);
 
             return Ok(patient);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Dietician,Patient")]
-        public async Task<IActionResult> Update([FromBody] PatientDto dto, int id)
+        public async Task<IActionResult> Update([FromBody] PatientDto command)
         {
-            await _patientService.UpdatePatient(dto, id);
+            await _patientService.Update(command);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Dietician,Patient")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _patientService.DeletePatient(id);
+            await _patientService.Delete(id);
 
             return NoContent();
         }
