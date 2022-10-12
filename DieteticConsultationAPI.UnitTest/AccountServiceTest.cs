@@ -52,7 +52,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public async Task GenerateJwt_WhenNull_ReturnBadRequestException()
+        public async Task GenerateJwt_WhenNull_ReturnIncorrectLogginException()
         {
             // arrange
             var loginDto = new LoginDto();
@@ -66,7 +66,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
 
             //assert
-            await Assert.ThrowsAsync<BadRequestHttpException>(() => _sut.GenerateJwt(loginDto));
+            await Assert.ThrowsAsync<IncorrectLogginException>(() => _sut.GenerateJwt(loginDto));
         }
 
         [Theory]
@@ -75,7 +75,7 @@ namespace DieteticConsultationAPI.UnitTest
         [InlineData("test@test.com", null)]
         [InlineData(null, "password123")]
         [InlineData(null, null)]
-        public async Task GenerateJwt_WhenInvalidUserNameOrPasswordOrNull_ReturnBadRequestException(string email, string password)
+        public async Task GenerateJwt_WhenInvalidUserNameOrPasswordOrNull_IncorrectLogginException(string email, string password)
         {
             // arrange
             var loginDto = new LoginDto()
@@ -100,7 +100,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
 
             //assert
-            await Assert.ThrowsAsync<BadRequestHttpException>(() => _sut.GenerateJwt(loginDto));
+            await Assert.ThrowsAsync<IncorrectLogginException>(() => _sut.GenerateJwt(loginDto));
         }
     }
 }

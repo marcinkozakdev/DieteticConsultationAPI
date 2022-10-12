@@ -18,7 +18,7 @@ namespace DieteticConsultationAPI.Services
         public async Task UploadFile(IFormFile file)
         {
             if (file is null || file.Length == 0)
-                NotFoundHttpException.For("File not found");
+                CannotFindResourceException.For("File not found");
 
             using var memoryStream = new MemoryStream();
 
@@ -37,36 +37,16 @@ namespace DieteticConsultationAPI.Services
 
         public async Task<FileModelDto> DownloadFile(int id)
         {
-            var file = await GetFileById(id);
-
-            var fileDto = new FileModelDto()
-            {
-                Id = id,
-                FileName = file.FileName,
-                FileType = file.FileType,
-                Attachment = file.Attachment,
-                Date = file.Date,
-            };
-
-            return fileDto;
-        }
-
-        public async Task DeleteFile(int id)
-        {
-            var file = await GetFileById(id);
-            
-            await _fileRepository.Delete(file.Id);
-        }
-
-        private async Task<FileModel> GetFileById(int id)
-        {
-            var file = await _fileRepository.GetById(id);
+            var file = FileModelDto.For(await _fileRepository.GetById(id));
 
             if (file is null)
-                NotFoundHttpException.For("File not found");
+                CannotFindResourceException.For("File not found");
 
             return file;
         }
+
+        public async Task DeleteFile(int id) =>
+            await _fileRepository.Delete(id);
     }
 }
 

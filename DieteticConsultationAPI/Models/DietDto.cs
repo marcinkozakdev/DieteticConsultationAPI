@@ -16,7 +16,7 @@ namespace DieteticConsultationAPI.Models
 
         public static DietDto For(Diet diet)
             =>
-            diet is null
+            diet is null 
             ? null
             : new()
             {

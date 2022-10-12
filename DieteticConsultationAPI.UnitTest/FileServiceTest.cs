@@ -18,7 +18,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public async Task UploadFile_FileIsNullAndFileLengthIsZero_ReturnNotFoundException()
+        public async Task UploadFile_FileIsNullAndFileLengthIsZero_ReturnCannotFindResourceException()
         {
             // arrange
             var file = new FormFile(Stream.Null, 0, 0, null, null);
@@ -27,7 +27,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new FileService(_fileRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.UploadFile(file));
+            await Assert.ThrowsAsync<CannotFindResourceException>(() => _sut.UploadFile(file));
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace DieteticConsultationAPI.UnitTest
         }
 
         [Fact]
-        public async Task DownloadFile_FileNotFound_ReturnNotFoundException()
+        public async Task DownloadFile_FileNotFound_ReturnCannotFindResourceException()
         {
             // arrange
             int id = 2;
@@ -67,7 +67,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new FileService(_fileRepositoryMock.Object);
 
             // arrange
-            await Assert.ThrowsAsync<NotFoundHttpException>(() => _sut.DownloadFile(file.Id));
+            await Assert.ThrowsAsync<CannotFindResourceException>(() => _sut.DownloadFile(file.Id));
         }
 
         [Fact]
@@ -91,27 +91,6 @@ namespace DieteticConsultationAPI.UnitTest
             // assert
             _fileRepositoryMock
                 .Verify(x => x.Delete(file.Id), Times.Once());
-        }
-
-        [Fact]
-        public async Task DeleteFile_FileNotFound_ReturnNotFoundException()
-        {
-            // arrange
-            int id = 2;
-            var file = SampleFile();
-
-            _fileRepositoryMock
-                .Setup(x => x.GetById(id))
-                .ReturnsAsync(file);
-
-            _fileRepositoryMock
-                .Setup(x => x.Delete(It.IsAny<int>()));
-
-            // act
-            var _sut = new FileService(_fileRepositoryMock.Object);
-
-            // assert
-            await Assert.ThrowsAsync<NotFoundHttpException>(()=> _sut.DeleteFile(file.Id));
         }
 
         private FileModel SampleFile()

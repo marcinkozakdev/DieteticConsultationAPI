@@ -114,7 +114,7 @@ namespace DieteticConsultationAPI.UnitTest
 
             // assert
 
-            await Assert.ThrowsAsync<ForbidHttpException>(() => _sut.GetById(patient.Id));
+            await Assert.ThrowsAsync<ForbiddenResourceException>(() => _sut.GetById(patient.Id));
         }
 
         [Fact]
@@ -249,7 +249,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new PatientService(_authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<ForbidHttpException>(() => _sut.Update(updatePatient));
+            await Assert.ThrowsAsync<ForbiddenResourceException>(() => _sut.Update(updatePatient));
         }
 
         [Fact]
@@ -343,7 +343,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new PatientService(_authorizationServiceMock.Object, _userContextServiceMock.Object, _patientRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<ForbidHttpException>(() => _sut.Delete(patient.Id));
+            await Assert.ThrowsAsync<ForbiddenResourceException>(() => _sut.Delete(patient.Id));
         }
 
         [Fact]
