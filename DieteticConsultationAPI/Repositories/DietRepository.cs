@@ -1,4 +1,5 @@
 ﻿using DieteticConsultationAPI.Entities;
+using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,6 +43,8 @@ namespace DieteticConsultationAPI.Repositories
                 _context.Diets.Remove(diet);
                 await _context.SaveChangesAsync();
             }
+            else
+                CannotFindResourceException.For(id);
         }
 
         public async Task<ICollection<Diet>> GetAll() =>

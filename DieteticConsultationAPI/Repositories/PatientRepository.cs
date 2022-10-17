@@ -1,4 +1,5 @@
 ﻿using DieteticConsultationAPI.Entities;
+using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models.Pagination;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,8 @@ namespace DieteticConsultationAPI.Repositories
                 _context.Patients.Remove(patients);
                 await _context.SaveChangesAsync();
             }
+            else
+                CannotFindResourceException.For(id);
         }
 
         public async Task<IQueryable<Patient>> GetAll(PatientQuery query) => 
