@@ -71,7 +71,7 @@ namespace DieteticConsultationAPI.Services
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Read)).Result;
 
             if (!authorizationResult.Succeeded)
-                ForbiddenResourceException.For("Authorization failed");
+                ForbiddenResourceException.For(id);
 
             return patient;
         }
@@ -86,7 +86,7 @@ namespace DieteticConsultationAPI.Services
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
 
             if (!authorizationResult.Succeeded)
-                ForbiddenResourceException.For("Authorization failed");
+                ForbiddenResourceException.For(patientDto.Id);
 
             await _patientRepository.AddOrUpdate(Patient.For(patientDto));
         }
@@ -101,7 +101,7 @@ namespace DieteticConsultationAPI.Services
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, patient, new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
 
             if (!authorizationResult.Succeeded)
-                ForbiddenResourceException.For("Authorization failed");
+                ForbiddenResourceException.For(id);
 
             await _patientRepository.Delete(id);
         }

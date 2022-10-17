@@ -20,9 +20,9 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Dietician,Patient")]
-        public async Task<ActionResult> Create([FromBody] PatientDto dto)
+        public async Task<ActionResult> Create([FromBody] PatientDto command)
         {
-            await _patientService.Create(dto);
+            await _patientService.Create(command);
 
             return Created("api/patient", null);
         }

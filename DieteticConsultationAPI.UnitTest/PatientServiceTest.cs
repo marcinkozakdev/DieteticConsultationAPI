@@ -141,9 +141,9 @@ namespace DieteticConsultationAPI.UnitTest
             // arrange
             var patient = new PatientDto()
             {
-                FirstName = "Marcin",
-                LastName = "Kozak",
-                ContactEmail = "marcinkozak@test.com",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
+                ContactEmail = "test@test.com",
                 ContactNumber = "999888777",
                 Sex = "Male",
                 Weight = 60,
@@ -161,7 +161,7 @@ namespace DieteticConsultationAPI.UnitTest
             await _sut.Create(patient);
 
             // assert
-            Assert.Equal("Marcin", patient.FirstName);
+            Assert.Equal("Test FirstName", patient.FirstName);
         }
 
         [Fact]
@@ -174,9 +174,9 @@ namespace DieteticConsultationAPI.UnitTest
 
             {
                 Id = 1,
-                FirstName = "Marcin",
-                LastName = "Kozak",
-                ContactEmail = "marcinkozak@test.com",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
+                ContactEmail = "test@test.com",
                 ContactNumber = "999888777",
                 Sex = "Male",
                 Weight = 65,
@@ -220,9 +220,9 @@ namespace DieteticConsultationAPI.UnitTest
 
             {
                 Id = 1,
-                FirstName = "Marcin",
-                LastName = "Kozak",
-                ContactEmail = "marcinkozak@test.com",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
+                ContactEmail = "test@test.com",
                 ContactNumber = "999888777",
                 Sex = "Male",
                 Weight = 65,
@@ -261,9 +261,9 @@ namespace DieteticConsultationAPI.UnitTest
 
             var updatePatient = new PatientDto()
             {
-                FirstName = "Marcin",
-                LastName = "Kozak",
-                ContactEmail = "marcinkozak@test.com",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
+                ContactEmail = "test@test.com",
                 ContactNumber = "999888777",
                 Sex = "Male",
                 Weight = 65,
@@ -372,9 +372,9 @@ namespace DieteticConsultationAPI.UnitTest
             return new Patient()
             {
                 Id = 1,
-                FirstName = "Marcin",
-                LastName = "Kozak",
-                ContactEmail = "marcinkozak@test.com",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
+                ContactEmail = "test1@test.com",
                 ContactNumber = "999888777",
                 Sex = "Male",
                 Weight = 60,
@@ -389,9 +389,9 @@ namespace DieteticConsultationAPI.UnitTest
             return new Patient()
             {
                 Id = 1,
-                FirstName = "Dominika",
-                LastName = "Kozak",
-                ContactEmail = "marcinkozak@test.com",
+                FirstName = "Test FirstName2",
+                LastName = "Test LastName2",
+                ContactEmail = "test2@test.com",
                 ContactNumber = "999888777",
                 Sex = "Female",
                 Weight = 55,

@@ -8,10 +8,6 @@ namespace DieteticConsultationAPI.Middleware
     public class ErrorHandlingMiddleware : IMiddleware
 
     {
-        private readonly ILogger<ErrorHandlingMiddleware> _logger;
-
-        public ErrorHandlingMiddleware(ILogger<ErrorHandlingMiddleware> logger) => _logger = logger;
-
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
@@ -30,9 +26,13 @@ namespace DieteticConsultationAPI.Middleware
             {
                 await BuildResponse(context, cannotCreateResourceException, HttpStatusCode.BadRequest);
             }
-            catch (CannotFindResourceException cannotfindResourceException)
+            catch (CannotFindResourceException cannotFindResourceException)
             {
-                await BuildResponse(context, cannotfindResourceException, HttpStatusCode.NotFound);
+                await BuildResponse(context, cannotFindResourceException, HttpStatusCode.NotFound);
+            }
+            catch (CannotUploadResourceException cannotUploadResourceException)
+            {
+                await BuildResponse(context, cannotUploadResourceException, HttpStatusCode.NotFound);
             }
             catch (CommonHttpException ex)
             {
@@ -40,7 +40,7 @@ namespace DieteticConsultationAPI.Middleware
             }
             catch (Exception)
             {
-                await BuildResponse(context, "Something bas happened to our server", HttpStatusCode.InternalServerError);
+                await BuildResponse(context, "Something bad happened to our server", HttpStatusCode.InternalServerError);
             }
         }
 

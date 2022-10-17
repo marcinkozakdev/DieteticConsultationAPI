@@ -21,6 +21,6 @@ public class Dietician
             Specialization = dieticianDto.Specialization,
             ContactEmail = dieticianDto.ContactEmail,
             ContactNumber = dieticianDto.ContactNumber,
-            Patients= dieticianDto.Patients.Select(Patient.For).ToList()
+            Patients= dieticianDto.Patients?.Select(Patient.For).ToList()
         };
 }

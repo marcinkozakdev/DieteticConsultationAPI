@@ -27,7 +27,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new FileService(_fileRepositoryMock.Object);
 
             // assert
-            await Assert.ThrowsAsync<CannotFindResourceException>(() => _sut.UploadFile(file));
+            await Assert.ThrowsAsync<CannotUploadResourceException>(() => _sut.UploadFile(file));
         }
 
         [Fact]

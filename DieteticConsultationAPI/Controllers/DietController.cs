@@ -27,7 +27,6 @@ namespace DieteticConsultationAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,Dietician")]
-
         public async Task<IActionResult> GetAll()
         {
             var diets = await _dietService.GetAll();

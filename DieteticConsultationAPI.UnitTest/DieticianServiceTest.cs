@@ -125,10 +125,10 @@ namespace DieteticConsultationAPI.UnitTest
             var dietician = new DieticianDto()
             {
                 Id = 2,
-                FirstName = "Dominika",
-                LastName = "Kozak",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
                 Specialization = "Dietician",
-                ContactEmail = "dominika.kozak@test.com",
+                ContactEmail = "test@test.com",
                 ContactNumber = "111222333",
                 Patients = new List<PatientDto>()
             };
@@ -144,7 +144,7 @@ namespace DieteticConsultationAPI.UnitTest
             _dieticianRepositoryMock
                 .Verify(x => x.AddOrUpdate(It.IsAny<Dietician>()), Times.Once());
 
-            Assert.Equal("Dominika", dietician.FirstName);
+            Assert.Equal("Test FirstName", dietician.FirstName);
             Assert.Equal(2, dietician.Id);
         }
 
@@ -157,10 +157,10 @@ namespace DieteticConsultationAPI.UnitTest
 
             DieticianDto updateDietician = new DieticianDto()
             {
-                FirstName = "Dominika",
-                LastName = "Olszowy",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
                 Specialization = "Dietician",
-                ContactEmail = "dominika.olszowy@test.com",
+                ContactEmail = "test@test.com",
                 ContactNumber = "111222333",
                 Patients = new List<PatientDto>()
             };
@@ -180,7 +180,7 @@ namespace DieteticConsultationAPI.UnitTest
             _dieticianRepositoryMock
                 .Verify(x => x.AddOrUpdate(It.IsAny<Dietician>()), Times.Once());
 
-            Assert.Equal("Olszowy", updateDietician.LastName);
+            Assert.Equal("Test LastName", updateDietician.LastName);
         }
 
         [Fact]
@@ -192,10 +192,10 @@ namespace DieteticConsultationAPI.UnitTest
 
             DieticianDto createDietician = new DieticianDto()
             {
-                FirstName = "Dominika",
-                LastName = "Olszowy",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
                 Specialization = "Dietician",
-                ContactEmail = "dominika.olszowy@test.com",
+                ContactEmail = "test@test.com",
                 ContactNumber = "111222333",
                 Patients= new List<PatientDto>()
             };
@@ -212,7 +212,7 @@ namespace DieteticConsultationAPI.UnitTest
             await _sut.Create(createDietician);
 
             // assert
-            Assert.Equal("Olszowy", createDietician.LastName);
+            Assert.Equal("Test LastName", createDietician.LastName);
         }
 
         [Fact]
@@ -241,10 +241,10 @@ namespace DieteticConsultationAPI.UnitTest
             return new Dietician()
             {
                 Id = 1,
-                FirstName = "Dominika",
-                LastName = "Kozak",
-                Specialization = "Dietician",
-                ContactEmail = "dominika.kozak@test.com",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
+                Specialization = "Test Specialization",
+                ContactEmail = "test1@test.com",
                 ContactNumber = "111222333",
                 Patients = new List<Patient>()
             };
