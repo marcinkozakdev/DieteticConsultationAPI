@@ -18,18 +18,19 @@ public class Patient
     public virtual Dietician Dietician { get; set; }
     public virtual Diet? Diet { get; set; }
     
-    public static Patient For(PatientDto patientdto) =>
+    public static Patient For(PatientDto? patientDto) =>
         new()
         {
-            Id = patientdto.Id,
-            FirstName = patientdto.FirstName,
-            LastName = patientdto.LastName,
-            ContactEmail = patientdto.ContactEmail,
-            ContactNumber = patientdto.ContactNumber,
-            Sex = patientdto.Sex,
-            Weight = patientdto.Weight,
-            Height = patientdto.Height,
-            Age = patientdto.Age,
-            Diet = Diet.For(patientdto.Diet)
+            Id = patientDto.Id,
+            FirstName = patientDto.FirstName,
+            LastName = patientDto.LastName,
+            ContactEmail = patientDto.ContactEmail,
+            ContactNumber = patientDto.ContactNumber,
+            Sex = patientDto.Sex,
+            Weight = patientDto.Weight,
+            Height = patientDto.Height,
+            Age = patientDto.Age,
+            DieticianId = patientDto.DieteticanId,
+            Diet = Diet.For(patientDto.Diet)
         };
 }

@@ -28,9 +28,9 @@ namespace DieteticConsultationAPI.UnitTest
             // arrange
             var newUser = new RegisterUserDto()
             {
-                Email = "marcin.kozak@test.com",
-                FirstName = "Marcin",
-                LastName = "Kozak",
+                Email = "test123@test.com",
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
                 RoleId = 1,
                 ConfirmPassword = "password1",
                 Password = "password1",
@@ -48,7 +48,7 @@ namespace DieteticConsultationAPI.UnitTest
             _accountRepositoryMock
                 .Verify(x => x.Register(It.IsAny<User>()), Times.Once());
 
-            Assert.Equal("marcin.kozak@test.com", newUser.Email);
+            Assert.Equal("test123@test.com", newUser.Email);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace DieteticConsultationAPI.UnitTest
             var _sut = new AccountService(_passwordHasherMock.Object, _authenticationSettingsMock.Object, _accountRepositoryMock.Object);
 
             //assert
-            await Assert.ThrowsAsync<IncorrectLogginException>(() => _sut.GenerateJwt(loginDto));
+            await Assert.ThrowsAsync<CannotFindResourceException>(() => _sut.GenerateJwt(loginDto));
         }
 
         [Theory]

@@ -8,7 +8,7 @@ public sealed class CannotFindResourceException : CommonHttpException
 
     }
 
-    private CannotFindResourceException(string message) : base(message, HttpStatusCode.NotFound)
+    private CannotFindResourceException() : base("Cannot find resource", HttpStatusCode.NotFound)
     {
 
     }
@@ -16,6 +16,6 @@ public sealed class CannotFindResourceException : CommonHttpException
     public static void For(int id) =>
         throw new CannotFindResourceException(id);
 
-    public static void For(string message) =>
-        throw new CannotFindResourceException(message);
+    public static void For() =>
+        throw new CannotFindResourceException();
 }

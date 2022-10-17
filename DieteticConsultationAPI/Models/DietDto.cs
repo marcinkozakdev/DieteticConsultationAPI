@@ -14,7 +14,7 @@ namespace DieteticConsultationAPI.Models
         public string RecommendedProducts { get; set; }
         public virtual List<FileModelDto> Files { get; set; }
 
-        public static DietDto For(Diet diet)
+        public static DietDto? For(Diet diet)
             =>
             diet is null 
             ? null

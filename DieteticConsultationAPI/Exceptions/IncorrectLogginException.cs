@@ -3,7 +3,7 @@ namespace DieteticConsultationAPI.Exceptions;
 
 public sealed class IncorrectLogginException : CommonHttpException
 {
-    private IncorrectLogginException(string message) : base(message, HttpStatusCode.BadRequest)
+    private IncorrectLogginException(int id) : base($"Invalid username or password for id:{id}", HttpStatusCode.BadRequest)
     {
     }
 
@@ -11,5 +11,7 @@ public sealed class IncorrectLogginException : CommonHttpException
     {
     }
 
-    public static void For(string message) => throw new IncorrectLogginException(message);
+    public static void For(int id) => throw new IncorrectLogginException(id);
+    public static void For() => throw new IncorrectLogginException();
+
 }

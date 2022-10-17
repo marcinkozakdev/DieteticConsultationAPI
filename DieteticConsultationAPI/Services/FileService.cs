@@ -18,7 +18,7 @@ namespace DieteticConsultationAPI.Services
         public async Task UploadFile(IFormFile file)
         {
             if (file is null || file.Length == 0)
-                CannotFindResourceException.For("File not found");
+                CannotUploadResourceException.For(file.FileName);
 
             using var memoryStream = new MemoryStream();
 
@@ -40,7 +40,7 @@ namespace DieteticConsultationAPI.Services
             var file = FileModelDto.For(await _fileRepository.GetById(id));
 
             if (file is null)
-                CannotFindResourceException.For("File not found");
+                CannotFindResourceException.For(id);
 
             return file;
         }

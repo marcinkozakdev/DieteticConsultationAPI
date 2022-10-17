@@ -46,13 +46,13 @@ namespace DieteticConsultationAPI.Services
             var user = await _accountRepository.Login(dto);
 
             if (user is null)
-                IncorrectLogginException.For("Invalid username or password");
+                CannotFindResourceException.For();
 
             var result = _passwordHasher
                 .VerifyHashedPassword(user, user.PasswordHash, dto.Password);
 
             if (result == PasswordVerificationResult.Failed)
-                IncorrectLogginException.For("Invalid username or password");
+                IncorrectLogginException.For(user.Id);
 
             var claims = new List<Claim>()
             {

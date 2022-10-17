@@ -3,7 +3,7 @@ namespace DieteticConsultationAPI.Exceptions;
 
 public sealed class ForbiddenResourceException : CommonHttpException
 {
-    private ForbiddenResourceException(string message) : base(message, HttpStatusCode.Forbidden)
+    private ForbiddenResourceException(int id) : base($"Authorization failed for id: {id}", HttpStatusCode.Forbidden)
     {
     }
 
@@ -11,5 +11,5 @@ public sealed class ForbiddenResourceException : CommonHttpException
     {
     }
 
-    public static void For(string message) => throw new ForbiddenResourceException(message);
+    public static void For(int id) => throw new ForbiddenResourceException(id);
 }
