@@ -16,7 +16,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Dietician")]
+        //[Authorize(Roles = "Admin,Dietician")]
         public async Task<IActionResult> Upload(IFormFile file)
         {
             await _fileService.UploadFile(file);
@@ -25,7 +25,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Dietician,Patient")]
+        //[Authorize(Roles = "Admin,Dietician,Patient")]
         public async Task<IActionResult> Download(int id)
         {
             var file =  await _fileService.DownloadFile(id);
@@ -34,7 +34,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Dietician")]
+        //[Authorize(Roles = "Admin,Dietician")]
         public async Task<IActionResult> Delete(int id)
         {
             await _fileService.DeleteFile(id);

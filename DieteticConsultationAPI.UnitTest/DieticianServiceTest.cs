@@ -152,11 +152,12 @@ namespace DieteticConsultationAPI.UnitTest
         public async Task UpdateDietician_DieticianFound_ReturnDietician()
         {
             // arrange
-            int id = 1;
+            var id = 1;
             var dietician = SampleDietician();
 
             DieticianDto updateDietician = new DieticianDto()
             {
+                Id = 1,
                 FirstName = "Test FirstName",
                 LastName = "Test LastName",
                 Specialization = "Dietician",
@@ -181,6 +182,37 @@ namespace DieteticConsultationAPI.UnitTest
                 .Verify(x => x.AddOrUpdate(It.IsAny<Dietician>()), Times.Once());
 
             Assert.Equal("Test LastName", updateDietician.LastName);
+        }
+
+        [Fact]
+        public async Task UpdateDietician_DieticianFound_ReturnIdNotProvidedException()
+        {
+            // arrange
+            var id = 1;
+            var dietician = SampleDietician();
+
+            DieticianDto updateDietician = new DieticianDto()
+            {
+                FirstName = "Test FirstName",
+                LastName = "Test LastName",
+                Specialization = "Dietician",
+                ContactEmail = "test@test.com",
+                ContactNumber = "111222333",
+                Patients = new List<PatientDto>()
+            };
+
+            _dieticianRepositoryMock
+                .Setup(x => x.GetById(id))
+                .ReturnsAsync(dietician);
+
+            _dieticianRepositoryMock
+                .Setup(x => x.AddOrUpdate(It.IsAny<Dietician>()));
+
+            // act
+            var _sut = new DieticianService(_dieticianRepositoryMock.Object);
+
+            // assert
+            await Assert.ThrowsAsync<IdNotProvidedException>(() => _sut.Update(updateDietician));
         }
 
         [Fact]

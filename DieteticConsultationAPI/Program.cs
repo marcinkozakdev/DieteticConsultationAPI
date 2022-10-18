@@ -3,12 +3,8 @@ using FluentValidation.AspNetCore;
 using NLog.Web;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DieteticConsultationAPI.UnitTest")]
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Logging.AddCustomLogging();
-builder.Host.UseNLog();
 builder.Services.AddAuthenticationServices(builder.Configuration);
 builder.Services.AddAutorizationServices();
 builder.Services.AddControllers().AddFluentValidation();
@@ -37,5 +33,5 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints => { endpoints.MapControllers();});
 app.Run();
 
-public partial class Program { }
+
 

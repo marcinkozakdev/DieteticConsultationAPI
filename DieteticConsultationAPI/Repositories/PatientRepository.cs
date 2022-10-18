@@ -12,7 +12,7 @@ namespace DieteticConsultationAPI.Repositories
         private readonly DieteticConsultationDbContext _context;
 
         public PatientRepository(DieteticConsultationDbContext context) => _context = context;
-        
+
 
         public async Task AddOrUpdate(Patient patient)
         {
@@ -26,13 +26,17 @@ namespace DieteticConsultationAPI.Repositories
                 obj.Weight = patient.Weight;
                 obj.Height = patient.Height;
                 obj.Sex = patient.Sex;
-                obj.Diet=patient.Diet;
+                obj.Diet = patient.Diet;
+                obj.DieticianId = patient.DieticianId;
 
                 _context.Update(obj);
             }
 
-            else
+            else if (patient.Id is 0)
                 await _context.Patients.AddAsync(patient);
+
+            else
+                CannotFindResourceException.For(patient.Id);
 
             await _context.SaveChangesAsync();
         }
@@ -48,15 +52,15 @@ namespace DieteticConsultationAPI.Repositories
                 CannotFindResourceException.For(id);
         }
 
-        public async Task<IQueryable<Patient>> GetAll(PatientQuery query) => 
-            await Task.FromResult( _context
+        public async Task<IQueryable<Patient>> GetAll(PatientQuery query) =>
+            await Task.FromResult(_context
                 .Patients
                 .Include(p => p.Diet)
                 .Where(r => query.SearchPhrase == null
                                 || r.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
-                                || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower()))); 
+                                || r.LastName.ToLower().Contains(query.SearchPhrase.ToLower())));
 
-        public async Task<Patient> GetById(int id) => 
+        public async Task<Patient> GetById(int id) =>
             await _context
                 .Patients
                 .Include(p => p.Diet)

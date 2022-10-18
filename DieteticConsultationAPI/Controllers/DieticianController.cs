@@ -18,7 +18,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult> Create([FromBody] DieticianDto command)
         {
             await _dieticianService.Create(command);
@@ -27,7 +27,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var dieticians = await _dieticianService.GetAll();
@@ -36,7 +36,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
             var dietician = await _dieticianService.GetById(id);
@@ -45,16 +45,16 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Dietician")]
+        //[Authorize(Roles = "Admin,Dietician")]
         public async Task<IActionResult> Update([FromBody] DieticianDto command)
         {
             await _dieticianService.Update(command);
 
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             await _dieticianService.Delete(id);

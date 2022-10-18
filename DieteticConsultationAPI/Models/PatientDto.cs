@@ -35,7 +35,7 @@ public sealed record PatientDto
                 Diet = DietDto.For(patient.Diet)
             };
 
-    public static async ValueTask<PatientDto?> BindAsync(HttpContext context)
+    public static async ValueTask<PatientDto> BindAsync(HttpContext context)
     {
         var form = await context.Request.ReadFormAsync();
 

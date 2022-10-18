@@ -3,7 +3,7 @@
     "DieteticConsultationAPI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/dieteticconsultation",
+      "launchUrl": "api",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
