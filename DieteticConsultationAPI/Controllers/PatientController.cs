@@ -19,7 +19,7 @@ namespace DieteticConsultationAPI.Controllers
 
 
         [HttpPost]
-        //[Authorize(Roles = "Admin,Dietician,Patient")]
+        [Authorize(Roles = "Admin,Dietician,Patient")]
         public async Task<ActionResult> Create([FromBody] PatientDto command)
         {
             await _patientService.Create(command);
@@ -28,7 +28,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Admin,Dietician")]
+        [Authorize(Roles = "Admin,Dietician")]
         public async Task<IActionResult> GetAll([FromQuery] PatientQuery query)
         {
             var patients = await _patientService.GetAll(query);
@@ -37,7 +37,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize(Roles = "Admin,Dietician,Patient")]
+        [Authorize(Roles = "Admin,Dietician,Patient")]
         public async Task<IActionResult> Get(int id)
         {
             var patient = await _patientService.GetById(id);
@@ -46,7 +46,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = "Admin,Dietician,Patient")]
+        [Authorize(Roles = "Admin,Dietician,Patient")]
         public async Task<IActionResult> Update([FromBody] PatientDto command)
         {
             await _patientService.Update(command);
@@ -55,7 +55,7 @@ namespace DieteticConsultationAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Admin,Dietician,Patient")]
+        [Authorize(Roles = "Admin,Dietician,Patient")]
         public async Task<IActionResult> Delete(int id)
         {
             await _patientService.Delete(id);
