@@ -8,6 +8,12 @@ namespace DieteticConsultationAPI.Middleware
     public class ErrorHandlingMiddleware : IMiddleware
 
     {
+        private readonly ILogger<ErrorHandlingMiddleware> _logger;
+
+        public ErrorHandlingMiddleware(ILogger<ErrorHandlingMiddleware> logger)
+        {
+            _logger = logger;
+        }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
@@ -34,12 +40,18 @@ namespace DieteticConsultationAPI.Middleware
             {
                 await BuildResponse(context, cannotUploadResourceException, HttpStatusCode.NotFound);
             }
+            catch (IdNotProvidedException idNotProvidedException)
+            {
+                await BuildResponse(context, idNotProvidedException, HttpStatusCode.BadRequest);
+            }
             catch (CommonHttpException ex)
             {
                 await BuildResponse(context, ex, ex.Code);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError("Un exception occured {Message}, {InnerException}", ex.Message, ex.InnerException);
+
                 await BuildResponse(context, "Something bad happened to our server", HttpStatusCode.InternalServerError);
             }
         }

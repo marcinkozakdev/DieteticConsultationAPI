@@ -14,9 +14,9 @@ namespace DieteticConsultationAPI.Repositories
             _context = context;
         }
 
-        public async Task<Diet> AddOrUpdate(Diet diet)
+        public async Task AddOrUpdate(Diet diet)
         {
-            if (await _context.Diets.FirstOrDefaultAsync(d => d.Id.Equals(diet.Id)) is { } obj)
+            if (await _context.Diets.FirstOrDefaultAsync(d => d.Id == diet.Id) is { } obj)
             {
                 obj.Description = diet?.Description;
                 obj.CalorificValue = diet.CalorificValue;
@@ -28,12 +28,13 @@ namespace DieteticConsultationAPI.Repositories
                 _context.Update(obj);
             }
 
-            else
+            else if (diet.Id is 0)
                 await _context.Diets.AddAsync(diet);
 
-            await _context.SaveChangesAsync();
+            else
+                CannotFindResourceException.For(diet.Id);
 
-            return diet;
+            await _context.SaveChangesAsync();
         }
 
         public async Task Delete(int id)

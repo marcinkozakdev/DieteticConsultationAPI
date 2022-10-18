@@ -3,7 +3,6 @@ using DieteticConsultationAPI.Exceptions;
 using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services.Interfaces;
-using FileModel = DieteticConsultationAPI.Entities.FileModel;
 
 namespace DieteticConsultationAPI.Services
 {
@@ -25,18 +24,25 @@ namespace DieteticConsultationAPI.Services
         public async Task<DietDto> GetById(int id)
         {
             var diet = DietDto.For(await _dietRepository.GetById(id));
-            
+
             if (diet is null)
                 CannotFindResourceException.For(id);
 
             return diet;
         }
 
-        public Task Update(DietDto dietDto) => 
-            _dietRepository.AddOrUpdate(Diet.For(dietDto));
+        public Task Update(DietDto dietDto)
+        {
+            if (dietDto.Id is 0)
+                IdNotProvidedException.For();
 
-        public async Task Delete(int id) =>
+            return _dietRepository.AddOrUpdate(Diet.For(dietDto));
+        }
+
+        public async Task Delete(int id)
+        {
             await _dietRepository.Delete(id);
-        
+        }
+
     }
 }

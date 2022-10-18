@@ -1,4 +1,5 @@
 ﻿using DieteticConsultationAPI.Models;
+
 namespace DieteticConsultationAPI.Entities;
 
 public class Patient
@@ -14,11 +15,11 @@ public class Patient
     public int Age { get; set; }
     public int? CreatedById { get; set; }
     public virtual User CreatedBy { get; set; }
-    public int DieticianId { get; set; }
-    public virtual Dietician Dietician { get; set; }
+    public int? DieticianId { get; set; }
+    public virtual Dietician? Dietician { get; set; }
     public virtual Diet? Diet { get; set; }
     
-    public static Patient For(PatientDto? patientDto) =>
+    public static Patient For(PatientDto patientDto) =>
         new()
         {
             Id = patientDto.Id,

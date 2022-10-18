@@ -14,7 +14,7 @@ public class Diet
     public virtual Patient? Patient { get; set; }
     public virtual List<FileModel>? Files { get; set; }
     
-    public static Diet For(DietDto? dietDto) =>
+    public static Diet For(DietDto dietDto) =>
         dietDto is null
         ? null
         : new()

@@ -14,7 +14,7 @@ namespace DieteticConsultationAPI.Models
         public string RecommendedProducts { get; set; }
         public virtual List<FileModelDto> Files { get; set; }
 
-        public static DietDto? For(Diet diet)
+        public static DietDto For(Diet diet)
             =>
             diet is null 
             ? null
@@ -29,7 +29,7 @@ namespace DieteticConsultationAPI.Models
                 Files = diet.Files?.Select(FileModelDto.For).ToList()
             };
 
-        public static async ValueTask<DietDto?> BindAsync(HttpContext context)
+        public static async ValueTask<DietDto> BindAsync(HttpContext context)
         {
             var form = await context.Request.ReadFormAsync();
 

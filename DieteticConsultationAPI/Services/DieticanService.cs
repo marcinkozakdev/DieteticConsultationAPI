@@ -31,8 +31,13 @@ namespace DieteticConsultationAPI.Services
             return dietetican;
         }
 
-        public Task Update(DieticianDto dieticianDto) =>
-            _dieticianRepository.AddOrUpdate(Dietician.For(dieticianDto));
+        public Task Update(DieticianDto dieticianDto)
+        {
+            if (dieticianDto.Id is 0)
+                IdNotProvidedException.For();
+
+            return _dieticianRepository.AddOrUpdate(Dietician.For(dieticianDto));
+        }
 
         public async Task Delete(int id) =>
             await _dieticianRepository.Delete(id);

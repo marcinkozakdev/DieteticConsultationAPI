@@ -155,8 +155,7 @@ namespace DieteticConsultationAPI.UnitTest
                 .Setup(x => x.GetById(id)).ReturnsAsync(diet);
 
             _dietRepositoryMock
-                .Setup(x => x.AddOrUpdate(It.IsAny<Diet>()))
-                .ReturnsAsync(diet);
+                .Setup(x => x.AddOrUpdate(It.IsAny<Diet>()));
 
             // act
             var _sut = new DietService(_dietRepositoryMock.Object);
@@ -190,8 +189,7 @@ namespace DieteticConsultationAPI.UnitTest
                 .ReturnsAsync(diet);
 
             _dietRepositoryMock
-                .Setup(x => x.AddOrUpdate(It.IsAny<Diet>()))
-                .ReturnsAsync(diet);
+                .Setup(x => x.AddOrUpdate(It.IsAny<Diet>()));
 
             // act
             var _sut = new DietService(_dietRepositoryMock.Object);

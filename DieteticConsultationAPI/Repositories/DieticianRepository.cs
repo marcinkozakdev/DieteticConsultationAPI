@@ -35,8 +35,11 @@ namespace DieteticConsultationAPI.Repositories
                 _context.Update(obj);
             }
 
-            else
+            else if (dietician.Id is 0)
                 await _context.Dieticians.AddAsync(dietician);
+
+            else
+                CannotFindResourceException.For(dietician.Id);
 
             await _context.SaveChangesAsync();
         }
@@ -48,6 +51,7 @@ namespace DieteticConsultationAPI.Repositories
                 _context.Dieticians.Remove(dietician);
                 await _context.SaveChangesAsync();
             }
+
             else
                 CannotFindResourceException.For(id);
         }
