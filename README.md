@@ -8,7 +8,7 @@
 * [Room for Improvement](#features-to-be-added-in-the-future)
 
 ## General Information
-DieteticConsultationAPI is an application developed for dieticians and their patients for better cooperation and communication, also for support during the diet. This application created for educational purposes. I chose this kind of application because I would like to make the work of my wife who is a dietician, so that she will be happier and have more time for me.
+Backend of a web application created for dietitians and their patients for better cooperation and communication, as well as support during the diet. In the project I used the REST architecture. The application allows users to register/login, view and manage patients and their diets. Everything is based on ASP.NET Core and a database managed by EF Core.
 
 ## Technologies Used
 - ASP.NET Core 6.0
