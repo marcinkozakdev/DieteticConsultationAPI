@@ -4,12 +4,12 @@ using DieteticConsultationAPI.Models;
 using DieteticConsultationAPI.Repositories.Abstractions;
 using DieteticConsultationAPI.Services.Interfaces;
 
-
 namespace DieteticConsultationAPI.Services
 {
     public class DieticianService : IDieticianService
     {
         private readonly IDieticianRepository _dieticianRepository;
+
         public DieticianService(IDieticianRepository dieticianRepository) =>
             _dieticianRepository = dieticianRepository;
 
@@ -31,12 +31,12 @@ namespace DieteticConsultationAPI.Services
             return dietetican;
         }
 
-        public Task Update(DieticianDto dieticianDto)
+        public async Task Update(DieticianDto dieticianDto)
         {
             if (dieticianDto.Id is 0)
                 IdNotProvidedException.For();
 
-            return _dieticianRepository.AddOrUpdate(Dietician.For(dieticianDto));
+            await _dieticianRepository.AddOrUpdate(Dietician.For(dieticianDto));
         }
 
         public async Task Delete(int id) =>

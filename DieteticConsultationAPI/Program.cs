@@ -1,5 +1,8 @@
+using DieteticConsultationAPI.Entities;
 using DieteticConsultationAPI.Extensions;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.EntityFrameworkCore;
 using NLog.Web;
 using System.Runtime.CompilerServices;
 
@@ -17,6 +20,12 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<DieteticConsultationDbContext>();
+    context.Database.Migrate();
+}
 app.UseStaticFiles();
 app.UseSeeder();
 if (app.Environment.IsDevelopment())

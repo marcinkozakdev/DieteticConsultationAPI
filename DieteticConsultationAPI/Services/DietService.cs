@@ -31,12 +31,12 @@ namespace DieteticConsultationAPI.Services
             return diet;
         }
 
-        public Task Update(DietDto dietDto)
+        public async Task Update(DietDto dietDto)
         {
             if (dietDto.Id is 0)
                 IdNotProvidedException.For();
 
-            return _dietRepository.AddOrUpdate(Diet.For(dietDto));
+            await _dietRepository.AddOrUpdate(Diet.For(dietDto));
         }
 
         public async Task Delete(int id)
